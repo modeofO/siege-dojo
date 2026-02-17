@@ -2,7 +2,7 @@
 
 import React from "react";
 import { sepolia } from "@starknet-react/chains";
-import { StarknetConfig, publicProvider, argent, braavos } from "@starknet-react/core";
+import { StarknetConfig, publicProvider } from "@starknet-react/core";
 import { ControllerConnector } from "@cartridge/connector";
 
 // Siege game contract addresses — update after deployment
@@ -36,7 +36,7 @@ const cartridge = new ControllerConnector({
 }) as any;
 
 const chains = [sepolia];
-const connectors = [cartridge, argent(), braavos()];
+const connectors = [cartridge];
 
 export function StarknetProvider({ children }: { children: React.ReactNode }) {
   return (
