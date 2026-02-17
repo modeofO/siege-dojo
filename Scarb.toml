@@ -1,0 +1,20 @@
+[package]
+cairo-version = "2.14.0"
+name = "siege_dojo"
+version = "1.0.0"
+edition = "2024_07"
+
+[[target.starknet-contract]]
+sierra = true
+build-external-contracts = ["dojo::world::world_contract::world"]
+
+[dependencies]
+starknet = "2.14.0"
+dojo = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.8.0" }
+
+[dev-dependencies]
+cairo_test = "2.14.0"
+dojo_cairo_test = { git = "https://github.com/dojoengine/dojo.git", tag = "v1.8.0" }
+
+[tool.scarb]
+allow-prebuilt-plugins = ["dojo_cairo_macros"]

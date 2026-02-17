@@ -1,0 +1,5 @@
+[namespace]
+default = "siege_dojo"
+
+[writers]
+"siege_dojo" = ["siege_dojo-actions", "siege_dojo-commit_reveal", "siege_dojo-resolution"]
