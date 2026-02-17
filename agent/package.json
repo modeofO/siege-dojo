@@ -1,0 +1,19 @@
+{
+  "name": "agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "selfplay": "node dist/selfplay.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^25.2.3",
+    "starknet": "^8.9.2",
+    "typescript": "^5.9.3"
+  },
+  "type": "module"
+}
