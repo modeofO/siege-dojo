@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@cartridge/connector": "^0.13.9",
+    "@cartridge/controller": "^0.13.9",
     "@starknet-react/chains": "^5.0.3",
     "@starknet-react/core": "^5.0.3",
     "get-starknet-core": "^4.0.0",
