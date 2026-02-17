@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #0a0a0f;
+  --color-surface: #12121a;
+  --color-surface-light: #1a1a26;
+  --color-border: #2a2a3a;
+  --color-friendly: #00d4ff;
+  --color-enemy: #ff3344;
+  --color-gold: #ffd700;
+  --color-text: #e0e0e8;
+  --color-text-dim: #6a6a7a;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Pulsing red for critical HP */
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-red {
+  animation: pulse-red 1s ease-in-out infinite;
+}
+
+/* Damage flash */
+@keyframes damage-flash {
+  0% { background-color: rgba(255, 51, 68, 0.3); }
+  100% { background-color: transparent; }
+}
+.animate-damage {
+  animation: damage-flash 0.5s ease-out;
+}
+
+/* Slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+input[type="range"]::-webkit-slider-track {
+  background: var(--color-surface-light);
+  height: 8px;
+  border-radius: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-friendly);
+  margin-top: -6px;
+}
+input[type="range"]::-moz-range-track {
+  background: var(--color-surface-light);
+  height: 8px;
+  border-radius: 4px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-friendly);
+  border: none;
+}
