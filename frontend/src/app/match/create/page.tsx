@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
 import { createMatch, CONTRACTS } from "@/lib/contracts";
 import Link from "next/link";
 
 export default function CreateMatchPage() {
-  const { account, isConnected } = useAccount();
-  const [teammateAddr, setTeammateAddr] = useState("");
+  const { account, isConnected, address, accounts, selectedIndex } = useAccount();
+  const otherAccounts = accounts.filter((_, i) => i !== selectedIndex);
+  const [teammateAddr, setTeammateAddr] = useState(otherAccounts[0]?.address || "");
   const [yourRole, setYourRole] = useState<"attacker" | "defender">("attacker");
   const [matchId, setMatchId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,11 +19,31 @@ export default function CreateMatchPage() {
     setLoading(true);
     setError("");
     try {
-      const attackerAddr = yourRole === "attacker" ? account.address : teammateAddr;
-      const defenderAddr = yourRole === "defender" ? account.address : teammateAddr;
+      const attackerAddr = yourRole === "attacker" ? (address || account.address) : teammateAddr;
+      const defenderAddr = yourRole === "defender" ? (address || account.address) : teammateAddr;
       const result = await createMatch(account, teammateAddr, attackerAddr, defenderAddr);
-      // Parse match ID from tx events (simplified — real impl reads events)
-      setMatchId(result.transaction_hash);
+      // Try to get match_id from transaction events
+      const txHash = result.transaction_hash;
+      // Query Torii for the latest match counter to get the real match ID
+      const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
+      try {
+        const res = await fetch(`${TORII_URL}/graphql`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `{ siegeMatchCounterModels(first: 1) { edges { node { count } } } }`,
+          }),
+        });
+        const data = await res.json();
+        const count = data?.data?.siegeMatchCounterModels?.edges?.[0]?.node?.count;
+        if (count != null) {
+          setMatchId(String(count));
+        } else {
+          setMatchId(txHash);
+        }
+      } catch {
+        setMatchId(txHash);
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Transaction failed");
     } finally {
@@ -61,15 +82,22 @@ export default function CreateMatchPage() {
       {/* Teammate address */}
       <div className="space-y-2">
         <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">
-          AI Agent Wallet Address
+          AI Agent (Teammate)
         </label>
-        <input
-          type="text"
+        <select
           value={teammateAddr}
           onChange={(e) => setTeammateAddr(e.target.value)}
-          placeholder="0x..."
-          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
-        />
+          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors cursor-pointer"
+        >
+          {otherAccounts.map((acc, i) => {
+            const originalIndex = accounts.findIndex((a) => a.address === acc.address);
+            return (
+              <option key={acc.address} value={acc.address} className="bg-[#12121a]">
+                Dev Account {originalIndex} ({acc.address.slice(0, 6)}…{acc.address.slice(-4)})
+              </option>
+            );
+          })}
+        </select>
       </div>
 
       {/* Role selection */}
