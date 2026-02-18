@@ -109,6 +109,65 @@ export function useMatchState(matchId: string | null) {
   return { state, loading, refresh };
 }
 
+export interface MatchPlayers {
+  teamAAttacker: string;
+  teamADefender: string;
+  teamBAttacker: string;
+  teamBDefender: string;
+}
+
+export function useMatchPlayers(matchId: string | null): MatchPlayers | null {
+  const [players, setPlayers] = useState<MatchPlayers | null>(null);
+
+  useEffect(() => {
+    if (!matchId) return;
+
+    const fetchPlayers = async () => {
+      try {
+        const res = await fetch(`${TORII_URL}/graphql`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `
+              query GetPlayers($id: String!) {
+                siegeMatchStateModels(where: { match_id: $id }) {
+                  edges {
+                    node {
+                      team_a_attacker
+                      team_a_defender
+                      team_b_attacker
+                      team_b_defender
+                    }
+                  }
+                }
+              }
+            `,
+            variables: { id: matchId },
+          }),
+        });
+        const data = await res.json();
+        const node = data?.data?.siegeMatchStateModels?.edges?.[0]?.node;
+        if (node) {
+          setPlayers({
+            teamAAttacker: node.team_a_attacker,
+            teamADefender: node.team_a_defender,
+            teamBAttacker: node.team_b_attacker,
+            teamBDefender: node.team_b_defender,
+          });
+        }
+      } catch {
+        console.error("Failed to fetch match players");
+      }
+    };
+
+    fetchPlayers();
+    const interval = setInterval(fetchPlayers, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [matchId]);
+
+  return players;
+}
+
 export function useRoundHistory(matchId: string | null) {
   const [history, setHistory] = useState<RoundResult[]>([]);
 

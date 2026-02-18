@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
 import { joinMatch } from "@/lib/contracts";
 import { useRouter } from "next/navigation";
 

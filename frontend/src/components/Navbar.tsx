@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
+import { AccountSelector } from "./AccountSelector";
 
 export function Navbar() {
-  const { address, isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
-  const { disconnect } = useDisconnect();
-
+  const { address } = useAccount();
   const shortAddr = address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "";
 
   return (
@@ -17,29 +15,8 @@ export function Navbar() {
           SIEGE
         </Link>
         <div className="flex items-center gap-4">
-          {isConnected ? (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-[#6a6a7a]">{shortAddr}</span>
-              <button
-                onClick={() => disconnect()}
-                className="text-xs px-3 py-1.5 border border-[#2a2a3a] rounded hover:border-[#ff3344] hover:text-[#ff3344] transition-colors"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              {connectors.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => connect({ connector: c })}
-                  className="text-xs px-3 py-1.5 bg-[#12121a] border border-[#2a2a3a] rounded hover:border-[#00d4ff] hover:text-[#00d4ff] transition-colors"
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          )}
+          <AccountSelector />
+          <span className="text-sm text-[#6a6a7a]">{shortAddr}</span>
         </div>
       </div>
     </nav>

@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { useAccount } from "@starknet-react/core";
-import { useMatchState, useRoundHistory } from "@/lib/gameState";
+import { useAccount } from "@/app/providers";
+import { useMatchState, useRoundHistory, useMatchPlayers } from "@/lib/gameState";
 import { generateSalt, computeAttackerCommitment, computeDefenderCommitment, storeSalt, storeMove, getSalt, getMove } from "@/lib/crypto";
 import { commitMove, revealAttacker, revealDefender } from "@/lib/contracts";
 import { VaultDisplay } from "@/components/VaultDisplay";
@@ -14,18 +14,32 @@ import { MatchStatus } from "@/components/MatchStatus";
 import { EndScreen } from "@/components/EndScreen";
 import { Timer } from "@/components/Timer";
 
-// TODO: determine from on-chain data which team/role the connected wallet has
-const YOUR_TEAM: 1 | 2 = 1;
-const YOUR_ROLE: "attacker" | "defender" = "attacker";
 const COMMIT_DEADLINE_OFFSET = 120; // seconds from round start
 
 export default function GamePage() {
   const params = useParams();
   const matchId = params.id as string;
-  const { account } = useAccount();
+  const { account, address } = useAccount();
 
   const { state, loading } = useMatchState(matchId);
   const history = useRoundHistory(matchId);
+  const players = useMatchPlayers(matchId);
+
+  // Determine team/role from on-chain match state
+  const normalizedAddr = address?.toLowerCase();
+  let YOUR_TEAM: 1 | 2 = 1;
+  let YOUR_ROLE: "attacker" | "defender" = "attacker";
+  if (players && normalizedAddr) {
+    if (players.teamAAttacker?.toLowerCase() === normalizedAddr) {
+      YOUR_TEAM = 1; YOUR_ROLE = "attacker";
+    } else if (players.teamADefender?.toLowerCase() === normalizedAddr) {
+      YOUR_TEAM = 1; YOUR_ROLE = "defender";
+    } else if (players.teamBAttacker?.toLowerCase() === normalizedAddr) {
+      YOUR_TEAM = 2; YOUR_ROLE = "attacker";
+    } else if (players.teamBDefender?.toLowerCase() === normalizedAddr) {
+      YOUR_TEAM = 2; YOUR_ROLE = "defender";
+    }
+  }
 
   // Attacker: 6 slots (3 pressure points + 3 nodes)
   // Defender: 7 slots (3 pressure points + repair + 3 nodes)

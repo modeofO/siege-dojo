@@ -101,16 +101,45 @@ console.log("\n📊 RESULTS");
 const res2 = await fetch("http://localhost:8080/graphql", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ query: `{ siegeDojoMatchStateModels(where: { match_id: ${matchId} }) { edges { node { vault_a_hp vault_b_hp current_round status } } } }` }),
+  body: JSON.stringify({ query: `{ siegeDojoMatchStateModels(where: { match_idEQ: "${matchId}" }) { edges { node { vault_a_hp vault_b_hp current_round status } } } }` }),
 });
 const result = await res2.json();
-const state = result.data?.siegeDojoMatchStateModels?.edges?.[0]?.node;
-if (state) {
-  console.log(`   Vault A: ${state.vault_a_hp} HP`);
-  console.log(`   Vault B: ${state.vault_b_hp} HP`);
-  console.log(`   Round: ${state.current_round}`);
-  console.log(`   Status: ${state.status}`);
+if (result.errors) {
+  console.log("   Torii query error:", JSON.stringify(result.errors));
+  // Fallback: fetch all and filter
+  const fallback = await fetch("http://localhost:8080/graphql", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query: `{ siegeDojoMatchStateModels(order: {field: MATCH_ID, direction: DESC}, first: 1) { edges { node { match_id vault_a_hp vault_b_hp current_round status } } } }` }),
+  });
+  const fb = await fallback.json();
+  const s = fb.data?.siegeDojoMatchStateModels?.edges?.[0]?.node;
+  if (s) {
+    console.log(`   Vault A: ${s.vault_a_hp} HP`);
+    console.log(`   Vault B: ${s.vault_b_hp} HP`);
+    console.log(`   Round: ${s.current_round}`);
+    console.log(`   Status: ${s.status}`);
+  } else {
+    console.log("   Could not read state from Torii (fallback also failed)");
+  }
 } else {
-  console.log("   Could not read state from Torii");
+  const state = result.data?.siegeDojoMatchStateModels?.edges?.[0]?.node;
+  if (state) {
+    console.log(`   Vault A: ${state.vault_a_hp} HP`);
+    console.log(`   Vault B: ${state.vault_b_hp} HP`);
+    console.log(`   Round: ${state.current_round}`);
+    console.log(`   Status: ${state.status}`);
+  } else {
+    console.log("   Could not read state from Torii");
+  }
 }
+
+// Also show expected damage calc
+console.log("\n📐 EXPECTED DAMAGE CALC");
+console.log("   Team A attacks B vault: pressure=[5,3,2] vs B defense=[4,2,2]");
+console.log("   Node 0: max(0, 5-4)=1, Node 1: max(0, 3-2)=1, Node 2: max(0, 2-2)=0 → 2 dmg, repair 1 → net 1");
+console.log("   Team B attacks A vault: pressure=[2,3,5] vs A defense=[3,3,2]");
+console.log("   Node 0: max(0, 2-3)=0, Node 1: max(0, 3-3)=0, Node 2: max(0, 5-2)=3 → 3 dmg, repair 1 → net 2");
+console.log("   Expected: Vault A=98, Vault B=99");
+
 console.log("\nDone!");

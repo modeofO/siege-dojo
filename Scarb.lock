@@ -3,21 +3,21 @@ version = 1
 
 [[package]]
 name = "dojo"
-version = "1.8.0"
-source = "git+https://github.com/dojoengine/dojo.git?tag=v1.8.0#843d276a42c3fc34084a88af9f11fa7690bf3d75"
+version = "1.7.1"
+source = "git+https://github.com/dojoengine/dojo.git?tag=v1.7.1#cb78e550220e52bad4e4c940b20699dc6e98f7e4"
 dependencies = [
  "dojo_cairo_macros",
 ]
 
 [[package]]
 name = "dojo_cairo_macros"
-version = "1.8.0"
-source = "git+https://github.com/dojoengine/dojo.git?tag=v1.8.0#843d276a42c3fc34084a88af9f11fa7690bf3d75"
+version = "1.7.1"
+source = "git+https://github.com/dojoengine/dojo.git?tag=v1.7.1#cb78e550220e52bad4e4c940b20699dc6e98f7e4"
 
 [[package]]
 name = "dojo_cairo_test"
-version = "1.8.0"
-source = "git+https://github.com/dojoengine/dojo.git?tag=v1.8.0#843d276a42c3fc34084a88af9f11fa7690bf3d75"
+version = "1.7.1"
+source = "git+https://github.com/dojoengine/dojo.git?tag=v1.7.1#cb78e550220e52bad4e4c940b20699dc6e98f7e4"
 dependencies = [
  "dojo",
 ]
