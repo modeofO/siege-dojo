@@ -73,7 +73,7 @@ export function StarknetProvider({ children }: { children: React.ReactNode }) {
 
   const account = useMemo(() => {
     const dev = DEV_ACCOUNTS[selectedIndex];
-    return new KatanaAccount({ provider, address: dev.address, signer: dev.privateKey });
+    return new KatanaAccount({ provider, address: dev.address, signer: dev.privateKey, cairoVersion: "1" });
   }, [provider, selectedIndex]);
 
   const value = useMemo(
