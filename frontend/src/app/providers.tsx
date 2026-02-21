@@ -20,7 +20,6 @@ const policies: SessionPolicies = {
     [ACTIONS_ADDRESS]: {
       methods: [
         { name: "Create Match", entrypoint: "create_match" },
-        { name: "Join Match", entrypoint: "join_match" },
       ],
     },
     [COMMIT_REVEAL_ADDRESS]: {

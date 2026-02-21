@@ -37,7 +37,7 @@ export default function Home() {
           href="/match/join"
           className="px-8 py-3 bg-[#12121a] border border-[#2a2a3a] rounded hover:border-[#ffd700] hover:text-[#ffd700] transition-colors tracking-wider text-sm"
         >
-          JOIN MATCH
+          OPEN MATCH
         </Link>
       </div>
 

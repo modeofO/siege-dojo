@@ -8,28 +8,15 @@ export const CONTRACTS = {
 
 export async function createMatch(
   account: AccountInterface,
-  teammateAddress: string,
-  attackerAddress: string,
-  defenderAddress: string
+  teamAAttacker: string,
+  teamADefender: string,
+  teamBAttacker: string,
+  teamBDefender: string
 ) {
   return account.execute({
     contractAddress: CONTRACTS.ACTIONS,
     entrypoint: "create_match",
-    calldata: [teammateAddress, attackerAddress, defenderAddress],
-  });
-}
-
-export async function joinMatch(
-  account: AccountInterface,
-  matchId: string,
-  teammateAddress: string,
-  attackerAddress: string,
-  defenderAddress: string
-) {
-  return account.execute({
-    contractAddress: CONTRACTS.ACTIONS,
-    entrypoint: "join_match",
-    calldata: [matchId, teammateAddress, attackerAddress, defenderAddress],
+    calldata: [teamAAttacker, teamADefender, teamBAttacker, teamBDefender],
   });
 }
 

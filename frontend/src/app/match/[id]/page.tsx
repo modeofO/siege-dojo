@@ -84,7 +84,7 @@ export default function GamePage() {
     } finally {
       setSubmitting(false);
     }
-  }, [account, state, allocations, budget, matchId]);
+  }, [account, state, allocations, budget, matchId, YOUR_ROLE]);
 
   const handleReveal = useCallback(async () => {
     if (!account || !state) return;
@@ -114,7 +114,7 @@ export default function GamePage() {
     } finally {
       setSubmitting(false);
     }
-  }, [account, state, matchId]);
+  }, [account, state, matchId, YOUR_ROLE]);
 
   if (loading || !state) {
     return (
