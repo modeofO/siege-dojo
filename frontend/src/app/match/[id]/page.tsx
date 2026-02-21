@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { useAccount } from "@/app/providers";
+import { useAccount } from "@starknet-react/core";
 import { useMatchState, useRoundHistory, useMatchPlayers } from "@/lib/gameState";
 import { generateSalt, computeAttackerCommitment, computeDefenderCommitment, storeSalt, storeMove, getSalt, getMove } from "@/lib/crypto";
 import { commitMove, revealAttacker, revealDefender } from "@/lib/contracts";

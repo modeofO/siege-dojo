@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@/app/providers";
-import { createMatch, CONTRACTS } from "@/lib/contracts";
+import { useAccount } from "@starknet-react/core";
+import { createMatch } from "@/lib/contracts";
 import Link from "next/link";
 
 export default function CreateMatchPage() {
-  const { account, isConnected, address, accounts, selectedIndex } = useAccount();
-  const otherAccounts = accounts.filter((_, i) => i !== selectedIndex);
-  const [teammateAddr, setTeammateAddr] = useState(otherAccounts[0]?.address || "");
+  const { account, address, status } = useAccount();
+  const isConnected = status === "connected";
+  const [teammateAddr, setTeammateAddr] = useState("");
   const [yourRole, setYourRole] = useState<"attacker" | "defender">("attacker");
   const [matchId, setMatchId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -22,9 +22,7 @@ export default function CreateMatchPage() {
       const attackerAddr = yourRole === "attacker" ? (address || account.address) : teammateAddr;
       const defenderAddr = yourRole === "defender" ? (address || account.address) : teammateAddr;
       const result = await createMatch(account, teammateAddr, attackerAddr, defenderAddr);
-      // Try to get match_id from transaction events
       const txHash = result.transaction_hash;
-      // Query Torii for the latest match counter to get the real match ID
       const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
       try {
         const res = await fetch(`${TORII_URL}/graphql`, {
@@ -82,22 +80,15 @@ export default function CreateMatchPage() {
       {/* Teammate address */}
       <div className="space-y-2">
         <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">
-          AI Agent (Teammate)
+          AI Agent Wallet Address (Teammate)
         </label>
-        <select
+        <input
+          type="text"
           value={teammateAddr}
           onChange={(e) => setTeammateAddr(e.target.value)}
-          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors cursor-pointer"
-        >
-          {otherAccounts.map((acc, i) => {
-            const originalIndex = accounts.findIndex((a) => a.address === acc.address);
-            return (
-              <option key={acc.address} value={acc.address} className="bg-[#12121a]">
-                Dev Account {originalIndex} ({acc.address.slice(0, 6)}…{acc.address.slice(-4)})
-              </option>
-            );
-          })}
-        </select>
+          placeholder="0x..."
+          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
+        />
       </div>
 
       {/* Role selection */}

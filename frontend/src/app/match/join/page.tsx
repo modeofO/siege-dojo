@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@/app/providers";
+import { useAccount } from "@starknet-react/core";
 import { joinMatch } from "@/lib/contracts";
 import { useRouter } from "next/navigation";
 
 export default function JoinMatchPage() {
-  const { account, isConnected } = useAccount();
+  const { account, status } = useAccount();
+  const isConnected = status === "connected";
   const router = useRouter();
   const [matchId, setMatchId] = useState("");
   const [teammateAddr, setTeammateAddr] = useState("");

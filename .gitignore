@@ -141,3 +141,27 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Private keys / secrets / credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*secret*
+*private*key*
+!**/node_modules/**
+credentials.json
+service-account*.json
+keyfile*.json
+account*.json
+.secrets
+.secret
+*.secret
+
+# Dojo account files with private keys
+dojo_*.toml
+
+# Scripts with hardcoded dev keys
+scripts/play-round.js
