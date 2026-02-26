@@ -1,6 +1,18 @@
-FROM ghcr.io/dojoengine/dojo:v1.8.6
-RUN apt-get update -qq && apt-get install -y -qq build-essential curl git pkg-config libssl-dev && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+FROM ubuntu:24.04
+
+RUN apt-get update -qq && apt-get install -y -qq \
+    build-essential curl git pkg-config libssl-dev ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install scarb 2.13.1 (matches dojo v1.8.0 core dependency)
+RUN curl -sSL https://docs.swmansion.com/scarb/install.sh | bash -s -- -v 2.13.1
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Install sozo 1.8.6 (latest, with updated Sierra->CASM compiler)
+RUN curl -sSL https://github.com/dojoengine/dojo/releases/download/sozo/v1.8.6/sozo_v1.8.6_linux_amd64.tar.gz | tar xz -C /usr/local/bin
+
+# Install Rust (needed for scarb plugin compilation)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
 ENV PATH="/root/.cargo/bin:${PATH}"
-ENV SCARB=/opt/asdf/shims/scarb
+
 WORKDIR /app
