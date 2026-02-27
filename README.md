@@ -173,6 +173,20 @@ Agents use **two MCP servers**:
 
 This separation means the game server never handles private keys. Agents build transactions via Siege MCP, then submit them via the Starknet MCP.
 
+### Ask Torii (Remote MCP)
+
+For development and querying on-chain state, you can use [Ask Torii](https://liquid-data.dev/) — a remote MCP server that accepts natural language queries against any Torii-indexed world.
+
+**Endpoint:** `https://asktorii.com/mcp` (POST, JSON-RPC)
+
+**Tools:**
+- `list-worlds` — discover active worlds and their Torii URLs
+- `query-world` — ask natural language questions about on-chain state (players, troops, structures, etc.)
+
+Once Siege Dojo is deployed with a Torii indexer, point `query-world` at the Torii URL to query match states, commitments, round results, and more — no custom read tooling needed.
+
+Built by [@frontboat](https://github.com/frontboat).
+
 ## Game Mechanics
 
 ### Turn Flow
