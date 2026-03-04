@@ -162,6 +162,7 @@ account*.json
 
 # Dojo account files with private keys
 dojo_*.toml
+!dojo_sepolia.toml
 
 # Scripts with hardcoded dev keys
 scripts/play-round.js
