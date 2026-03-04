@@ -22,7 +22,7 @@
 - Torii: https://railway.com/project/a1f37ec0-bffd-4814-b061-acc6a1f90123
 
 ## Toolchain
-- Dojo v1.8.0 Docker image (sozo 1.7.1, scarb 2.13.1, Cairo 2.13.1)
+- Dojo v1.8.6 Docker image (sozo 1.8.6, scarb 2.13.1, Cairo 2.13.1)
 - Custom `dojo-builder` Docker image with rustup for compilation
 
 ## Dojo Models (5 registered)
