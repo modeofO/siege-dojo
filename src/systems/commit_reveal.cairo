@@ -254,13 +254,14 @@ pub mod commit_reveal {
                 while r < 4 {
                     let c: Commitment = world.read_model((match_id, round, r));
                     if !c.committed {
+                        // Auto-commit missing players with zero hash (forfeit with zero moves).
+                        // They are NOT auto-revealed here — the reveal timeout phase handles them.
                         world.write_model(@Commitment {
                             match_id, round, role: r,
                             hash: 0,
                             committed: true,
-                            revealed: true,
+                            revealed: false,
                         });
-                        rm.reveal_count += 1;
                     }
                     r += 1;
                 };
