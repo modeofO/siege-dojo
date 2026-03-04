@@ -122,6 +122,7 @@ pub mod commit_reveal {
             assert(state.status == MatchStatus::Active, 'Match not active');
 
             let role = get_player_role(@state, caller);
+            assert(role == ROLE_ATK_A || role == ROLE_ATK_B, 'Not an attacker');
             let round = state.current_round;
 
             let rm: RoundMoves = world.read_model((match_id, round));
@@ -186,6 +187,7 @@ pub mod commit_reveal {
             assert(state.status == MatchStatus::Active, 'Match not active');
 
             let role = get_player_role(@state, caller);
+            assert(role == ROLE_DEF_A || role == ROLE_DEF_B, 'Not a defender');
             let round = state.current_round;
 
             let rm: RoundMoves = world.read_model((match_id, round));
