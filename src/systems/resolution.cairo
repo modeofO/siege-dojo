@@ -92,6 +92,9 @@ pub mod resolution {
             // Win condition
             if hp_a == 0 || hp_b == 0 {
                 state.status = MatchStatus::Finished;
+            } else if state.current_round >= 10 {
+                // Max round limit reached — game ends, winner by HP
+                state.status = MatchStatus::Finished;
             } else {
                 state.current_round = round + 1;
             }
