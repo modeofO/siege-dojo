@@ -14,6 +14,7 @@ mod tests {
     use siege_dojo::models::commitment::{m_Commitment};
     use siege_dojo::models::round_moves::{m_RoundMoves};
     use siege_dojo::models::match_counter::{MatchCounter, m_MatchCounter};
+    use siege_dojo::models::events::{e_MatchCreated, e_MoveCommitted, e_MoveRevealed, e_RoundResolved, e_MatchFinished};
 
     fn namespace_def() -> NamespaceDef {
         NamespaceDef {
@@ -24,6 +25,11 @@ mod tests {
                 TestResource::Model(m_Commitment::TEST_CLASS_HASH),
                 TestResource::Model(m_RoundMoves::TEST_CLASS_HASH),
                 TestResource::Model(m_MatchCounter::TEST_CLASS_HASH),
+                TestResource::Event(e_MatchCreated::TEST_CLASS_HASH),
+                TestResource::Event(e_MoveCommitted::TEST_CLASS_HASH),
+                TestResource::Event(e_MoveRevealed::TEST_CLASS_HASH),
+                TestResource::Event(e_RoundResolved::TEST_CLASS_HASH),
+                TestResource::Event(e_MatchFinished::TEST_CLASS_HASH),
                 TestResource::Contract(actions::TEST_CLASS_HASH),
                 TestResource::Contract(commit_reveal::TEST_CLASS_HASH),
                 TestResource::Contract(resolution::TEST_CLASS_HASH),

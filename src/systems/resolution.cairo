@@ -6,9 +6,11 @@ pub trait IResolution<T> {
 #[dojo::contract]
 pub mod resolution {
     use dojo::model::ModelStorage;
+    use dojo::event::EventStorage;
     use siege_dojo::models::match_state::{MatchState, MatchStatus};
     use siege_dojo::models::node_state::{NodeState, NodeOwner};
     use siege_dojo::models::round_moves::RoundMoves;
+    use siege_dojo::models::events::{RoundResolved, MatchFinished};
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
@@ -89,12 +91,35 @@ pub mod resolution {
                 n += 1;
             };
 
+            world.emit_event(@RoundResolved {
+                match_id,
+                round,
+                vault_a_hp: hp_a.into(),
+                vault_b_hp: hp_b.into(),
+            });
+
             // Win condition
             if hp_a == 0 || hp_b == 0 {
                 state.status = MatchStatus::Finished;
+                let winner_team: u8 = if hp_b == 0 && hp_a > 0 {
+                    1_u8 // Team A wins
+                } else if hp_a == 0 && hp_b > 0 {
+                    2_u8 // Team B wins
+                } else {
+                    0_u8 // Draw
+                };
+                world.emit_event(@MatchFinished { match_id, winner_team });
             } else if state.current_round >= 10 {
                 // Max round limit reached — game ends, winner by HP
                 state.status = MatchStatus::Finished;
+                let winner_team: u8 = if hp_a > hp_b {
+                    1_u8 // Team A wins by HP
+                } else if hp_b > hp_a {
+                    2_u8 // Team B wins by HP
+                } else {
+                    0_u8 // Draw
+                };
+                world.emit_event(@MatchFinished { match_id, winner_team });
             } else {
                 state.current_round = round + 1;
             }
