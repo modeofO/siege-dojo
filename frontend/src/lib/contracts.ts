@@ -1,9 +1,19 @@
-import type { AccountInterface } from "starknet";
+import type { AccountInterface, UniversalDetails } from "starknet";
 
 // Contract addresses — update after deployment
 export const CONTRACTS = {
   ACTIONS: process.env.NEXT_PUBLIC_ACTIONS_ADDRESS || "0x0",
   COMMIT_REVEAL: process.env.NEXT_PUBLIC_COMMIT_REVEAL_ADDRESS || "0x0",
+};
+
+// Skip fee estimation on Katana devnet (no-fee mode)
+const DEVNET_TX_OPTS: UniversalDetails = {
+  skipValidate: true,
+  resourceBounds: {
+    l1_gas: { max_amount: BigInt(0), max_price_per_unit: BigInt(0) },
+    l2_gas: { max_amount: BigInt(0), max_price_per_unit: BigInt(0) },
+    l1_data_gas: { max_amount: BigInt(0), max_price_per_unit: BigInt(0) },
+  },
 };
 
 export async function createMatch(
@@ -13,11 +23,14 @@ export async function createMatch(
   teamBAttacker: string,
   teamBDefender: string
 ) {
-  return account.execute({
-    contractAddress: CONTRACTS.ACTIONS,
-    entrypoint: "create_match",
-    calldata: [teamAAttacker, teamADefender, teamBAttacker, teamBDefender],
-  });
+  return account.execute(
+    {
+      contractAddress: CONTRACTS.ACTIONS,
+      entrypoint: "create_match",
+      calldata: [teamAAttacker, teamADefender, teamBAttacker, teamBDefender],
+    },
+    DEVNET_TX_OPTS,
+  );
 }
 
 export async function commitMove(
@@ -25,11 +38,14 @@ export async function commitMove(
   matchId: string,
   commitment: string
 ) {
-  return account.execute({
-    contractAddress: CONTRACTS.COMMIT_REVEAL,
-    entrypoint: "commit",
-    calldata: [matchId, commitment],
-  });
+  return account.execute(
+    {
+      contractAddress: CONTRACTS.COMMIT_REVEAL,
+      entrypoint: "commit",
+      calldata: [matchId, commitment],
+    },
+    DEVNET_TX_OPTS,
+  );
 }
 
 export async function revealAttacker(
@@ -39,11 +55,14 @@ export async function revealAttacker(
   pressurePoints: [string, string, string],
   nodeContests: [string, string, string]
 ) {
-  return account.execute({
-    contractAddress: CONTRACTS.COMMIT_REVEAL,
-    entrypoint: "reveal_attacker",
-    calldata: [matchId, salt, ...pressurePoints, ...nodeContests],
-  });
+  return account.execute(
+    {
+      contractAddress: CONTRACTS.COMMIT_REVEAL,
+      entrypoint: "reveal_attacker",
+      calldata: [matchId, salt, ...pressurePoints, ...nodeContests],
+    },
+    DEVNET_TX_OPTS,
+  );
 }
 
 export async function revealDefender(
@@ -54,9 +73,12 @@ export async function revealDefender(
   repair: string,
   nodeContests: [string, string, string]
 ) {
-  return account.execute({
-    contractAddress: CONTRACTS.COMMIT_REVEAL,
-    entrypoint: "reveal_defender",
-    calldata: [matchId, salt, ...pressurePoints, repair, ...nodeContests],
-  });
+  return account.execute(
+    {
+      contractAddress: CONTRACTS.COMMIT_REVEAL,
+      entrypoint: "reveal_defender",
+      calldata: [matchId, salt, ...pressurePoints, repair, ...nodeContests],
+    },
+    DEVNET_TX_OPTS,
+  );
 }

@@ -41,8 +41,15 @@ export default function Home() {
         </Link>
       </div>
 
+      <Link
+        href="/how-to-play"
+        className="text-xs text-[#6a6a7a] hover:text-[#00d4ff] transition-colors tracking-wider"
+      >
+        HOW TO PLAY
+      </Link>
+
       {/* Decorative */}
-      <div className="text-[#2a2a3a] text-xs tracking-[0.5em] mt-8">
+      <div className="text-[#2a2a3a] text-xs tracking-[0.5em] mt-4">
         ▪ COMMIT ▪ REVEAL ▪ CONQUER ▪
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
 import { createMatch } from "@/lib/contracts";
 import Link from "next/link";
 
@@ -27,17 +27,61 @@ async function fetchLatestMatchId(): Promise<string | null> {
   });
   const data = await res.json();
   const count = data?.data?.siegeDojoMatchCounterModels?.edges?.[0]?.node?.count;
-  return count != null ? String(count) : null;
+  if (count == null) return null;
+  return String(typeof count === "string" && count.startsWith("0x") ? parseInt(count, 16) : Number(count));
+}
+
+function DevAccountSelect({
+  label,
+  value,
+  onChange,
+  excludeIndices,
+  accounts,
+}: {
+  label: string;
+  value: string;
+  onChange: (addr: string) => void;
+  excludeIndices: number[];
+  accounts: { address: string }[];
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">{label}</label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
+      >
+        <option value="">Select account...</option>
+        {accounts.map((acc, i) => (
+          <option key={i} value={acc.address} disabled={excludeIndices.includes(i)}>
+            Dev Account {i} ({acc.address.slice(0, 6)}...{acc.address.slice(-4)})
+          </option>
+        ))}
+      </select>
+    </div>
+  );
 }
 
 export default function CreateMatchPage() {
-  const { account, address, status } = useAccount();
+  const { account, address, status, accounts } = useAccount();
   const isConnected = status === "connected";
 
   const [teamATeammateAddr, setTeamATeammateAddr] = useState("");
   const [teamBAttackerAddr, setTeamBAttackerAddr] = useState("");
   const [teamBDefenderAddr, setTeamBDefenderAddr] = useState("");
   const [yourRole, setYourRole] = useState<"attacker" | "defender">("attacker");
+
+  // Track which account indices are used so we can disable them in other dropdowns
+  const addrToIndex = (addr: string) => accounts.findIndex((a) => a.address === addr);
+  const yourIndex = accounts.findIndex((a) => a.address === address);
+  const selectedIndices = [
+    addrToIndex(teamATeammateAddr),
+    addrToIndex(teamBAttackerAddr),
+    addrToIndex(teamBDefenderAddr),
+    yourIndex,
+  ].filter((i) => i !== -1);
+
   const [matchId, setMatchId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -112,40 +156,29 @@ export default function CreateMatchPage() {
         </div>
       )}
 
-      <div className="space-y-2">
-        <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">
-          Team A Teammate Address (AI)
-        </label>
-        <input
-          type="text"
-          value={teamATeammateAddr}
-          onChange={(e) => setTeamATeammateAddr(e.target.value)}
-          placeholder="0x..."
-          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
-        />
-      </div>
+      <DevAccountSelect
+        label="Team A Teammate Address (AI)"
+        value={teamATeammateAddr}
+        onChange={setTeamATeammateAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 0)}
+        accounts={accounts}
+      />
 
-      <div className="space-y-2">
-        <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Team B Attacker Address</label>
-        <input
-          type="text"
-          value={teamBAttackerAddr}
-          onChange={(e) => setTeamBAttackerAddr(e.target.value)}
-          placeholder="0x..."
-          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
-        />
-      </div>
+      <DevAccountSelect
+        label="Team B Attacker Address"
+        value={teamBAttackerAddr}
+        onChange={setTeamBAttackerAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 1)}
+        accounts={accounts}
+      />
 
-      <div className="space-y-2">
-        <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Team B Defender Address</label>
-        <input
-          type="text"
-          value={teamBDefenderAddr}
-          onChange={(e) => setTeamBDefenderAddr(e.target.value)}
-          placeholder="0x..."
-          className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors"
-        />
-      </div>
+      <DevAccountSelect
+        label="Team B Defender Address"
+        value={teamBDefenderAddr}
+        onChange={setTeamBDefenderAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 2)}
+        accounts={accounts}
+      />
 
       <div className="space-y-3">
         <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Your Role on Team A</label>

@@ -98,13 +98,12 @@ function computeDamage(
   def0: number,
   def1: number,
   def2: number,
-  repair: number
 ): number {
-  const raw =
+  return (
     Math.max(0, atk0 - def0) +
     Math.max(0, atk1 - def1) +
-    Math.max(0, atk2 - def2);
-  return Math.max(0, raw - Math.min(3, repair));
+    Math.max(0, atk2 - def2)
+  );
 }
 
 async function toriiQuery<T>(query: string): Promise<T | null> {
@@ -133,7 +132,7 @@ async function fetchMatchState(matchId: string): Promise<MatchState | null> {
     siegeDojoNodeStateModels: GraphEdges<NodeStateNode>;
   }>(`
     query {
-      siegeDojoMatchStateModels(where: { match_id: ${id} }) {
+      siegeDojoMatchStateModels(where: { match_id: "${id}" }) {
         edges {
           node {
             match_id
@@ -144,7 +143,7 @@ async function fetchMatchState(matchId: string): Promise<MatchState | null> {
           }
         }
       }
-      siegeDojoNodeStateModels(where: { match_id: ${id} }) {
+      siegeDojoNodeStateModels(where: { match_id: "${id}" }) {
         edges {
           node {
             node_index
@@ -182,7 +181,7 @@ async function fetchMatchState(matchId: string): Promise<MatchState | null> {
       siegeDojoRoundMovesModels: GraphEdges<Pick<RoundMovesNode, "commit_count" | "reveal_count">>;
     }>(`
       query {
-        siegeDojoRoundMovesModels(where: { match_id: ${id}, round: ${round} }) {
+        siegeDojoRoundMovesModels(where: { match_id: "${id}", round: ${round} }) {
           edges {
             node {
               commit_count
@@ -272,7 +271,7 @@ export function useMatchPlayers(matchId: string | null): MatchPlayers | null {
         siegeDojoMatchStateModels: GraphEdges<MatchStateNode>;
       }>(`
         query {
-          siegeDojoMatchStateModels(where: { match_id: ${id} }) {
+          siegeDojoMatchStateModels(where: { match_id: "${id}" }) {
             edges {
               node {
                 team_a_attacker
@@ -327,7 +326,7 @@ export function useRoundHistory(matchId: string | null) {
         siegeDojoRoundMovesModels: GraphEdges<RoundMovesNode>;
       }>(`
         query {
-          siegeDojoRoundMovesModels(where: { match_id: ${id} }) {
+          siegeDojoRoundMovesModels(where: { match_id: "${id}" }) {
             edges {
               node {
                 round
@@ -378,7 +377,6 @@ export function useRoundHistory(matchId: string | null) {
             t1Defense[0],
             t1Defense[1],
             t1Defense[2],
-            toNum(node.def_a_repair)
           ),
           damageToTeam2: computeDamage(
             t1Attack[0],
@@ -387,7 +385,6 @@ export function useRoundHistory(matchId: string | null) {
             t2Defense[0],
             t2Defense[1],
             t2Defense[2],
-            toNum(node.def_b_repair)
           ),
         };
       });

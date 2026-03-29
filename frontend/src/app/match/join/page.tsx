@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
 import { useRouter } from "next/navigation";
 
 export default function JoinMatchPage() {

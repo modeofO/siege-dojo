@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useAccount } from "@starknet-react/core";
+import { useAccount } from "@/app/providers";
 import { useMatchState, useRoundHistory, useMatchPlayers } from "@/lib/gameState";
 import { generateSalt, computeAttackerCommitment, computeDefenderCommitment, storeSalt, storeMove, getSalt, getMove } from "@/lib/crypto";
 import { commitMove, revealAttacker, revealDefender } from "@/lib/contracts";
@@ -48,6 +48,7 @@ export default function GamePage() {
   const [submitting, setSubmitting] = useState(false);
   const [committed, setCommitted] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const deadlineRef = useRef({ key: "", deadline: 0 });
 
   const budget = state
     ? YOUR_TEAM === 1 ? state.team1Budget : state.team2Budget
@@ -139,7 +140,11 @@ export default function GamePage() {
 
   const yourVault = YOUR_TEAM === 1 ? state.team1Vault : state.team2Vault;
   const enemyVault = YOUR_TEAM === 1 ? state.team2Vault : state.team1Vault;
-  const deadline = Math.floor(Date.now() / 1000) + COMMIT_DEADLINE_OFFSET; // placeholder
+  const phaseKey = `${state.round}-${state.phase}`;
+  if (deadlineRef.current.key !== phaseKey) {
+    deadlineRef.current = { key: phaseKey, deadline: Math.floor(Date.now() / 1000) + COMMIT_DEADLINE_OFFSET };
+  }
+  const deadline = deadlineRef.current.deadline;
 
   return (
     <div className="space-y-4 max-w-4xl mx-auto">
