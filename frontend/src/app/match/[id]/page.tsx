@@ -13,6 +13,7 @@ import { RoundHistory } from "@/components/RoundHistory";
 import { MatchStatus } from "@/components/MatchStatus";
 import { EndScreen } from "@/components/EndScreen";
 import { Timer } from "@/components/Timer";
+import { GateDisplay } from "@/components/GateDisplay";
 
 const COMMIT_DEADLINE_OFFSET = 120; // seconds from round start
 
@@ -156,6 +157,13 @@ export default function GamePage() {
         <VaultDisplay label="Your Fortress" hp={yourVault} />
         <VaultDisplay label="Enemy Fortress" hp={enemyVault} isEnemy />
       </div>
+
+      {/* Gates */}
+      <GateDisplay
+        yourTeam={YOUR_TEAM}
+        yourRole={YOUR_ROLE}
+        lastRound={history.length > 0 ? history[0] : null}
+      />
 
       {/* Nodes */}
       <NodeMap nodes={state.nodes} />
