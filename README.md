@@ -283,7 +283,7 @@ The original deployment blocker was a CASM compiled class hash mismatch. Root ca
 
 - [x] **Cartridge Controller integration** — session policies for `create_match`, `commit`, `reveal_attacker`, `reveal_defender`
 - [x] **Frontend Sepolia mode** — env-driven toggle (`NEXT_PUBLIC_NETWORK=sepolia`) between local devnet and Cartridge Controller
-- [ ] **Torii indexer on Sepolia** — hosted indexer for the deployed world
+- [x] **Torii indexer on Sepolia** — hosted on Slot at `https://api.cartridge.gg/x/siege-dojo/torii`
 - [ ] **AI agent end-to-end on Sepolia** — MCP servers pointing at live contracts
 
 ## License

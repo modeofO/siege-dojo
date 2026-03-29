@@ -39,6 +39,11 @@ sozo -P sepolia auth grant writer \
   siege_dojo,siege_dojo-resolution
 ```
 
+**Torii:** `https://api.cartridge.gg/x/siege-dojo/torii` (hosted on Slot)
+- GraphQL: `https://api.cartridge.gg/x/siege-dojo/torii/graphql`
+- SQL: `https://api.cartridge.gg/x/siege-dojo/torii/sql`
+- Config: `torii_sepolia.toml`
+
 **starkli uses a different RPC spec** — use the v0_8 endpoint:
 `https://api.cartridge.gg/x/starknet/sepolia/rpc/v0_8`
 
