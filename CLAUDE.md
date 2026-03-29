@@ -70,13 +70,14 @@ The frontend supports two network modes, controlled by `NEXT_PUBLIC_NETWORK`:
 - `useDevAccounts()` — dev-only: `{ accounts, selectedIndex, setSelectedIndex }`
 - `isDevMode()` — boolean check for conditional rendering
 
-### Sepolia env vars
+### Sepolia env vars (`frontend/.env.local`)
 
 ```
 NEXT_PUBLIC_NETWORK=sepolia
 NEXT_PUBLIC_ACTIONS_ADDRESS=0x06e730a23bd927ff424985dedef2cd84b7ce1bfbf1c3083411e150a297c114cc
 NEXT_PUBLIC_COMMIT_REVEAL_ADDRESS=0x0435bfc2a56e3a4b3561b9936970e87db527b447bb30f47370dfb9d4964f6038
-NEXT_PUBLIC_TORII_URL=<torii-sepolia-url>
+NEXT_PUBLIC_TORII_URL=https://api.cartridge.gg/x/siege-dojo/torii
+NEXT_PUBLIC_RPC_URL=https://api.cartridge.gg/x/starknet/sepolia
 ```
 
 ### Session policies (Cartridge Controller)
