@@ -281,9 +281,9 @@ The original deployment blocker was a CASM compiled class hash mismatch. Root ca
 
 ## Roadmap
 
-- [ ] **Cartridge Controller integration** — wallet connection for Sepolia (session policies for gasless gameplay)
+- [x] **Cartridge Controller integration** — session policies for `create_match`, `commit`, `reveal_attacker`, `reveal_defender`
+- [x] **Frontend Sepolia mode** — env-driven toggle (`NEXT_PUBLIC_NETWORK=sepolia`) between local devnet and Cartridge Controller
 - [ ] **Torii indexer on Sepolia** — hosted indexer for the deployed world
-- [ ] **Frontend Sepolia mode** — env-driven toggle between local devnet and Sepolia
 - [ ] **AI agent end-to-end on Sepolia** — MCP servers pointing at live contracts
 
 ## License

@@ -1,6 +1,8 @@
 import type { AccountInterface, UniversalDetails } from "starknet";
 
-// Contract addresses — update after deployment
+const IS_DEVNET = (process.env.NEXT_PUBLIC_NETWORK || "devnet") === "devnet";
+
+// Contract addresses — set via env vars, fallback to devnet defaults
 export const CONTRACTS = {
   ACTIONS: process.env.NEXT_PUBLIC_ACTIONS_ADDRESS || "0x0",
   COMMIT_REVEAL: process.env.NEXT_PUBLIC_COMMIT_REVEAL_ADDRESS || "0x0",
@@ -16,6 +18,8 @@ const DEVNET_TX_OPTS: UniversalDetails = {
   },
 };
 
+const TX_OPTS = IS_DEVNET ? DEVNET_TX_OPTS : undefined;
+
 export async function createMatch(
   account: AccountInterface,
   teamAAttacker: string,
@@ -29,7 +33,7 @@ export async function createMatch(
       entrypoint: "create_match",
       calldata: [teamAAttacker, teamADefender, teamBAttacker, teamBDefender],
     },
-    DEVNET_TX_OPTS,
+    TX_OPTS,
   );
 }
 
@@ -44,7 +48,7 @@ export async function commitMove(
       entrypoint: "commit",
       calldata: [matchId, commitment],
     },
-    DEVNET_TX_OPTS,
+    TX_OPTS,
   );
 }
 
@@ -61,7 +65,7 @@ export async function revealAttacker(
       entrypoint: "reveal_attacker",
       calldata: [matchId, salt, ...pressurePoints, ...nodeContests],
     },
-    DEVNET_TX_OPTS,
+    TX_OPTS,
   );
 }
 
@@ -79,6 +83,6 @@ export async function revealDefender(
       entrypoint: "reveal_defender",
       calldata: [matchId, salt, ...pressurePoints, repair, ...nodeContests],
     },
-    DEVNET_TX_OPTS,
+    TX_OPTS,
   );
 }

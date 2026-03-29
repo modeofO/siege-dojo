@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { isDevMode } from "@/app/providers";
 import { AccountSelector } from "./AccountSelector";
+import { ConnectWallet } from "./ConnectWallet";
 
 export function Navbar() {
   return (
@@ -15,7 +17,7 @@ export function Navbar() {
             HOW TO PLAY
           </Link>
         </div>
-        <AccountSelector />
+        {isDevMode() ? <AccountSelector /> : <ConnectWallet />}
       </div>
     </nav>
   );

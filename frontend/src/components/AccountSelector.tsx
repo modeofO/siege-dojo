@@ -1,9 +1,10 @@
 "use client";
 
-import { useAccount } from "@/app/providers";
+import { useAccount, useDevAccounts } from "@/app/providers";
 
 export function AccountSelector() {
-  const { address, selectedIndex, setSelectedIndex, accounts } = useAccount();
+  const { address } = useAccount();
+  const { selectedIndex, setSelectedIndex, accounts } = useDevAccounts();
 
   return (
     <div className="flex items-center gap-3">
@@ -19,7 +20,7 @@ export function AccountSelector() {
         ))}
       </select>
       <span className="text-xs text-[#6a6a7a]">
-        {address.slice(0, 6)}...{address.slice(-4)}
+        {address?.slice(0, 6)}...{address?.slice(-4)}
       </span>
     </div>
   );

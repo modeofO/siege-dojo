@@ -1,9 +1,44 @@
 "use client";
 
 import React, { createContext, useContext, useState, useMemo } from "react";
-import { RpcProvider, Account } from "starknet";
+import { RpcProvider, Account, type AccountInterface } from "starknet";
+import { sepolia } from "@starknet-react/chains";
+import {
+  StarknetConfig,
+  jsonRpcProvider,
+  cartridge,
+  useAccount as useStarknetAccount,
+} from "@starknet-react/core";
+import { ControllerConnector } from "@cartridge/connector";
+import type { SessionPolicies } from "@cartridge/controller";
+import { CONTRACTS } from "@/lib/contracts";
 
-const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:5050";
+// ---------- Network mode ----------
+
+const IS_DEVNET = (process.env.NEXT_PUBLIC_NETWORK || "devnet") === "devnet";
+export function isDevMode() {
+  return IS_DEVNET;
+}
+
+// ---------- Shared account interface ----------
+
+interface SiegeAccountValue {
+  account: AccountInterface | undefined;
+  address: string | undefined;
+  status: "connected" | "disconnected" | "connecting" | "reconnecting";
+}
+
+const SiegeAccountContext = createContext<SiegeAccountValue>({
+  account: undefined,
+  address: undefined,
+  status: "disconnected",
+});
+
+export function useAccount(): SiegeAccountValue {
+  return useContext(SiegeAccountContext);
+}
+
+// ---------- Dev mode (Katana hardcoded accounts) ----------
 
 const DEV_ACCOUNTS = [
   {
@@ -25,9 +60,6 @@ const DEV_ACCOUNTS = [
 ];
 
 interface DevAccountContextValue {
-  account: Account;
-  address: string;
-  status: "connected";
   selectedIndex: number;
   setSelectedIndex: (i: number) => void;
   accounts: typeof DEV_ACCOUNTS;
@@ -35,34 +67,103 @@ interface DevAccountContextValue {
 
 const DevAccountContext = createContext<DevAccountContextValue | null>(null);
 
-export function useAccount() {
+export function useDevAccounts() {
   const ctx = useContext(DevAccountContext);
-  if (!ctx) throw new Error("useAccount must be used within StarknetProvider");
+  if (!ctx) throw new Error("useDevAccounts only available in devnet mode");
   return ctx;
 }
 
-export function StarknetProvider({ children }: { children: React.ReactNode }) {
+function DevProvider({ children }: { children: React.ReactNode }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const provider = useMemo(() => new RpcProvider({ nodeUrl: RPC_URL }), []);
+  const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "http://localhost:5050";
+  const provider = useMemo(() => new RpcProvider({ nodeUrl: RPC_URL }), [RPC_URL]);
 
   const account = useMemo(() => {
     const { address, privateKey } = DEV_ACCOUNTS[selectedIndex];
     return new Account({ provider, address, signer: privateKey });
   }, [provider, selectedIndex]);
 
-  const value: DevAccountContextValue = {
-    account,
-    address: DEV_ACCOUNTS[selectedIndex].address,
-    status: "connected",
-    selectedIndex,
-    setSelectedIndex,
-    accounts: DEV_ACCOUNTS,
-  };
-
   return (
-    <DevAccountContext.Provider value={value}>
-      {children}
+    <DevAccountContext.Provider value={{ selectedIndex, setSelectedIndex, accounts: DEV_ACCOUNTS }}>
+      <SiegeAccountContext.Provider
+        value={{
+          account,
+          address: DEV_ACCOUNTS[selectedIndex].address,
+          status: "connected",
+        }}
+      >
+        {children}
+      </SiegeAccountContext.Provider>
     </DevAccountContext.Provider>
   );
+}
+
+// ---------- Sepolia mode (Cartridge Controller) ----------
+
+const SESSION_POLICIES: SessionPolicies = {
+  contracts: {
+    [CONTRACTS.ACTIONS]: {
+      methods: [
+        { name: "Create Match", entrypoint: "create_match" },
+      ],
+    },
+    [CONTRACTS.COMMIT_REVEAL]: {
+      methods: [
+        { name: "Commit Move", entrypoint: "commit" },
+        { name: "Reveal Attacker", entrypoint: "reveal_attacker" },
+        { name: "Reveal Defender", entrypoint: "reveal_defender" },
+      ],
+    },
+  },
+};
+
+const sepoliaConnector = IS_DEVNET
+  ? null
+  : new ControllerConnector({
+      policies: SESSION_POLICIES,
+      chains: [{ rpcUrl: "https://api.cartridge.gg/x/starknet/sepolia" }],
+      defaultChainId: sepolia.id.toString(16).padStart(2, "0"),
+    });
+
+const sepoliaRpcProvider = jsonRpcProvider({
+  rpc: () => ({ nodeUrl: "https://api.cartridge.gg/x/starknet/sepolia" }),
+});
+
+function CartridgeBridge({ children }: { children: React.ReactNode }) {
+  const { account, address, status } = useStarknetAccount();
+  return (
+    <SiegeAccountContext.Provider
+      value={{
+        account: account ?? undefined,
+        address: address ?? undefined,
+        status: status ?? "disconnected",
+      }}
+    >
+      {children}
+    </SiegeAccountContext.Provider>
+  );
+}
+
+function SepoliaProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <StarknetConfig
+      autoConnect
+      chains={[sepolia]}
+      defaultChainId={sepolia.id}
+      provider={sepoliaRpcProvider}
+      connectors={sepoliaConnector ? [sepoliaConnector] : []}
+      explorer={cartridge}
+    >
+      <CartridgeBridge>{children}</CartridgeBridge>
+    </StarknetConfig>
+  );
+}
+
+// ---------- Exported provider ----------
+
+export function StarknetProvider({ children }: { children: React.ReactNode }) {
+  if (IS_DEVNET) {
+    return <DevProvider>{children}</DevProvider>;
+  }
+  return <SepoliaProvider>{children}</SepoliaProvider>;
 }

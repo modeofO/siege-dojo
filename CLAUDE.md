@@ -51,11 +51,44 @@ sozo -P sepolia auth grant writer \
 
 ## Frontend
 
-- `providers.tsx` uses 4 hardcoded Katana dev accounts with dropdown selector (dev mode)
-- All contract calls in `contracts.ts` pass `DEVNET_TX_OPTS` to skip fee estimation
+### Dual-mode provider (`providers.tsx`)
+
+The frontend supports two network modes, controlled by `NEXT_PUBLIC_NETWORK`:
+
+| Mode | Value | Provider | Wallet |
+|------|-------|----------|--------|
+| **Dev** (default) | `devnet` | 4 hardcoded Katana accounts | Dropdown selector |
+| **Sepolia** | `sepolia` | Cartridge Controller + `@starknet-react/core` | Connect button (session-based) |
+
+**Key exports from `providers.tsx`:**
+- `useAccount()` — unified hook, returns `{ account, address, status }` in both modes
+- `useDevAccounts()` — dev-only: `{ accounts, selectedIndex, setSelectedIndex }`
+- `isDevMode()` — boolean check for conditional rendering
+
+### Sepolia env vars
+
+```
+NEXT_PUBLIC_NETWORK=sepolia
+NEXT_PUBLIC_ACTIONS_ADDRESS=0x06e730a23bd927ff424985dedef2cd84b7ce1bfbf1c3083411e150a297c114cc
+NEXT_PUBLIC_COMMIT_REVEAL_ADDRESS=0x0435bfc2a56e3a4b3561b9936970e87db527b447bb30f47370dfb9d4964f6038
+NEXT_PUBLIC_TORII_URL=<torii-sepolia-url>
+```
+
+### Session policies (Cartridge Controller)
+
+Defined in `providers.tsx`. Covers all gameplay entrypoints for gasless, no-prompt transactions:
+- `create_match` on actions contract
+- `commit`, `reveal_attacker`, `reveal_defender` on commit_reveal contract
+
+### Contract calls (`contracts.ts`)
+
+- `DEVNET_TX_OPTS` (skip validation, zero gas) applied only in devnet mode
+- Sepolia mode passes no tx options — Cartridge paymaster handles fees
+
+### Other notes
 - Starknet.js v8: `new Account({ provider, address, signer: privateKey })`
 - `BigInt(0)` not `0n` (tsconfig targets ES2017)
-- `npm test` runs vitest (`--legacy-peer-deps` needed for React 19)
+- `bun run test` runs vitest (39 tests)
 
 ## Torii GraphQL Quirks
 

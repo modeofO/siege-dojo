@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAccount } from "@/app/providers";
+import { useAccount, isDevMode, useDevAccounts } from "@/app/providers";
 import { createMatch } from "@/lib/contracts";
 import Link from "next/link";
 
@@ -29,6 +29,31 @@ async function fetchLatestMatchId(): Promise<string | null> {
   const count = data?.data?.siegeDojoMatchCounterModels?.edges?.[0]?.node?.count;
   if (count == null) return null;
   return String(typeof count === "string" && count.startsWith("0x") ? parseInt(count, 16) : Number(count));
+}
+
+function AddressInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (addr: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">{label}</label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || "0x..."}
+        className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors font-mono"
+      />
+    </div>
+  );
 }
 
 function DevAccountSelect({
@@ -63,18 +88,26 @@ function DevAccountSelect({
   );
 }
 
-export default function CreateMatchPage() {
-  const { account, address, status, accounts } = useAccount();
-  const isConnected = status === "connected";
-
-  const [teamATeammateAddr, setTeamATeammateAddr] = useState("");
-  const [teamBAttackerAddr, setTeamBAttackerAddr] = useState("");
-  const [teamBDefenderAddr, setTeamBDefenderAddr] = useState("");
-  const [yourRole, setYourRole] = useState<"attacker" | "defender">("attacker");
-
-  // Track which account indices are used so we can disable them in other dropdowns
+function DevModeFields({
+  teamATeammateAddr,
+  setTeamATeammateAddr,
+  teamBAttackerAddr,
+  setTeamBAttackerAddr,
+  teamBDefenderAddr,
+  setTeamBDefenderAddr,
+  currentAddress,
+}: {
+  teamATeammateAddr: string;
+  setTeamATeammateAddr: (v: string) => void;
+  teamBAttackerAddr: string;
+  setTeamBAttackerAddr: (v: string) => void;
+  teamBDefenderAddr: string;
+  setTeamBDefenderAddr: (v: string) => void;
+  currentAddress: string;
+}) {
+  const { accounts } = useDevAccounts();
   const addrToIndex = (addr: string) => accounts.findIndex((a) => a.address === addr);
-  const yourIndex = accounts.findIndex((a) => a.address === address);
+  const yourIndex = accounts.findIndex((a) => a.address === currentAddress);
   const selectedIndices = [
     addrToIndex(teamATeammateAddr),
     addrToIndex(teamBAttackerAddr),
@@ -82,21 +115,95 @@ export default function CreateMatchPage() {
     yourIndex,
   ].filter((i) => i !== -1);
 
+  return (
+    <>
+      <DevAccountSelect
+        label="Team A Teammate Address (AI)"
+        value={teamATeammateAddr}
+        onChange={setTeamATeammateAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 0)}
+        accounts={accounts}
+      />
+      <DevAccountSelect
+        label="Team B Attacker Address"
+        value={teamBAttackerAddr}
+        onChange={setTeamBAttackerAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 1)}
+        accounts={accounts}
+      />
+      <DevAccountSelect
+        label="Team B Defender Address"
+        value={teamBDefenderAddr}
+        onChange={setTeamBDefenderAddr}
+        excludeIndices={selectedIndices.filter((_, j) => j !== 2)}
+        accounts={accounts}
+      />
+    </>
+  );
+}
+
+function SepoliaModeFields({
+  teamATeammateAddr,
+  setTeamATeammateAddr,
+  teamBAttackerAddr,
+  setTeamBAttackerAddr,
+  teamBDefenderAddr,
+  setTeamBDefenderAddr,
+}: {
+  teamATeammateAddr: string;
+  setTeamATeammateAddr: (v: string) => void;
+  teamBAttackerAddr: string;
+  setTeamBAttackerAddr: (v: string) => void;
+  teamBDefenderAddr: string;
+  setTeamBDefenderAddr: (v: string) => void;
+}) {
+  return (
+    <>
+      <AddressInput
+        label="Team A Teammate Address"
+        value={teamATeammateAddr}
+        onChange={setTeamATeammateAddr}
+        placeholder="Paste teammate's wallet address"
+      />
+      <AddressInput
+        label="Team B Attacker Address"
+        value={teamBAttackerAddr}
+        onChange={setTeamBAttackerAddr}
+        placeholder="Paste opponent attacker's wallet address"
+      />
+      <AddressInput
+        label="Team B Defender Address"
+        value={teamBDefenderAddr}
+        onChange={setTeamBDefenderAddr}
+        placeholder="Paste opponent defender's wallet address"
+      />
+    </>
+  );
+}
+
+export default function CreateMatchPage() {
+  const { account, address, status } = useAccount();
+  const isConnected = status === "connected";
+
+  const [teamATeammateAddr, setTeamATeammateAddr] = useState("");
+  const [teamBAttackerAddr, setTeamBAttackerAddr] = useState("");
+  const [teamBDefenderAddr, setTeamBDefenderAddr] = useState("");
+  const [yourRole, setYourRole] = useState<"attacker" | "defender">("attacker");
+
   const [matchId, setMatchId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleCreate = async () => {
-    if (!account || !teamATeammateAddr || !teamBAttackerAddr || !teamBDefenderAddr) return;
+    if (!account || !address || !teamATeammateAddr || !teamBAttackerAddr || !teamBDefenderAddr) return;
 
     setLoading(true);
     setError("");
 
-    try {
-      const yourAddress = address || account.address;
-      const teamAAttacker = yourRole === "attacker" ? yourAddress : teamATeammateAddr;
-      const teamADefender = yourRole === "defender" ? yourAddress : teamATeammateAddr;
+    const teamAAttacker = yourRole === "attacker" ? address : teamATeammateAddr;
+    const teamADefender = yourRole === "defender" ? address : teamATeammateAddr;
 
+    try {
       const result = await createMatch(
         account,
         teamAAttacker,
@@ -156,29 +263,26 @@ export default function CreateMatchPage() {
         </div>
       )}
 
-      <DevAccountSelect
-        label="Team A Teammate Address (AI)"
-        value={teamATeammateAddr}
-        onChange={setTeamATeammateAddr}
-        excludeIndices={selectedIndices.filter((_, j) => j !== 0)}
-        accounts={accounts}
-      />
-
-      <DevAccountSelect
-        label="Team B Attacker Address"
-        value={teamBAttackerAddr}
-        onChange={setTeamBAttackerAddr}
-        excludeIndices={selectedIndices.filter((_, j) => j !== 1)}
-        accounts={accounts}
-      />
-
-      <DevAccountSelect
-        label="Team B Defender Address"
-        value={teamBDefenderAddr}
-        onChange={setTeamBDefenderAddr}
-        excludeIndices={selectedIndices.filter((_, j) => j !== 2)}
-        accounts={accounts}
-      />
+      {isDevMode() ? (
+        <DevModeFields
+          teamATeammateAddr={teamATeammateAddr}
+          setTeamATeammateAddr={setTeamATeammateAddr}
+          teamBAttackerAddr={teamBAttackerAddr}
+          setTeamBAttackerAddr={setTeamBAttackerAddr}
+          teamBDefenderAddr={teamBDefenderAddr}
+          setTeamBDefenderAddr={setTeamBDefenderAddr}
+          currentAddress={address || ""}
+        />
+      ) : (
+        <SepoliaModeFields
+          teamATeammateAddr={teamATeammateAddr}
+          setTeamATeammateAddr={setTeamATeammateAddr}
+          teamBAttackerAddr={teamBAttackerAddr}
+          setTeamBAttackerAddr={setTeamBAttackerAddr}
+          teamBDefenderAddr={teamBDefenderAddr}
+          setTeamBDefenderAddr={setTeamBDefenderAddr}
+        />
+      )}
 
       <div className="space-y-3">
         <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Your Role on Team A</label>
