@@ -166,3 +166,5 @@ dojo_*.toml
 
 # Scripts with hardcoded dev keys
 scripts/play-round.js
+
+.DS_Store
