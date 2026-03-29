@@ -68,30 +68,30 @@ type RoundMovesNode = {
   def_b_repair: number | string;
 };
 
-function toNum(value: number | string | null | undefined): number {
+export function toNum(value: number | string | null | undefined): number {
   if (typeof value === "number") return value;
   if (typeof value === "string") return Number(value);
   return 0;
 }
 
-function parseMatchId(matchId: string): number | null {
+export function parseMatchId(matchId: string): number | null {
   const parsed = Number(matchId);
   if (!Number.isInteger(parsed) || parsed < 0) return null;
   return parsed;
 }
 
-function ownerToNode(owner: string): NodeOwner {
+export function ownerToNode(owner: string): NodeOwner {
   if (owner === "TeamA") return "team1";
   if (owner === "TeamB") return "team2";
   return "neutral";
 }
 
-function computeBudget(nodes: NodeOwner[], team: "team1" | "team2"): number {
+export function computeBudget(nodes: NodeOwner[], team: "team1" | "team2"): number {
   const bonus = nodes.filter((owner) => owner === team).length;
   return 10 + bonus;
 }
 
-function computeDamage(
+export function computeDamage(
   atk0: number,
   atk1: number,
   atk2: number,
