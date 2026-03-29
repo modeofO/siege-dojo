@@ -122,7 +122,7 @@ const sepoliaConnector = IS_DEVNET
   : new ControllerConnector({
       policies: SESSION_POLICIES,
       chains: [{ rpcUrl: "https://api.cartridge.gg/x/starknet/sepolia" }],
-      defaultChainId: sepolia.id.toString(16).padStart(2, "0"),
+      defaultChainId: "0x" + sepolia.id.toString(16),
     });
 
 const sepoliaRpcProvider = jsonRpcProvider({
