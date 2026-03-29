@@ -203,11 +203,88 @@ Built by [@frontboat](https://github.com/frontboat).
 
 ## Deployment (Sepolia)
 
-_Coming soon_ — update `Scarb.toml` with Sepolia RPC and account, then:
+Contracts are live on Starknet Sepolia as of 2026-03-29.
+
+### Contract Addresses (Sepolia)
+
+| Contract | Address |
+|----------|---------|
+| **World** | `0x07ba32eaaa2a25145ea713e17ad1f42dc7f9f08355a2fd058a9a875e609fa8c0` |
+| **actions** | `0x06e730a23bd927ff424985dedef2cd84b7ce1bfbf1c3083411e150a297c114cc` |
+| **commit_reveal** | `0x0435bfc2a56e3a4b3561b9936970e87db527b447bb30f47370dfb9d4964f6038` |
+| **resolution** | `0x0558ea4d31edbc24293bf8468fb96a435a21ca24452e82da217b4168e03a0f71` |
+
+**RPC:** `https://api.cartridge.gg/x/starknet/sepolia`
+
+### Redeploying
+
+#### Prerequisites
+
+- **sozo >= v1.8.1** (v1.8.6 recommended) — blake2s CASM hashing required for Starknet v0.14.1+
+- **scarb 2.13.1** / **cairo 2.13.1**
+- A funded Starknet Sepolia account (needs STRK for gas)
+
+If your local sozo is older, grab the binary directly:
+```bash
+# macOS ARM64
+curl -sL "https://github.com/dojoengine/dojo/releases/download/sozo%2Fv1.8.6/sozo_v1.8.6_darwin_arm64.tar.gz" | tar xz -C /usr/local/bin
+```
+
+#### Create a deployer account (if needed)
 
 ```bash
-sozo migrate --profile sepolia
+# Install starkli
+curl https://get.starkli.sh | sh && starkliup
+
+# Generate keypair
+starkli signer gen-keypair
+# Save the private key and public key output
+
+# Init OZ account (use the v0_8 RPC for starkli compatibility)
+starkli account oz init \
+  --private-key <PRIVATE_KEY> \
+  ~/.starkli/deployer_account.json
+
+# Fund the printed address via https://starknet-faucet.vercel.app/
+
+# Deploy account
+starkli account deploy \
+  --rpc https://api.cartridge.gg/x/starknet/sepolia/rpc/v0_8 \
+  --private-key <PRIVATE_KEY> \
+  ~/.starkli/deployer_account.json
 ```
+
+#### Build and migrate
+
+```bash
+export DOJO_ACCOUNT_ADDRESS="0x..."
+export DOJO_PRIVATE_KEY="0x..."
+
+sozo build -P sepolia
+sozo -P sepolia migrate
+```
+
+sozo v1.8.1+ auto-detects blake2s from the `"sepolia"` string in the RPC URL. No extra flags needed.
+
+#### Grant permissions
+
+```bash
+sozo -P sepolia auth grant writer \
+  siege_dojo,siege_dojo-actions \
+  siege_dojo,siege_dojo-commit_reveal \
+  siege_dojo,siege_dojo-resolution
+```
+
+### Toolchain Notes
+
+The original deployment blocker was a CASM compiled class hash mismatch. Root cause: Starknet v0.14.1 (Nov 2025) switched from Poseidon to blake2s for `compiled_class_hash`. sozo v1.8.0 predated this change. Upgrading to v1.8.1+ (which auto-detects and uses blake2s) resolved it.
+
+## Roadmap
+
+- [ ] **Cartridge Controller integration** — wallet connection for Sepolia (session policies for gasless gameplay)
+- [ ] **Torii indexer on Sepolia** — hosted indexer for the deployed world
+- [ ] **Frontend Sepolia mode** — env-driven toggle between local devnet and Sepolia
+- [ ] **AI agent end-to-end on Sepolia** — MCP servers pointing at live contracts
 
 ## License
 
