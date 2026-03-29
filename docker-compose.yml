@@ -1,0 +1,33 @@
+services:
+  katana:
+    image: ghcr.io/dojoengine/dojo:v1.8.0
+    platform: linux/amd64
+    entrypoint: /opt/asdf/installs/katana/1.7.0/bin/katana
+    command: --dev --dev.no-fee --http.addr 0.0.0.0 --http.cors_origins "*"
+    ports:
+      - "5050:5050"
+
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    platform: linux/amd64
+    volumes:
+      - .:/app
+    profiles:
+      - tools
+
+  torii:
+    image: ghcr.io/dojoengine/dojo:v1.8.0
+    platform: linux/amd64
+    entrypoint: /opt/asdf/installs/torii/1.8.3/bin/torii
+    command: >-
+      --world ${WORLD_ADDRESS}
+      --rpc http://katana:5050
+      --http.addr 0.0.0.0
+      --http.cors_origins "*"
+      --indexing.controllers
+    ports:
+      - "8080:8080"
+    depends_on:
+      - katana
