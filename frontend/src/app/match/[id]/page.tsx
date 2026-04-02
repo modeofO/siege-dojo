@@ -50,7 +50,12 @@ export default function GamePage() {
   // Attacker: 6 slots (3 pressure points + 3 nodes)
   // Defender: 7 slots (3 pressure points + repair + 3 nodes)
   const slotCount = YOUR_ROLE === "attacker" ? 6 : 7;
-  const [allocations, setAllocations] = useState<number[]>(new Array(slotCount).fill(0));
+  const [allocations, setAllocations] = useState<number[]>(new Array(6).fill(0));
+
+  // Reset allocations when role is determined (async player load)
+  useEffect(() => {
+    setAllocations(new Array(slotCount).fill(0));
+  }, [slotCount]);
   const [submitting, setSubmitting] = useState(false);
   const [committed, setCommitted] = useState(false);
   const [revealed, setRevealed] = useState(false);
