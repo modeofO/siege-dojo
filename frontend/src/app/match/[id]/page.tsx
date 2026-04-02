@@ -27,17 +27,22 @@ export default function GamePage() {
   const players = useMatchPlayers(matchId);
 
   // Determine team/role from on-chain match state
-  const normalizedAddr = address?.toLowerCase();
+  // Normalize addresses via BigInt to handle leading-zero differences
+  // (Controller returns 0x05298f..., Torii returns 0x5298f...)
+  const addrMatch = (a: string | undefined, b: string | undefined) => {
+    if (!a || !b) return false;
+    return BigInt(a) === BigInt(b);
+  };
   let YOUR_TEAM: 1 | 2 = 1;
   let YOUR_ROLE: "attacker" | "defender" = "attacker";
-  if (players && normalizedAddr) {
-    if (players.teamAAttacker?.toLowerCase() === normalizedAddr) {
+  if (players && address) {
+    if (addrMatch(players.teamAAttacker, address)) {
       YOUR_TEAM = 1; YOUR_ROLE = "attacker";
-    } else if (players.teamADefender?.toLowerCase() === normalizedAddr) {
+    } else if (addrMatch(players.teamADefender, address)) {
       YOUR_TEAM = 1; YOUR_ROLE = "defender";
-    } else if (players.teamBAttacker?.toLowerCase() === normalizedAddr) {
+    } else if (addrMatch(players.teamBAttacker, address)) {
       YOUR_TEAM = 2; YOUR_ROLE = "attacker";
-    } else if (players.teamBDefender?.toLowerCase() === normalizedAddr) {
+    } else if (addrMatch(players.teamBDefender, address)) {
       YOUR_TEAM = 2; YOUR_ROLE = "defender";
     }
   }
