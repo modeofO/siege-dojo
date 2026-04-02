@@ -406,3 +406,64 @@ export function useRoundHistory(matchId: string | null) {
 
   return history;
 }
+
+// Role enum from Cairo: 0 = TeamAAttacker, 1 = TeamADefender, 2 = TeamBAttacker, 3 = TeamBDefender
+function roleIndex(team: 1 | 2, role: "attacker" | "defender"): number {
+  if (team === 1 && role === "attacker") return 0;
+  if (team === 1 && role === "defender") return 1;
+  if (team === 2 && role === "attacker") return 2;
+  return 3;
+}
+
+export interface CommitmentStatus {
+  committed: boolean;
+  revealed: boolean;
+}
+
+export function useCommitmentStatus(
+  matchId: string | null,
+  round: number,
+  team: 1 | 2,
+  role: "attacker" | "defender",
+): CommitmentStatus {
+  const [status, setStatus] = useState<CommitmentStatus>({ committed: false, revealed: false });
+
+  useEffect(() => {
+    if (!matchId) return;
+    const id = parseMatchId(matchId);
+    if (id == null) return;
+
+    const rIdx = roleIndex(team, role);
+
+    const fetchStatus = async () => {
+      const data = await toriiQuery<{
+        siegeDojoCommitmentModels: GraphEdges<{ committed: boolean; revealed: boolean }>;
+      }>(`
+        query {
+          siegeDojoCommitmentModels(where: { match_id: "${id}", round: ${round}, role: ${rIdx} }) {
+            edges {
+              node {
+                committed
+                revealed
+              }
+            }
+          }
+        }
+      `);
+
+      const node = data?.siegeDojoCommitmentModels?.edges?.[0]?.node;
+      if (node) {
+        setStatus({ committed: node.committed, revealed: node.revealed });
+      }
+    };
+
+    const initTimer = setTimeout(() => { void fetchStatus(); }, 0);
+    const interval = setInterval(() => { void fetchStatus(); }, POLL_INTERVAL);
+    return () => {
+      clearTimeout(initTimer);
+      clearInterval(interval);
+    };
+  }, [matchId, round, team, role]);
+
+  return status;
+}

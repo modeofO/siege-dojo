@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useAccount } from "@/app/providers";
-import { useMatchState, useRoundHistory, useMatchPlayers } from "@/lib/gameState";
+import { useMatchState, useRoundHistory, useMatchPlayers, useCommitmentStatus } from "@/lib/gameState";
 import { generateSalt, computeAttackerCommitment, computeDefenderCommitment, storeSalt, storeMove, getSalt, getMove } from "@/lib/crypto";
 import { commitMove, revealAttacker, revealDefender } from "@/lib/contracts";
 import { VaultDisplay } from "@/components/VaultDisplay";
@@ -57,9 +57,15 @@ export default function GamePage() {
     setAllocations(new Array(slotCount).fill(0));
   }, [slotCount]);
   const [submitting, setSubmitting] = useState(false);
-  const [committed, setCommitted] = useState(false);
-  const [revealed, setRevealed] = useState(false);
   const deadlineRef = useRef({ key: "", deadline: 0 });
+
+  // On-chain commitment status — survives page reloads
+  const { committed, revealed } = useCommitmentStatus(
+    matchId,
+    state?.round ?? 1,
+    YOUR_TEAM,
+    YOUR_ROLE,
+  );
 
   const budget = state
     ? YOUR_TEAM === 1 ? state.team1Budget : state.team2Budget
@@ -90,7 +96,6 @@ export default function GamePage() {
       }
 
       await commitMove(account, matchId, commitment);
-      setCommitted(true);
     } catch (e) {
       console.error("Commit failed:", e);
     } finally {
@@ -120,7 +125,6 @@ export default function GamePage() {
           [move[4].toString(), move[5].toString(), move[6].toString()]
         );
       }
-      setRevealed(true);
     } catch (e) {
       console.error("Reveal failed:", e);
     } finally {
