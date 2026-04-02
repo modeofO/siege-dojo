@@ -35,15 +35,16 @@ export default function GamePage() {
   };
   let YOUR_TEAM: 1 | 2 = 1;
   let YOUR_ROLE: "attacker" | "defender" = "attacker";
+  let roleFound = false;
   if (players && address) {
     if (addrMatch(players.teamAAttacker, address)) {
-      YOUR_TEAM = 1; YOUR_ROLE = "attacker";
+      YOUR_TEAM = 1; YOUR_ROLE = "attacker"; roleFound = true;
     } else if (addrMatch(players.teamADefender, address)) {
-      YOUR_TEAM = 1; YOUR_ROLE = "defender";
+      YOUR_TEAM = 1; YOUR_ROLE = "defender"; roleFound = true;
     } else if (addrMatch(players.teamBAttacker, address)) {
-      YOUR_TEAM = 2; YOUR_ROLE = "attacker";
+      YOUR_TEAM = 2; YOUR_ROLE = "attacker"; roleFound = true;
     } else if (addrMatch(players.teamBDefender, address)) {
-      YOUR_TEAM = 2; YOUR_ROLE = "defender";
+      YOUR_TEAM = 2; YOUR_ROLE = "defender"; roleFound = true;
     }
   }
 
@@ -136,6 +137,23 @@ export default function GamePage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-[#6a6a7a] tracking-wider animate-pulse">LOADING MATCH...</div>
+      </div>
+    );
+  }
+
+  if (players && address && !roleFound) {
+    return (
+      <div className="max-w-lg mx-auto mt-20 space-y-4 text-center">
+        <div className="text-[#ff3344] text-lg font-bold">NOT A PLAYER IN THIS MATCH</div>
+        <div className="text-[#6a6a7a] text-sm">
+          Your address: <span className="font-mono text-[#e0e0e8]">{address}</span>
+        </div>
+        <div className="text-[#6a6a7a] text-xs space-y-1">
+          <div>Team A Atk: <span className="font-mono">{players.teamAAttacker}</span></div>
+          <div>Team A Def: <span className="font-mono">{players.teamADefender}</span></div>
+          <div>Team B Atk: <span className="font-mono">{players.teamBAttacker}</span></div>
+          <div>Team B Def: <span className="font-mono">{players.teamBDefender}</span></div>
+        </div>
       </div>
     );
   }
