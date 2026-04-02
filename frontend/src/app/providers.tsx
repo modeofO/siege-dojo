@@ -123,6 +123,7 @@ const sepoliaConnector = IS_DEVNET
       policies: SESSION_POLICIES,
       chains: [{ rpcUrl: "https://api.cartridge.gg/x/starknet/sepolia" }],
       defaultChainId: "0x" + sepolia.id.toString(16),
+      slot: "siege-dojo",
     });
 
 const sepoliaRpcProvider = jsonRpcProvider({
