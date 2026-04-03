@@ -23,6 +23,8 @@ pub mod tests {
     pub mod test_actions;
     pub mod test_actions_1v1;
     pub mod test_commit_reveal;
+    pub mod test_commit_reveal_1v1;
     pub mod test_resolution;
+    pub mod test_resolution_1v1;
     pub mod test_events;
 }
