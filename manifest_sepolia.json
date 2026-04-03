@@ -44,6 +44,17 @@
       ]
     },
     {
+      "address": "0x7cbd822e0dc535d084dd71b76ba332d76cb370954c83a5ebe5625f36cdfa1c",
+      "class_hash": "0x30b77ef7a09f9b30afc207620ee3dd0206155766059047c0ce3a78aaca054f5",
+      "init_calldata": [],
+      "tag": "siege_dojo-actions_1v1",
+      "selector": "0x26e0eeadcc0c8f020b1da157b4d0f038ca209cb1d1ed9b6b52248376703705",
+      "systems": [
+        "create_match_1v1",
+        "upgrade"
+      ]
+    },
+    {
       "address": "0x6c61d75ff72a9b5ccf82cd78b48777f3486d10e8077cf9456a6feff0a0273c8",
       "class_hash": "0x25c918d33577b814103793959e779eea266d5d44acf0a3d546fb468704139f8",
       "init_calldata": [],
@@ -58,11 +69,35 @@
       ]
     },
     {
+      "address": "0x516bdf650dcaebe431a06fba09766ee2d4be79c477e73ba220a64c4f6d4af80",
+      "class_hash": "0xb214bc09cdda0e3a907994f09f46f9f92db3955d0f7c7927569b42da861078",
+      "init_calldata": [],
+      "tag": "siege_dojo-commit_reveal_1v1",
+      "selector": "0x495013ee20d528ad6f0e109874e37a33ef3e258c7ed8c446cfb8389f7a94143",
+      "systems": [
+        "commit",
+        "reveal",
+        "force_timeout",
+        "upgrade"
+      ]
+    },
+    {
       "address": "0x4aa2e5246a0791d02d88c9f10fdc78a18331146b4498ea475e1f7b0faf4baad",
       "class_hash": "0x636964b849eb0e4f5eb97fc13541ec84fc39d8c8825e42b0a4c47ba957e01da",
       "init_calldata": [],
       "tag": "siege_dojo-resolution",
       "selector": "0x558ea4d31edbc24293bf8468fb96a435a21ca24452e82da217b4168e03a0f71",
+      "systems": [
+        "resolve_round",
+        "upgrade"
+      ]
+    },
+    {
+      "address": "0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b",
+      "class_hash": "0x151b1e3c782d0b0fcbcb7805b8791ae75b0a75616237fee3757558f3cc0f7d0",
+      "init_calldata": [],
+      "tag": "siege_dojo-resolution_1v1",
+      "selector": "0x3243785fc5c17bf6bc5b9d485ddaa1275e126e753d2eddd05e69e17e98f85fd",
       "systems": [
         "resolve_round",
         "upgrade"
@@ -176,6 +211,48 @@
       "class_hash": "0x63aa21a3c83d5cd12d41163199f259ddda6dde02ca9ca32bbaa637543fce585",
       "tag": "siege_dojo-MatchState",
       "selector": "0x577ad6bd750333caab515fa2ca5a442cddb5748da36f9756a751e706f8c0f80"
+    },
+    {
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64",
+          "key": true
+        },
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "vault_a_hp",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "vault_b_hp",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "current_round",
+          "type": "core::integer::u32",
+          "key": false
+        },
+        {
+          "name": "status",
+          "type": "siege_dojo::models::match_state::MatchStatus",
+          "key": false
+        }
+      ],
+      "class_hash": "0x2b446c8a278ddc404580fa3c067ff3300d2f297d73208a39ea0cb78a2611e68",
+      "tag": "siege_dojo-MatchState1v1",
+      "selector": "0x10aac1834dc21e02a087f4d89ed228e1ccd2813575a2d1fe2d8997c21627e1f"
     },
     {
       "members": [
@@ -370,6 +447,143 @@
       "class_hash": "0x2f58a62e82e76ebbaf29e5632b12b8c09803f86a09e6c0553ed07751ac9b45d",
       "tag": "siege_dojo-RoundMoves",
       "selector": "0x3c7f3421eaa8bd6b015e5b1e1e86c0d415b651333970eed34fef415def9b3de"
+    },
+    {
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64",
+          "key": true
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32",
+          "key": true
+        },
+        {
+          "name": "commit_count",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "reveal_count",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "commit_deadline",
+          "type": "core::integer::u64",
+          "key": false
+        },
+        {
+          "name": "reveal_deadline",
+          "type": "core::integer::u64",
+          "key": false
+        },
+        {
+          "name": "a_p0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_p1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_p2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_g0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_g1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_g2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_repair",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_nc0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_nc1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_nc2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_p0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_p1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_p2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_g0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_g1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_g2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_repair",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_nc0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_nc1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_nc2",
+          "type": "core::integer::u8",
+          "key": false
+        }
+      ],
+      "class_hash": "0x2ee62ff975ffc975b1eb155ef025b3e5bf20b4fa57a729e317a0522a985cb7a",
+      "tag": "siege_dojo-RoundMoves1v1",
+      "selector": "0x4b0c7078682d3ba10a477163083973ddc05d8f91dc9fd3ce590e30e4b817347"
     }
   ],
   "events": [
@@ -404,6 +618,28 @@
       "class_hash": "0x1cae0610657c08e68118e2733ef227b4e66a37a266c1a28fb15ca76da7c6671",
       "tag": "siege_dojo-MatchCreated",
       "selector": "0x10d0b54a4dcc745cfd296a6887971a6ad042b3f3f8b84f2eb4549c678c587aa"
+    },
+    {
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64",
+          "key": true
+        },
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        }
+      ],
+      "class_hash": "0xdc8f42271a731e64759fcf6270b6ca80b433b36892ab174fb9f96339bb3b76",
+      "tag": "siege_dojo-MatchCreated1v1",
+      "selector": "0x70c1e74e3809f48e0f3021f98c205fc488cfebc07536162a9f16f2cf86b7c66"
     },
     {
       "members": [
@@ -2424,6 +2660,38 @@
     },
     {
       "type": "struct",
+      "name": "siege_dojo::models::events::MatchCreated1v1",
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::events::MatchCreated1v1Value",
+      "members": [
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "type": "struct",
       "name": "siege_dojo::models::events::MatchCreatedValue",
       "members": [
         {
@@ -2571,6 +2839,12 @@
           "type": "core::integer::u32"
         }
       ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::events::e_MatchCreated1v1::Event",
+      "kind": "enum",
+      "variants": []
     },
     {
       "type": "event",
@@ -2733,6 +3007,76 @@
     {
       "type": "event",
       "name": "siege_dojo::models::match_state::m_MatchState::Event",
+      "kind": "enum",
+      "variants": []
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::match_state_1v1::MatchState1v1",
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "vault_a_hp",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "vault_b_hp",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "current_round",
+          "type": "core::integer::u32"
+        },
+        {
+          "name": "status",
+          "type": "siege_dojo::models::match_state::MatchStatus"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::match_state_1v1::MatchState1v1Value",
+      "members": [
+        {
+          "name": "player_a",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "player_b",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "vault_a_hp",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "vault_b_hp",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "current_round",
+          "type": "core::integer::u32"
+        },
+        {
+          "name": "status",
+          "type": "siege_dojo::models::match_state::MatchStatus"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::match_state_1v1::m_MatchState1v1::Event",
       "kind": "enum",
       "variants": []
     },
@@ -3063,6 +3407,224 @@
       "variants": []
     },
     {
+      "type": "struct",
+      "name": "siege_dojo::models::round_moves_1v1::RoundMoves1v1",
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32"
+        },
+        {
+          "name": "commit_count",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "reveal_count",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "commit_deadline",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "reveal_deadline",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "a_p0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_p1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_p2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_repair",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_repair",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::round_moves_1v1::RoundMoves1v1Value",
+      "members": [
+        {
+          "name": "commit_count",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "reveal_count",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "commit_deadline",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "reveal_deadline",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "a_p0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_p1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_p2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_g2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_repair",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_nc2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_p2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_g2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_repair",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_nc2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::round_moves_1v1::m_RoundMoves1v1::Event",
+      "kind": "enum",
+      "variants": []
+    },
+    {
       "type": "interface",
       "name": "siege_dojo::systems::actions::IActions",
       "items": [
@@ -3119,6 +3681,69 @@
     {
       "type": "event",
       "name": "siege_dojo::systems::actions::actions::Event",
+      "kind": "enum",
+      "variants": [
+        {
+          "name": "UpgradeableEvent",
+          "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "nested"
+        },
+        {
+          "name": "WorldProviderEvent",
+          "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "nested"
+        }
+      ]
+    },
+    {
+      "type": "interface",
+      "name": "siege_dojo::systems::actions_1v1::IActions1v1",
+      "items": [
+        {
+          "type": "function",
+          "name": "create_match_1v1",
+          "inputs": [
+            {
+              "name": "player_a",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "player_b",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::integer::u64"
+            }
+          ],
+          "state_mutability": "external"
+        },
+        {
+          "type": "function",
+          "name": "get_budget_1v1",
+          "inputs": [
+            {
+              "name": "match_id",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "is_player_a",
+              "type": "core::bool"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "core::integer::u8"
+            }
+          ],
+          "state_mutability": "view"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::systems::actions_1v1::actions_1v1::Event",
       "kind": "enum",
       "variants": [
         {
@@ -3270,6 +3895,113 @@
     },
     {
       "type": "interface",
+      "name": "siege_dojo::systems::commit_reveal_1v1::ICommitReveal1v1",
+      "items": [
+        {
+          "type": "function",
+          "name": "commit",
+          "inputs": [
+            {
+              "name": "match_id",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "commitment",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "type": "function",
+          "name": "reveal",
+          "inputs": [
+            {
+              "name": "match_id",
+              "type": "core::integer::u64"
+            },
+            {
+              "name": "salt",
+              "type": "core::felt252"
+            },
+            {
+              "name": "p0",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "p1",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "p2",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "g0",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "g1",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "g2",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "repair",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "nc0",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "nc1",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "nc2",
+              "type": "core::integer::u8"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "type": "function",
+          "name": "force_timeout",
+          "inputs": [
+            {
+              "name": "match_id",
+              "type": "core::integer::u64"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::systems::commit_reveal_1v1::commit_reveal_1v1::Event",
+      "kind": "enum",
+      "variants": [
+        {
+          "name": "UpgradeableEvent",
+          "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "nested"
+        },
+        {
+          "name": "WorldProviderEvent",
+          "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "nested"
+        }
+      ]
+    },
+    {
+      "type": "interface",
       "name": "siege_dojo::systems::resolution::IResolution",
       "items": [
         {
@@ -3289,6 +4021,41 @@
     {
       "type": "event",
       "name": "siege_dojo::systems::resolution::resolution::Event",
+      "kind": "enum",
+      "variants": [
+        {
+          "name": "UpgradeableEvent",
+          "type": "dojo::contract::components::upgradeable::upgradeable_cpt::Event",
+          "kind": "nested"
+        },
+        {
+          "name": "WorldProviderEvent",
+          "type": "dojo::contract::components::world_provider::world_provider_cpt::Event",
+          "kind": "nested"
+        }
+      ]
+    },
+    {
+      "type": "interface",
+      "name": "siege_dojo::systems::resolution_1v1::IResolution1v1",
+      "items": [
+        {
+          "type": "function",
+          "name": "resolve_round",
+          "inputs": [
+            {
+              "name": "match_id",
+              "type": "core::integer::u64"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::systems::resolution_1v1::resolution_1v1::Event",
       "kind": "enum",
       "variants": [
         {

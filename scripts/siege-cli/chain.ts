@@ -15,9 +15,9 @@ export const CHAIN_ID = "0x534e5f5345504f4c4941"; // SN_SEPOLIA
 
 export const CONTRACTS = {
   ACTIONS_1V1:
-    process.env.ACTIONS_1V1_ADDRESS || "0xTODO_AFTER_DEPLOY",
+    process.env.ACTIONS_1V1_ADDRESS || "0x7cbd822e0dc535d084dd71b76ba332d76cb370954c83a5ebe5625f36cdfa1c",
   COMMIT_REVEAL_1V1:
-    process.env.COMMIT_REVEAL_1V1_ADDRESS || "0xTODO_AFTER_DEPLOY",
+    process.env.COMMIT_REVEAL_1V1_ADDRESS || "0x516bdf650dcaebe431a06fba09766ee2d4be79c477e73ba220a64c4f6d4af80",
 };
 
 export const provider = new RpcProvider({ nodeUrl: RPC_URL });
