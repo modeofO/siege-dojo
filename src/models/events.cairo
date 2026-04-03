@@ -46,3 +46,12 @@ pub struct MatchFinished {
     pub match_id: u64,
     pub winner_team: u8,
 }
+
+#[dojo::event]
+#[derive(Drop, Serde)]
+pub struct MatchCreated1v1 {
+    #[key]
+    pub match_id: u64,
+    pub player_a: ContractAddress,
+    pub player_b: ContractAddress,
+}

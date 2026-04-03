@@ -1,8 +1,10 @@
 pub mod models {
     pub mod match_state;
+    pub mod match_state_1v1;
     pub mod node_state;
     pub mod commitment;
     pub mod round_moves;
+    pub mod round_moves_1v1;
     pub mod match_counter;
     pub mod events;
 }
