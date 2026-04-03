@@ -11,6 +11,7 @@ pub mod models {
 
 pub mod systems {
     pub mod actions;
+    pub mod actions_1v1;
     pub mod commit_reveal;
     pub mod resolution;
 }
