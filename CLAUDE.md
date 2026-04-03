@@ -112,9 +112,48 @@ cd scripts && bash run-test.sh                       # full automated round
 ## Contract Tests
 
 ```bash
-sozo test                                            # local (18 tests)
+sozo test                                            # local (36 tests, includes 1v1)
 docker compose run --rm builder sozo test            # via Docker
 ```
+
+## 1v1 Mode
+
+Simplified 1v1 game mode for mechanics testing. Each player controls both attack and defense with a shared budget of 10 (+node bonuses). Vault HP starts at 50.
+
+### 1v1 Contracts
+
+Same world as 2v2 (`siege_dojo`). Deployed to Sepolia alongside existing contracts.
+
+| Contract | Address |
+|----------|---------|
+| `actions_1v1` | `0x7cbd822e0dc535d084dd71b76ba332d76cb370954c83a5ebe5625f36cdfa1c` |
+| `commit_reveal_1v1` | `0x516bdf650dcaebe431a06fba09766ee2d4be79c477e73ba220a64c4f6d4af80` |
+| `resolution_1v1` | `0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b` |
+
+Models: `MatchState1v1`, `RoundMoves1v1`. Reuses `Commitment`, `NodeState`, `MatchCounter`.
+
+### CLI (`scripts/siege-cli/`)
+
+```bash
+cd scripts/siege-cli
+
+# Cartridge Controller (default — first run opens browser)
+npx tsx siege-cli.ts --create --opponent 0x<addr>
+npx tsx siege-cli.ts --match <id>
+
+# Private key fallback (local dev / Sepolia with raw key)
+npx tsx siege-cli.ts --match <id> --use-private-key
+
+# JSON mode (scripting)
+npx tsx siege-cli.ts --match <id> --json '{"attack":[3,2,1],"defense":[2,1,0],"repair":1,"nodes":[0,0,0]}'
+```
+
+### Budget Allocation
+
+Each player splits their budget across:
+- Attack: 3 pressure points (p0, p1, p2)
+- Defense: 3 gates (g0, g1, g2) + repair (max 3)
+- Nodes: 3 node contests (nc0, nc1, nc2)
 
 ## Project Structure
 
@@ -123,6 +162,7 @@ docker compose run --rm builder sozo test            # via Docker
 - `frontend/src/lib/` — Game logic (gameState.ts, crypto.ts, contracts.ts)
 - `frontend/src/components/` — UI components (GateDisplay, NodeMap, VaultDisplay, etc.)
 - `scripts/` — Dev scripts (local-dev.sh, play-opponent.js, run-test.sh, test-reveal.js)
+- `scripts/siege-cli/` — 1v1 terminal CLI (Cartridge Controller + private key fallback)
 - `mcp-server/` — AI agent MCP tools
 - `dojo_dev.toml` — Local dev config (gitignored, has dev private keys)
 - `dojo_sepolia.toml` — Sepolia config (reads env vars for credentials)
