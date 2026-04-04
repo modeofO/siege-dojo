@@ -11,6 +11,8 @@ pub mod models {
     pub mod events;
 }
 
+pub mod tokens;
+
 pub mod systems {
     pub mod actions;
     pub mod actions_1v1;
