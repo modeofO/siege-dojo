@@ -95,6 +95,10 @@ pub mod resolution_1v1 {
             let mut damage_to_a: [u8; 3] = [0, 0, 0];
             let mut overflow_to_b: [u8; 3] = [0, 0, 0];
             let mut overflow_to_a: [u8; 3] = [0, 0, 0];
+            // Unused defense at each gate (defense that wasn't consumed by direct attack)
+            // Used to block reflected damage at receiving gates
+            let mut unused_def_b: [u8; 3] = [0, 0, 0];  // B's unused defense
+            let mut unused_def_a: [u8; 3] = [0, 0, 0];  // A's unused defense
 
             let mut g: u32 = 0;
             while g < 3 {
@@ -148,6 +152,13 @@ pub mod resolution_1v1 {
                             1 => [*damage_to_b.span()[0], aa - bd, *damage_to_b.span()[2]],
                             _ => [*damage_to_b.span()[0], *damage_to_b.span()[1], aa - bd],
                         };
+                    } else {
+                        // B's defense exceeded A's attack — track unused defense
+                        unused_def_b = match g {
+                            0 => [bd - aa, *unused_def_b.span()[1], *unused_def_b.span()[2]],
+                            1 => [*unused_def_b.span()[0], bd - aa, *unused_def_b.span()[2]],
+                            _ => [*unused_def_b.span()[0], *unused_def_b.span()[1], bd - aa],
+                        };
                     }
                     if ba > ad {
                         damage_to_a = match g {
@@ -155,13 +166,20 @@ pub mod resolution_1v1 {
                             1 => [*damage_to_a.span()[0], ba - ad, *damage_to_a.span()[2]],
                             _ => [*damage_to_a.span()[0], *damage_to_a.span()[1], ba - ad],
                         };
+                    } else {
+                        unused_def_a = match g {
+                            0 => [ad - ba, *unused_def_a.span()[1], *unused_def_a.span()[2]],
+                            1 => [*unused_def_a.span()[0], ad - ba, *unused_def_a.span()[2]],
+                            _ => [*unused_def_a.span()[0], *unused_def_a.span()[1], ad - ba],
+                        };
                     }
                 }
 
                 g += 1;
             };
 
-            // Distribute overflow: each overflow gate splits damage evenly to the other two gates
+            // Distribute reflection: each reflection gate splits damage to other gates,
+            // but reflected damage is reduced by the target's unused defense at the receiving gate
             let mut g2: u32 = 0;
             while g2 < 3 {
                 let ovf_b = *overflow_to_b.span()[g2];
@@ -171,12 +189,16 @@ pub mod resolution_1v1 {
                     let mut t: u32 = 0;
                     while t < 3 {
                         if t != g2 {
-                            let cur = *damage_to_b.span()[t];
-                            damage_to_b = match t {
-                                0 => [cur + per_gate, *damage_to_b.span()[1], *damage_to_b.span()[2]],
-                                1 => [*damage_to_b.span()[0], cur + per_gate, *damage_to_b.span()[2]],
-                                _ => [*damage_to_b.span()[0], *damage_to_b.span()[1], cur + per_gate],
-                            };
+                            let def = *unused_def_b.span()[t];
+                            if per_gate > def {
+                                let cur = *damage_to_b.span()[t];
+                                damage_to_b = match t {
+                                    0 => [cur + per_gate - def, *damage_to_b.span()[1], *damage_to_b.span()[2]],
+                                    1 => [*damage_to_b.span()[0], cur + per_gate - def, *damage_to_b.span()[2]],
+                                    _ => [*damage_to_b.span()[0], *damage_to_b.span()[1], cur + per_gate - def],
+                                };
+                            }
+                            // If def >= per_gate, reflected damage is fully blocked
                         }
                         t += 1;
                     };
@@ -186,12 +208,15 @@ pub mod resolution_1v1 {
                     let mut t: u32 = 0;
                     while t < 3 {
                         if t != g2 {
-                            let cur = *damage_to_a.span()[t];
-                            damage_to_a = match t {
-                                0 => [cur + per_gate, *damage_to_a.span()[1], *damage_to_a.span()[2]],
-                                1 => [*damage_to_a.span()[0], cur + per_gate, *damage_to_a.span()[2]],
-                                _ => [*damage_to_a.span()[0], *damage_to_a.span()[1], cur + per_gate],
-                            };
+                            let def = *unused_def_a.span()[t];
+                            if per_gate > def {
+                                let cur = *damage_to_a.span()[t];
+                                damage_to_a = match t {
+                                    0 => [cur + per_gate - def, *damage_to_a.span()[1], *damage_to_a.span()[2]],
+                                    1 => [*damage_to_a.span()[0], cur + per_gate - def, *damage_to_a.span()[2]],
+                                    _ => [*damage_to_a.span()[0], *damage_to_a.span()[1], cur + per_gate - def],
+                                };
+                            }
                         }
                         t += 1;
                     };

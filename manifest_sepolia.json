@@ -94,7 +94,7 @@
     },
     {
       "address": "0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b",
-      "class_hash": "0x6d65497584be334adeeb441279728f7f5a960ced48ffff4ae5be4481659bc4b",
+      "class_hash": "0x216a00539d361f85687c0300f83d3d8ea21d8deb635aa04e2733b0782974ff0",
       "init_calldata": [],
       "tag": "siege_dojo-resolution_1v1",
       "selector": "0x3243785fc5c17bf6bc5b9d485ddaa1275e126e753d2eddd05e69e17e98f85fd",

@@ -73,6 +73,8 @@ function computeGateBreakdown(
   const dmgToA = [0, 0, 0];
   const ovfToB = [0, 0, 0];
   const ovfToA = [0, 0, 0];
+  const unusedDefB = [0, 0, 0]; // B's defense not consumed by direct attack
+  const unusedDefA = [0, 0, 0]; // A's defense not consumed by direct attack
 
   for (let g = 0; g < 3; g++) {
     let aa = aAtk[g], ad = aDef[g], ba = bAtk[g], bd = bDef[g];
@@ -87,25 +89,37 @@ function computeGateBreakdown(
       [ba, bd] = [bd, ba];
     }
     if (mod === 3) { // Deadlock
-      // no damage
+      // no damage — but defense is still "unused" for reflection blocking
+      unusedDefB[g] = bd;
+      unusedDefA[g] = ad;
     } else if (mod === 4) { // Reflection
       if (aa > bd) ovfToB[g] = aa - bd;
       if (ba > ad) ovfToA[g] = ba - ad;
     } else {
-      if (aa > bd) dmgToB[g] = aa - bd;
-      if (ba > ad) dmgToA[g] = ba - ad;
+      if (aa > bd) { dmgToB[g] = aa - bd; } else { unusedDefB[g] = bd - aa; }
+      if (ba > ad) { dmgToA[g] = ba - ad; } else { unusedDefA[g] = ad - ba; }
     }
   }
 
-  // Distribute reflection
+  // Distribute reflection — reduced by unused defense at receiving gate
   for (let g = 0; g < 3; g++) {
     if (ovfToB[g] > 0) {
       const per = Math.floor(ovfToB[g] / 2);
-      for (let t = 0; t < 3; t++) if (t !== g) dmgToB[t] += per;
+      for (let t = 0; t < 3; t++) {
+        if (t !== g) {
+          const blocked = Math.min(per, unusedDefB[t]);
+          dmgToB[t] += per - blocked;
+        }
+      }
     }
     if (ovfToA[g] > 0) {
       const per = Math.floor(ovfToA[g] / 2);
-      for (let t = 0; t < 3; t++) if (t !== g) dmgToA[t] += per;
+      for (let t = 0; t < 3; t++) {
+        if (t !== g) {
+          const blocked = Math.min(per, unusedDefA[t]);
+          dmgToA[t] += per - blocked;
+        }
+      }
     }
   }
 
