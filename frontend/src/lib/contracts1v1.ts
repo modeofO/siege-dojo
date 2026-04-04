@@ -21,12 +21,13 @@ const DEVNET_TX_OPTS: UniversalDetails = {
 
 const TX_OPTS = IS_DEVNET ? DEVNET_TX_OPTS : undefined;
 
-// Source::Nonce(address) encoded for calldata: type=0, then the address
-function vrfRequestRandomCall(callerContract: string, signerAddress: string) {
+// request_random(caller, source): caller = contract that will consume_random,
+// source must match what consume_random uses: Source::Nonce(contract_address)
+function vrfRequestRandomCall(callerContract: string) {
   return {
     contractAddress: VRF_PROVIDER_ADDRESS,
     entrypoint: "request_random",
-    calldata: [callerContract, "0", signerAddress],  // caller, Source::Nonce variant (0), address
+    calldata: [callerContract, "0", callerContract],  // caller, Source::Nonce(0), nonce_address = caller
   };
 }
 
@@ -37,7 +38,7 @@ export async function createMatch1v1(
 ) {
   return account.execute(
     [
-      vrfRequestRandomCall(CONTRACTS_1V1.ACTIONS, account.address),
+      vrfRequestRandomCall(CONTRACTS_1V1.ACTIONS),
       {
         contractAddress: CONTRACTS_1V1.ACTIONS,
         entrypoint: "create_match_1v1",
@@ -82,7 +83,7 @@ export async function revealMove1v1(
   if (includeVrf) {
     // 2nd reveal triggers resolution which consumes vRNG
     return account.execute(
-      [vrfRequestRandomCall(CONTRACTS_1V1.RESOLUTION, account.address), revealCall],
+      [vrfRequestRandomCall(CONTRACTS_1V1.RESOLUTION), revealCall],
       TX_OPTS,
     );
   }
