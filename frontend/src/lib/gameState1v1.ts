@@ -302,3 +302,52 @@ export function useRoundHistory1v1(matchId: string | null) {
 
   return history;
 }
+
+export const MODIFIER_NAMES: Record<number, string> = {
+  0: "Normal",
+  1: "Narrow Pass",
+  2: "Mirror Gate",
+  3: "Deadlock",
+  4: "Overflow",
+};
+
+export const MODIFIER_DESCRIPTIONS: Record<number, string> = {
+  0: "",
+  1: "Attack and defense capped at 3",
+  2: "Attack and defense values swap",
+  3: "No damage dealt at this gate",
+  4: "Unblocked damage splits to other gates",
+};
+
+export function useRoundModifiers1v1(matchId: string | null, round: number) {
+  const [modifiers, setModifiers] = useState<[number, number, number]>([0, 0, 0]);
+
+  useEffect(() => {
+    if (!matchId) return;
+    const id = Number(matchId);
+
+    const fetch = async () => {
+      const data = await toriiQuery<{
+        siegeDojoRoundModifiers1V1Models: GraphEdges<{
+          gate_0: string; gate_1: string; gate_2: string;
+        }>;
+      }>(`
+        query {
+          siegeDojoRoundModifiers1V1Models(where: { match_id: "${id}", round: ${round} }) {
+            edges { node { gate_0 gate_1 gate_2 } }
+          }
+        }
+      `);
+      const node = data?.siegeDojoRoundModifiers1V1Models?.edges?.[0]?.node;
+      if (node) {
+        setModifiers([toNum(node.gate_0), toNum(node.gate_1), toNum(node.gate_2)]);
+      }
+    };
+
+    const t = setTimeout(() => { void fetch(); }, 0);
+    const i = setInterval(() => { void fetch(); }, POLL_INTERVAL);
+    return () => { clearTimeout(t); clearInterval(i); };
+  }, [matchId, round]);
+
+  return modifiers;
+}

@@ -9,6 +9,9 @@ import {
   useRoundStatus1v1,
   useRoundHistory1v1,
   useCommitmentStatus1v1,
+  useRoundModifiers1v1,
+  MODIFIER_NAMES,
+  MODIFIER_DESCRIPTIONS,
 } from "@/lib/gameState1v1";
 import type { RoundResult1v1 } from "@/lib/gameState1v1";
 import {
@@ -57,6 +60,9 @@ export default function Match1v1Page() {
 
   // Round status for polling commit/reveal counts
   const roundStatus = useRoundStatus1v1(matchId, state?.round ?? 1);
+
+  // Gate modifiers for current round
+  const modifiers = useRoundModifiers1v1(matchId, state?.round ?? 1);
 
   // Allocations: [p0,p1,p2, g0,g1,g2, repair, nc0,nc1,nc2]
   const [allocations, setAllocations] = useState<number[]>(new Array(10).fill(0));
@@ -248,6 +254,30 @@ export default function Match1v1Page() {
                 <div className={`w-6 h-6 rounded-full border-2 ${color} opacity-80`} />
                 <span className="text-xs text-[#6a6a7a]">Node {i + 1}</span>
                 <span className="text-[10px] text-[#6a6a7a]">({label})</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Gate Modifiers */}
+      <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
+        <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Gate Conditions</div>
+        <div className="grid grid-cols-3 gap-4">
+          {["East Gate", "West Gate", "Underground"].map((gateName, i) => {
+            const mod = modifiers[i];
+            const modName = MODIFIER_NAMES[mod] || "Normal";
+            const modDesc = MODIFIER_DESCRIPTIONS[mod] || "";
+            const modColor = mod === 0 ? "text-[#6a6a7a]"
+              : mod === 1 ? "text-[#ffd700]"
+              : mod === 2 ? "text-[#00d4ff]"
+              : mod === 3 ? "text-[#ff3344]"
+              : "text-[#ff8800]";
+            return (
+              <div key={i} className="text-center space-y-1">
+                <div className="text-xs text-[#6a6a7a]">{gateName}</div>
+                <div className={`text-sm font-bold ${modColor}`}>{modName}</div>
+                {modDesc && <div className="text-[10px] text-[#6a6a7a]">{modDesc}</div>}
               </div>
             );
           })}
