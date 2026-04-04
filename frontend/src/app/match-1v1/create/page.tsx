@@ -12,7 +12,7 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchLatestMatchId(): Promise<string | null> {
+async function fetchMatchCounterValue(): Promise<number | null> {
   const res = await fetch(`${TORII_URL}/graphql`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -27,7 +27,7 @@ async function fetchLatestMatchId(): Promise<string | null> {
   const data = await res.json();
   const count = data?.data?.siegeDojoMatchCounterModels?.edges?.[0]?.node?.count;
   if (count == null) return null;
-  return String(typeof count === "string" && count.startsWith("0x") ? parseInt(count, 16) : Number(count));
+  return typeof count === "string" && count.startsWith("0x") ? parseInt(count, 16) : Number(count);
 }
 
 export default function Create1v1Page() {
@@ -46,19 +46,25 @@ export default function Create1v1Page() {
     setError("");
 
     try {
-      const result = await createMatch1v1(account, address, opponentAddr);
+      // Snapshot current counter BEFORE the transaction
+      const counterBefore = await fetchMatchCounterValue() ?? 0;
 
-      for (let i = 0; i < 8; i++) {
+      console.log("[1v1 create] Sending tx...", { playerA: address, playerB: opponentAddr });
+      const result = await createMatch1v1(account, address, opponentAddr);
+      console.log("[1v1 create] Tx hash:", result.transaction_hash);
+
+      // Poll until the counter increments past the snapshot
+      for (let i = 0; i < 12; i++) {
+        await sleep(2000);
         try {
-          const id = await fetchLatestMatchId();
-          if (id) {
-            setMatchId(id);
+          const counterNow = await fetchMatchCounterValue();
+          if (counterNow !== null && counterNow > counterBefore) {
+            setMatchId(String(counterNow));
             return;
           }
         } catch {
           // Torii may still be syncing
         }
-        await sleep(1500);
       }
 
       setError(
