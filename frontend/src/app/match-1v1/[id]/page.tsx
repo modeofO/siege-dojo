@@ -374,8 +374,14 @@ export default function Match1v1Page() {
           <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Round History</div>
           <div className="space-y-4 max-h-80 overflow-y-auto">
             {history.map((r: RoundResult1v1) => {
-              const dmgDealt = isPlayerA ? r.damageToB : r.damageToA;
-              const dmgTaken = isPlayerA ? r.damageToA : r.damageToB;
+              const gateDmgDealt = isPlayerA ? r.damageToB : r.damageToA;
+              const gateDmgTaken = isPlayerA ? r.damageToA : r.damageToB;
+              const myTraps = isPlayerA ? r.aTraps : r.bTraps;
+              const theirTraps = isPlayerA ? r.bTraps : r.aTraps;
+              const myTrapDmg = myTraps.filter(t => t > 0).length * 5;
+              const theirTrapDmg = theirTraps.filter(t => t > 0).length * 5;
+              const dmgDealt = gateDmgDealt + myTrapDmg;
+              const dmgTaken = gateDmgTaken + theirTrapDmg;
               const gateNames = ["East", "West", "Underground"];
 
               return (
@@ -384,8 +390,10 @@ export default function Match1v1Page() {
                     <span className="text-[#6a6a7a] font-bold">R{r.round}</span>
                     <span>
                       <span className="text-green-400">+{dmgDealt} dealt</span>
+                      {myTrapDmg > 0 && <span className="text-[#ffd700]"> (trap +{myTrapDmg})</span>}
                       {" / "}
                       <span className="text-red-400">-{dmgTaken} taken</span>
+                      {theirTrapDmg > 0 && <span className="text-[#ff3344]"> (trap -{theirTrapDmg})</span>}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2">
