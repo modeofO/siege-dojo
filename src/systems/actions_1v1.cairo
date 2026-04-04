@@ -10,22 +10,55 @@ pub trait IActions1v1<T> {
     fn get_budget_1v1(self: @T, match_id: u64, is_player_a: bool) -> u8;
 }
 
+#[starknet::interface]
+pub trait IVrfProvider<T> {
+    fn consume_random(ref self: T, source: Source) -> felt252;
+}
+
+#[derive(Drop, Copy, Clone, Serde)]
+pub enum Source {
+    Nonce: ContractAddress,
+    Salt: felt252,
+}
+
 #[dojo::contract]
 pub mod actions_1v1 {
-    use starknet::ContractAddress;
+    use starknet::{ContractAddress, get_contract_address};
     use dojo::model::ModelStorage;
     use siege_dojo::models::match_state::MatchStatus;
     use siege_dojo::models::match_state_1v1::MatchState1v1;
     use siege_dojo::models::node_state::{NodeState, NodeOwner};
     use siege_dojo::models::match_counter::MatchCounter;
+    use siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1;
     use siege_dojo::models::events::MatchCreated1v1;
     use dojo::event::EventStorage;
+    use super::{IVrfProviderDispatcher, IVrfProviderDispatcherTrait, Source};
+
+    const VRF_PROVIDER_ADDRESS: felt252 =
+        0x051fea4450da9d6aee758bdeba88b2f665bcbf549d2c61421aa724e9ac0ced8f;
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
         fn world_default(self: @ContractState) -> dojo::world::WorldStorage {
             self.world(@"siege_dojo")
         }
+    }
+
+    fn random_to_modifiers(random_value: felt252) -> (u8, u8, u8) {
+        let r: u256 = random_value.into();
+        let roll_0: u8 = (r % 10).try_into().unwrap();
+        let roll_1: u8 = ((r / 10) % 10).try_into().unwrap();
+        let roll_2: u8 = ((r / 100) % 10).try_into().unwrap();
+
+        let to_modifier = |roll: u8| -> u8 {
+            if roll <= 5 { 0 }       // Normal (60%)
+            else if roll == 6 { 1 }   // Narrow Pass (10%)
+            else if roll == 7 { 2 }   // Mirror Gate (10%)
+            else if roll == 8 { 3 }   // Deadlock (10%)
+            else { 4 }                // Overflow (10%)
+        };
+
+        (to_modifier(roll_0), to_modifier(roll_1), to_modifier(roll_2))
     }
 
     #[abi(embed_v0)]
@@ -60,6 +93,20 @@ pub mod actions_1v1 {
                 });
                 i += 1;
             };
+
+            // Generate round 1 modifiers via vRNG
+            let vrf = IVrfProviderDispatcher {
+                contract_address: VRF_PROVIDER_ADDRESS.try_into().unwrap(),
+            };
+            let random_value = vrf.consume_random(Source::Nonce(get_contract_address()));
+            let (g0, g1, g2) = random_to_modifiers(random_value);
+            world.write_model(@RoundModifiers1v1 {
+                match_id,
+                round: 1,
+                gate_0: g0,
+                gate_1: g1,
+                gate_2: g2,
+            });
 
             world.emit_event(@MatchCreated1v1 {
                 match_id,
