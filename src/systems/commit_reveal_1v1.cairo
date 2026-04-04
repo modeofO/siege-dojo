@@ -26,6 +26,7 @@ pub mod commit_reveal_1v1 {
     use siege_dojo::models::node_state::{NodeState, NodeOwner};
     use siege_dojo::models::commitment::Commitment;
     use siege_dojo::models::round_moves_1v1::RoundMoves1v1;
+    use siege_dojo::models::round_traps_1v1::RoundTraps1v1;
     use siege_dojo::systems::resolution_1v1::{IResolution1v1Dispatcher, IResolution1v1DispatcherTrait};
     use siege_dojo::models::events::{MoveCommitted, MoveRevealed};
     use dojo::event::EventStorage;
@@ -185,16 +186,23 @@ pub mod commit_reveal_1v1 {
                 rm.a_g0 = g0; rm.a_g1 = g1; rm.a_g2 = g2;
                 rm.a_repair = repair;
                 rm.a_nc0 = nc0; rm.a_nc1 = nc1; rm.a_nc2 = nc2;
-                rm.a_trap0 = trap0; rm.a_trap1 = trap1; rm.a_trap2 = trap2;
             } else {
                 rm.b_p0 = p0; rm.b_p1 = p1; rm.b_p2 = p2;
                 rm.b_g0 = g0; rm.b_g1 = g1; rm.b_g2 = g2;
                 rm.b_repair = repair;
                 rm.b_nc0 = nc0; rm.b_nc1 = nc1; rm.b_nc2 = nc2;
-                rm.b_trap0 = trap0; rm.b_trap1 = trap1; rm.b_trap2 = trap2;
             }
 
             world.write_model(@rm);
+
+            // Write traps to separate model (RoundTraps1v1)
+            let mut traps: RoundTraps1v1 = world.read_model((match_id, round));
+            if role == ROLE_A {
+                traps.a_trap0 = trap0; traps.a_trap1 = trap1; traps.a_trap2 = trap2;
+            } else {
+                traps.b_trap0 = trap0; traps.b_trap1 = trap1; traps.b_trap2 = trap2;
+            }
+            world.write_model(@traps);
 
             world.emit_event(@MoveRevealed { match_id, round, role });
 

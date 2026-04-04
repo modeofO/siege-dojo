@@ -26,6 +26,7 @@ pub mod resolution_1v1 {
     use siege_dojo::models::node_state::{NodeState, NodeOwner};
     use siege_dojo::models::round_moves_1v1::RoundMoves1v1;
     use siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1;
+    use siege_dojo::models::round_traps_1v1::RoundTraps1v1;
     use siege_dojo::models::events::{RoundResolved, MatchFinished};
     use super::{IVrfProviderResDispatcher, IVrfProviderResDispatcherTrait, Source};
 
@@ -269,8 +270,9 @@ pub mod resolution_1v1 {
             };
 
             // Trap damage: if a node changed owner and the previous owner had a trap, deal 5 damage
-            let a_traps: [u8; 3] = [rm.a_trap0, rm.a_trap1, rm.a_trap2];
-            let b_traps: [u8; 3] = [rm.b_trap0, rm.b_trap1, rm.b_trap2];
+            let traps: RoundTraps1v1 = world.read_model((match_id, round));
+            let a_traps: [u8; 3] = [traps.a_trap0, traps.a_trap1, traps.a_trap2];
+            let b_traps: [u8; 3] = [traps.b_trap0, traps.b_trap1, traps.b_trap2];
             let mut trap_dmg_to_a: u8 = 0;
             let mut trap_dmg_to_b: u8 = 0;
 

@@ -70,7 +70,7 @@
     },
     {
       "address": "0x516bdf650dcaebe431a06fba09766ee2d4be79c477e73ba220a64c4f6d4af80",
-      "class_hash": "0xb214bc09cdda0e3a907994f09f46f9f92db3955d0f7c7927569b42da861078",
+      "class_hash": "0x70be2a117f3136ed3cda5cf8cd3e9ef3fd1ec2cfc65c20deb1ee2837d3b84e",
       "init_calldata": [],
       "tag": "siege_dojo-commit_reveal_1v1",
       "selector": "0x495013ee20d528ad6f0e109874e37a33ef3e258c7ed8c446cfb8389f7a94143",
@@ -94,7 +94,7 @@
     },
     {
       "address": "0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b",
-      "class_hash": "0x216a00539d361f85687c0300f83d3d8ea21d8deb635aa04e2733b0782974ff0",
+      "class_hash": "0x66d2cb97a3a00b971211f0078dfc3fdb9a7acce001e82be27419970ec3cad53",
       "init_calldata": [],
       "tag": "siege_dojo-resolution_1v1",
       "selector": "0x3243785fc5c17bf6bc5b9d485ddaa1275e126e753d2eddd05e69e17e98f85fd",
@@ -616,6 +616,53 @@
       "class_hash": "0x2ee62ff975ffc975b1eb155ef025b3e5bf20b4fa57a729e317a0522a985cb7a",
       "tag": "siege_dojo-RoundMoves1v1",
       "selector": "0x4b0c7078682d3ba10a477163083973ddc05d8f91dc9fd3ce590e30e4b817347"
+    },
+    {
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64",
+          "key": true
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32",
+          "key": true
+        },
+        {
+          "name": "a_trap0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_trap1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "a_trap2",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_trap0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_trap1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "b_trap2",
+          "type": "core::integer::u8",
+          "key": false
+        }
+      ],
+      "class_hash": "0x599d48b1708f9fac1201db5af0dabb07bd1f4aafac6187358596f04fe0cd0a8",
+      "tag": "siege_dojo-RoundTraps1v1",
+      "selector": "0x299703c37ec67ae3aa71f204baf8b444abdcabf6822bc9acf344c82ef144dc9"
     }
   ],
   "events": [
@@ -3707,6 +3754,80 @@
       "variants": []
     },
     {
+      "type": "struct",
+      "name": "siege_dojo::models::round_traps_1v1::RoundTraps1v1",
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32"
+        },
+        {
+          "name": "a_trap0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_trap1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_trap2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::round_traps_1v1::RoundTraps1v1Value",
+      "members": [
+        {
+          "name": "a_trap0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_trap1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "a_trap2",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "b_trap2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::round_traps_1v1::m_RoundTraps1v1::Event",
+      "kind": "enum",
+      "variants": []
+    },
+    {
       "type": "interface",
       "name": "siege_dojo::systems::actions::IActions",
       "items": [
@@ -4045,6 +4166,18 @@
             },
             {
               "name": "nc2",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "trap0",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "trap1",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "trap2",
               "type": "core::integer::u8"
             }
           ],

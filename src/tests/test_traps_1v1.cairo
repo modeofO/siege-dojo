@@ -18,6 +18,7 @@ mod tests {
     use siege_dojo::models::commitment::m_Commitment;
     use siege_dojo::models::round_moves_1v1::m_RoundMoves1v1;
     use siege_dojo::models::round_modifiers_1v1::{RoundModifiers1v1, m_RoundModifiers1v1};
+    use siege_dojo::models::round_traps_1v1::m_RoundTraps1v1;
     use siege_dojo::models::match_counter::m_MatchCounter;
     use siege_dojo::models::events::{e_MatchCreated1v1, e_MoveCommitted, e_MoveRevealed, e_RoundResolved, e_MatchFinished};
 
@@ -48,6 +49,7 @@ mod tests {
                 TestResource::Model(m_Commitment::TEST_CLASS_HASH),
                 TestResource::Model(m_RoundMoves1v1::TEST_CLASS_HASH),
                 TestResource::Model(m_RoundModifiers1v1::TEST_CLASS_HASH),
+                TestResource::Model(m_RoundTraps1v1::TEST_CLASS_HASH),
                 TestResource::Model(m_MatchCounter::TEST_CLASS_HASH),
                 TestResource::Event(e_MatchCreated1v1::TEST_CLASS_HASH),
                 TestResource::Event(e_MoveCommitted::TEST_CLASS_HASH),
