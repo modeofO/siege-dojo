@@ -232,7 +232,11 @@ export function useCommitmentStatus1v1(
         }
       `);
       const node = data?.siegeDojoCommitmentModels?.edges?.[0]?.node;
-      if (node) setStatus({ committed: node.committed, revealed: node.revealed });
+      if (node) {
+        setStatus({ committed: node.committed, revealed: node.revealed });
+      } else {
+        setStatus({ committed: false, revealed: false });
+      }
     };
 
     const t = setTimeout(() => { void fetch(); }, 0);
