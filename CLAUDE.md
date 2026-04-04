@@ -153,7 +153,7 @@ npx tsx siege-cli.ts --match <id> --json '{"attack":[3,2,1],"defense":[2,1,0],"r
 Each player splits their budget across:
 - Attack: 3 pressure points (p0, p1, p2)
 - Defense: 3 gates (g0, g1, g2) + repair (max 3)
-- Nodes: 3 node contests (nc0, nc1, nc2)
+- Nodes: Forge (nc0), Quarry (nc1), Grove (nc2) — controlling a node awards resource tokens each round
 
 ### Gate Modifiers
 
@@ -178,6 +178,18 @@ Players can trap resource nodes they own:
 
 Allocation array is 13 elements: `[p0,p1,p2, g0,g1,g2, repair, nc0,nc1,nc2, trap0,trap1,trap2]`
 Poseidon hash is 14 elements (salt + 13 allocations).
+
+### Resource Tokens
+
+6 ERC-20 tokens (0 decimals) awarded for controlling resource nodes:
+
+| Node | Token 1 | Token 2 |
+|------|---------|---------|
+| Forge (nc0) | IRON | LINEN |
+| Quarry (nc1) | STONE | WOOD |
+| Grove (nc2) | EMBER | SEEDS |
+
+Each round, controlling a node mints 1 of each paired token to the player. Resources persist across matches and are tradeable. Token addresses stored in `ResourceConfig` model.
 
 ## Project Structure
 
