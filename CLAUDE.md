@@ -130,7 +130,7 @@ Same world as 2v2 (`siege_dojo`). Deployed to Sepolia alongside existing contrac
 | `commit_reveal_1v1` | `0x516bdf650dcaebe431a06fba09766ee2d4be79c477e73ba220a64c4f6d4af80` |
 | `resolution_1v1` | `0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b` |
 
-Models: `MatchState1v1`, `RoundMoves1v1`, `RoundModifiers1v1`. Reuses `Commitment`, `NodeState`, `MatchCounter`.
+Models: `MatchState1v1`, `RoundMoves1v1`, `RoundModifiers1v1`, `RoundTraps1v1`. Reuses `Commitment`, `NodeState`, `MatchCounter`.
 
 ### CLI (`scripts/siege-cli/`)
 
@@ -165,6 +165,19 @@ Each round, 3 gates independently roll a modifier via Cartridge vRNG:
 - **Reflection** (10%): Damage reflects to other gates
 
 Modifiers are visible to both players before allocation. vRNG uses `request_random` + `consume_random` — the frontend wraps `create_match_1v1` and `reveal` calls in multicall with `request_random`.
+
+### Node Traps
+
+Players can trap resource nodes they own:
+- **Cost**: 2 budget points per trap
+- **Effect**: When opponent takes a trapped node, they take 5 vault damage (post-repair, not repairable)
+- **Constraints**: Can only trap nodes you own. Trapping gives up contesting (your contest spend = 0)
+- **Hidden**: Traps are committed in the Poseidon hash and revealed with all other allocations
+- **Consumed**: Traps last one round — must be re-placed each round
+- **Model**: `RoundTraps1v1` (separate from `RoundMoves1v1` due to Dojo schema upgrade constraints)
+
+Allocation array is 13 elements: `[p0,p1,p2, g0,g1,g2, repair, nc0,nc1,nc2, trap0,trap1,trap2]`
+Poseidon hash is 14 elements (salt + 13 allocations).
 
 ## Project Structure
 
