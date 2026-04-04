@@ -329,28 +329,54 @@ export default function Match1v1Page() {
       {history.length > 0 && (
         <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
           <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Round History</div>
-          <div className="space-y-2 max-h-48 overflow-y-auto">
+          <div className="space-y-4 max-h-80 overflow-y-auto">
             {history.map((r: RoundResult1v1) => {
-              const myAtk = isPlayerA ? r.aAttack : r.bAttack;
-              const myDef = isPlayerA ? r.aDefense : r.bDefense;
-              const theirAtk = isPlayerA ? r.bAttack : r.aAttack;
               const dmgDealt = isPlayerA ? r.damageToB : r.damageToA;
               const dmgTaken = isPlayerA ? r.damageToA : r.damageToB;
+              const gateNames = ["East", "West", "Underground"];
 
               return (
-                <div key={r.round} className="text-xs py-2 border-b border-[#1a1a26] space-y-1">
+                <div key={r.round} className="text-xs py-2 border-b border-[#1a1a26] space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-[#6a6a7a]">R{r.round}</span>
+                    <span className="text-[#6a6a7a] font-bold">R{r.round}</span>
                     <span>
                       <span className="text-green-400">+{dmgDealt} dealt</span>
                       {" / "}
                       <span className="text-red-400">-{dmgTaken} taken</span>
                     </span>
                   </div>
-                  <div className="text-[#6a6a7a]">
-                    You: atk [{myAtk.join(",")}] def [{myDef.join(",")}]
-                    {" | "}
-                    Them: atk [{theirAtk.join(",")}]
+                  <div className="grid grid-cols-3 gap-2">
+                    {r.gateBreakdown.map((gate, i) => {
+                      const modName = MODIFIER_NAMES[gate.modifier] || "Normal";
+                      const modColor = gate.modifier === 0 ? "text-[#6a6a7a]"
+                        : gate.modifier === 1 ? "text-[#ffd700]"
+                        : gate.modifier === 2 ? "text-[#00d4ff]"
+                        : gate.modifier === 3 ? "text-[#ff3344]"
+                        : "text-[#ff8800]";
+                      const myDmgDealt = isPlayerA ? gate.dmgToB : gate.dmgToA;
+                      const myDmgTaken = isPlayerA ? gate.dmgToA : gate.dmgToB;
+                      return (
+                        <div key={i} className="bg-[#1a1a26] rounded p-2 space-y-1">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[#6a6a7a]">{gateNames[i]}</span>
+                            {gate.modifier !== 0 && (
+                              <span className={`${modColor} text-[10px]`}>{modName}</span>
+                            )}
+                          </div>
+                          <div className="text-[#6a6a7a]">
+                            You: {isPlayerA ? gate.attackA : gate.attackB} atk / {isPlayerA ? gate.defenseA : gate.defenseB} def
+                          </div>
+                          <div className="text-[#6a6a7a]">
+                            Them: {isPlayerA ? gate.attackB : gate.attackA} atk / {isPlayerA ? gate.defenseB : gate.defenseA} def
+                          </div>
+                          <div>
+                            {myDmgDealt > 0 && <span className="text-green-400">+{myDmgDealt} </span>}
+                            {myDmgTaken > 0 && <span className="text-red-400">-{myDmgTaken}</span>}
+                            {myDmgDealt === 0 && myDmgTaken === 0 && <span className="text-[#6a6a7a]">0</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );

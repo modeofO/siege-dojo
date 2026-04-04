@@ -162,7 +162,7 @@ Each round, 3 gates independently roll a modifier via Cartridge vRNG:
 - **Narrow Pass** (10%): Attack and defense capped at 3
 - **Mirror Gate** (10%): Attack/defense values swap
 - **Deadlock** (10%): No damage at this gate
-- **Overflow** (10%): Unblocked damage splits to other gates
+- **Reflection** (10%): Damage reflects to other gates
 
 Modifiers are visible to both players before allocation. vRNG uses `request_random` + `consume_random` — the frontend wraps `create_match_1v1` and `reveal` calls in multicall with `request_random`.
 

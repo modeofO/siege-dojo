@@ -17,6 +17,17 @@ export interface MatchState1v1 {
   winner: number | null;
 }
 
+export interface GateDamage {
+  gate: number;
+  modifier: number;
+  attackA: number;
+  defenseA: number;
+  attackB: number;
+  defenseB: number;
+  dmgToA: number;
+  dmgToB: number;
+}
+
 export interface RoundResult1v1 {
   round: number;
   aAttack: number[];
@@ -25,6 +36,8 @@ export interface RoundResult1v1 {
   bDefense: number[];
   damageToA: number;
   damageToB: number;
+  modifiers: [number, number, number];
+  gateBreakdown: GateDamage[];
 }
 
 const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
@@ -50,6 +63,65 @@ function computeBudget(nodes: NodeOwner[], team: "teamA" | "teamB"): number {
 
 function computeDamage(atk: number[], def: number[]): number {
   return atk.reduce((sum, a, i) => sum + Math.max(0, a - def[i]), 0);
+}
+
+function computeGateBreakdown(
+  aAtk: number[], aDef: number[], bAtk: number[], bDef: number[],
+  mods: [number, number, number],
+): { gateBreakdown: GateDamage[]; damageToA: number; damageToB: number } {
+  const dmgToB = [0, 0, 0];
+  const dmgToA = [0, 0, 0];
+  const ovfToB = [0, 0, 0];
+  const ovfToA = [0, 0, 0];
+
+  for (let g = 0; g < 3; g++) {
+    let aa = aAtk[g], ad = aDef[g], ba = bAtk[g], bd = bDef[g];
+    const mod = mods[g];
+
+    if (mod === 1) { // Narrow Pass
+      aa = Math.min(aa, 3); ad = Math.min(ad, 3);
+      ba = Math.min(ba, 3); bd = Math.min(bd, 3);
+    }
+    if (mod === 2) { // Mirror
+      [aa, ad] = [ad, aa];
+      [ba, bd] = [bd, ba];
+    }
+    if (mod === 3) { // Deadlock
+      // no damage
+    } else if (mod === 4) { // Reflection
+      if (aa > bd) ovfToB[g] = aa - bd;
+      if (ba > ad) ovfToA[g] = ba - ad;
+    } else {
+      if (aa > bd) dmgToB[g] = aa - bd;
+      if (ba > ad) dmgToA[g] = ba - ad;
+    }
+  }
+
+  // Distribute reflection
+  for (let g = 0; g < 3; g++) {
+    if (ovfToB[g] > 0) {
+      const per = Math.floor(ovfToB[g] / 2);
+      for (let t = 0; t < 3; t++) if (t !== g) dmgToB[t] += per;
+    }
+    if (ovfToA[g] > 0) {
+      const per = Math.floor(ovfToA[g] / 2);
+      for (let t = 0; t < 3; t++) if (t !== g) dmgToA[t] += per;
+    }
+  }
+
+  const gateBreakdown: GateDamage[] = [0, 1, 2].map(g => ({
+    gate: g,
+    modifier: mods[g],
+    attackA: aAtk[g], defenseA: aDef[g],
+    attackB: bAtk[g], defenseB: bDef[g],
+    dmgToA: dmgToA[g], dmgToB: dmgToB[g],
+  }));
+
+  return {
+    gateBreakdown,
+    damageToA: dmgToA[0] + dmgToA[1] + dmgToA[2],
+    damageToB: dmgToB[0] + dmgToB[1] + dmgToB[2],
+  };
 }
 
 async function toriiQuery<T>(query: string): Promise<T | null> {
@@ -263,13 +335,26 @@ export function useRoundHistory1v1(matchId: string | null) {
           b_p0: string; b_p1: string; b_p2: string;
           b_g0: string; b_g1: string; b_g2: string;
         }>;
+        siegeDojoRoundModifiers1V1Models: GraphEdges<{
+          round: string; gate_0: string; gate_1: string; gate_2: string;
+        }>;
       }>(`
         query {
           siegeDojoRoundMoves1V1Models(where: { match_id: "${id}" }) {
             edges { node { round reveal_count a_p0 a_p1 a_p2 a_g0 a_g1 a_g2 b_p0 b_p1 b_p2 b_g0 b_g1 b_g2 } }
           }
+          siegeDojoRoundModifiers1V1Models(where: { match_id: "${id}" }) {
+            edges { node { round gate_0 gate_1 gate_2 } }
+          }
         }
       `);
+
+      // Build modifier lookup by round
+      const modsByRound: Record<number, [number, number, number]> = {};
+      for (const edge of data?.siegeDojoRoundModifiers1V1Models?.edges || []) {
+        const r = toNum(edge.node.round);
+        modsByRound[r] = [toNum(edge.node.gate_0), toNum(edge.node.gate_1), toNum(edge.node.gate_2)];
+      }
 
       const results = (data?.siegeDojoRoundMoves1V1Models?.edges || [])
         .map((e) => e.node)
@@ -277,18 +362,23 @@ export function useRoundHistory1v1(matchId: string | null) {
         .sort((a, b) => toNum(b.round) - toNum(a.round))
         .slice(0, 10)
         .map((n): RoundResult1v1 => {
+          const rnd = toNum(n.round);
           const aAtk = [toNum(n.a_p0), toNum(n.a_p1), toNum(n.a_p2)];
           const aDef = [toNum(n.a_g0), toNum(n.a_g1), toNum(n.a_g2)];
           const bAtk = [toNum(n.b_p0), toNum(n.b_p1), toNum(n.b_p2)];
           const bDef = [toNum(n.b_g0), toNum(n.b_g1), toNum(n.b_g2)];
+          const mods: [number, number, number] = modsByRound[rnd] || [0, 0, 0];
+          const { gateBreakdown, damageToA, damageToB } = computeGateBreakdown(aAtk, aDef, bAtk, bDef, mods);
           return {
-            round: toNum(n.round),
+            round: rnd,
             aAttack: aAtk,
             aDefense: aDef,
             bAttack: bAtk,
             bDefense: bDef,
-            damageToA: computeDamage(bAtk, aDef),
-            damageToB: computeDamage(aAtk, bDef),
+            damageToA,
+            damageToB,
+            modifiers: mods,
+            gateBreakdown,
           };
         });
 
@@ -308,7 +398,7 @@ export const MODIFIER_NAMES: Record<number, string> = {
   1: "Narrow Pass",
   2: "Mirror Gate",
   3: "Deadlock",
-  4: "Overflow",
+  4: "Reflection",
 };
 
 export const MODIFIER_DESCRIPTIONS: Record<number, string> = {
@@ -316,7 +406,7 @@ export const MODIFIER_DESCRIPTIONS: Record<number, string> = {
   1: "Attack and defense capped at 3",
   2: "Attack and defense values swap",
   3: "No damage dealt at this gate",
-  4: "Unblocked damage splits to other gates",
+  4: "Damage reflects to other gates",
 };
 
 export function useRoundModifiers1v1(matchId: string | null, round: number) {
