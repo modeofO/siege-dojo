@@ -45,12 +45,13 @@
     },
     {
       "address": "0x7cbd822e0dc535d084dd71b76ba332d76cb370954c83a5ebe5625f36cdfa1c",
-      "class_hash": "0x6788a3a687a4bbd5c3de4332559e1e4c342b040a917dd903476e9c832e05f8b",
+      "class_hash": "0x45f39cab5dc4e8786665628697222f5fa1d2e352a6155c2687027b75ed96838",
       "init_calldata": [],
       "tag": "siege_dojo-actions_1v1",
       "selector": "0x26e0eeadcc0c8f020b1da157b4d0f038ca209cb1d1ed9b6b52248376703705",
       "systems": [
         "create_match_1v1",
+        "set_resource_config",
         "upgrade"
       ]
     },
@@ -94,7 +95,7 @@
     },
     {
       "address": "0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b",
-      "class_hash": "0x66d2cb97a3a00b971211f0078dfc3fdb9a7acce001e82be27419970ec3cad53",
+      "class_hash": "0x1e3934a422d37bacfa84ede453741515a81cc62caf70700cc8c2e02e6614297",
       "init_calldata": [],
       "tag": "siege_dojo-resolution_1v1",
       "selector": "0x3243785fc5c17bf6bc5b9d485ddaa1275e126e753d2eddd05e69e17e98f85fd",
@@ -275,6 +276,48 @@
       "class_hash": "0x33425c0293254ae0325a812d601bd946db7d6059c7d076e9e39ed9635cf2950",
       "tag": "siege_dojo-NodeState",
       "selector": "0x4bb7be800153f78192f4f5d55503f14c51a2865e40caa558e244961a379bbf"
+    },
+    {
+      "members": [
+        {
+          "name": "id",
+          "type": "core::integer::u8",
+          "key": true
+        },
+        {
+          "name": "iron",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "linen",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "stone",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "wood",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "ember",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        },
+        {
+          "name": "seeds",
+          "type": "core::starknet::contract_address::ContractAddress",
+          "key": false
+        }
+      ],
+      "class_hash": "0x66501f7f735a64e12afb0df0eef8f3cc0889e1ef6760bb84e35daf4f048c8f4",
+      "tag": "siege_dojo-ResourceConfig",
+      "selector": "0x62231c2dc0531535e3e15617d9a10dd402a509f2e37355500cac2c454cb1abf"
     },
     {
       "members": [
@@ -3213,6 +3256,76 @@
     },
     {
       "type": "struct",
+      "name": "siege_dojo::models::resource_config::ResourceConfig",
+      "members": [
+        {
+          "name": "id",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "iron",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "linen",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "stone",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "wood",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "ember",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "seeds",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::resource_config::ResourceConfigValue",
+      "members": [
+        {
+          "name": "iron",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "linen",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "stone",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "wood",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "ember",
+          "type": "core::starknet::contract_address::ContractAddress"
+        },
+        {
+          "name": "seeds",
+          "type": "core::starknet::contract_address::ContractAddress"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::resource_config::m_ResourceConfig::Event",
+      "kind": "enum",
+      "variants": []
+    },
+    {
+      "type": "struct",
       "name": "siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1",
       "members": [
         {
@@ -3941,6 +4054,38 @@
             }
           ],
           "state_mutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "set_resource_config",
+          "inputs": [
+            {
+              "name": "iron",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "linen",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "stone",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "wood",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "ember",
+              "type": "core::starknet::contract_address::ContractAddress"
+            },
+            {
+              "name": "seeds",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ],
+          "outputs": [],
+          "state_mutability": "external"
         }
       ]
     },
