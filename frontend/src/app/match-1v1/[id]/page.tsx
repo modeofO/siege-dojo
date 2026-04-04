@@ -67,7 +67,8 @@ export default function Match1v1Page() {
   // Allocations: [p0,p1,p2, g0,g1,g2, repair, nc0,nc1,nc2]
   const [allocations, setAllocations] = useState<number[]>(new Array(10).fill(0));
   const [submitting, setSubmitting] = useState(false);
-  const [autoRevealing, setAutoRevealing] = useState(false);
+  const [autoRevealStatus, setAutoRevealStatus] = useState<"idle" | "pending" | "done">("idle");
+  const autoRevealLock = useRef(false);
   const [error, setError] = useState("");
 
 
@@ -78,7 +79,8 @@ export default function Match1v1Page() {
   // Reset state on round change
   useEffect(() => {
     setAllocations(new Array(10).fill(0));
-    setAutoRevealing(false);
+    setAutoRevealStatus("idle");
+    autoRevealLock.current = false;
     setError("");
   }, [state?.round]);
 
@@ -95,25 +97,26 @@ export default function Match1v1Page() {
     return String(e);
   }
 
+  // Check if an error is a known recoverable case
+  const isAlreadyRevealed = (msg: string) =>
+    msg.includes("Already revealed") || msg.includes("416c72656164792072657665616c6564");
+  const isNotConsumed = (msg: string) =>
+    msg.includes("not consumed") || msg.includes("6e6f7420636f6e73756d6564");
+
   // Auto-reveal: when both committed & we haven't revealed yet
   useEffect(() => {
     if (
       !account || !state || !committed || revealed ||
-      roundStatus.commitCount < 2 || autoRevealing
+      roundStatus.commitCount < 2 || autoRevealLock.current
     ) return;
 
     const salt = getSalt1v1(matchId, state.round);
     const move = getMove1v1(matchId, state.round);
     if (!salt || !move) return;
 
-    setAutoRevealing(true);
-
-    // Check if an error is a known recoverable case
-    // Starknet errors contain hex-encoded short strings, so check both ASCII and hex
-    const isAlreadyRevealed = (msg: string) =>
-      msg.includes("Already revealed") || msg.includes("416c72656164792072657665616c6564");
-    const isNotConsumed = (msg: string) =>
-      msg.includes("not consumed") || msg.includes("6e6f7420636f6e73756d6564");
+    // Lock via ref (doesn't trigger re-render)
+    autoRevealLock.current = true;
+    setAutoRevealStatus("pending");
 
     const attemptReveal = async (includeVrf: boolean): Promise<void> => {
       try {
@@ -145,22 +148,19 @@ export default function Match1v1Page() {
 
     // Small random delay (1-3s) so both browsers don't fire simultaneously
     const delay = 1000 + Math.random() * 2000;
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       (async () => {
         try {
           const isSecondReveal = roundStatus.revealCount >= 1;
           await attemptReveal(isSecondReveal);
         } catch (e) {
           console.error("Auto-reveal failed:", e);
-          // Don't show error if the round already advanced (state will update on next poll)
         }
+        setAutoRevealStatus("done");
         void refresh();
-        setAutoRevealing(false);
       })();
     }, delay);
-
-    return () => clearTimeout(timer);
-  }, [account, state, matchId, committed, revealed, roundStatus.commitCount, roundStatus.revealCount, refresh, autoRevealing]);
+  }, [account, state, matchId, committed, revealed, roundStatus.commitCount, roundStatus.revealCount, refresh]);
 
   // Commit handler
   const commitLock = useRef(false);
@@ -259,7 +259,7 @@ export default function Match1v1Page() {
   if (committed && !revealed && roundStatus.commitCount < 2) {
     phaseText = "Waiting for opponent to commit...";
   } else if (committed && !revealed && roundStatus.commitCount >= 2) {
-    phaseText = autoRevealing ? "Auto-revealing your move..." : "Preparing to reveal...";
+    phaseText = autoRevealStatus === "pending" ? "Auto-revealing your move..." : "Preparing to reveal...";
   } else if (committed && revealed && roundStatus.revealCount < 2) {
     phaseText = "Waiting for opponent to reveal...";
   } else if (state.phase === "resolving") {
