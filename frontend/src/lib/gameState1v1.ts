@@ -38,6 +38,10 @@ export interface RoundResult1v1 {
   damageToB: number;
   modifiers: [number, number, number];
   gateBreakdown: GateDamage[];
+  aTraps: [number, number, number];
+  bTraps: [number, number, number];
+  trapDmgToA: number;
+  trapDmgToB: number;
 }
 
 const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
@@ -348,6 +352,8 @@ export function useRoundHistory1v1(matchId: string | null) {
           a_g0: string; a_g1: string; a_g2: string;
           b_p0: string; b_p1: string; b_p2: string;
           b_g0: string; b_g1: string; b_g2: string;
+          a_trap0: string; a_trap1: string; a_trap2: string;
+          b_trap0: string; b_trap1: string; b_trap2: string;
         }>;
         siegeDojoRoundModifiers1V1Models: GraphEdges<{
           round: string; gate_0: string; gate_1: string; gate_2: string;
@@ -355,7 +361,7 @@ export function useRoundHistory1v1(matchId: string | null) {
       }>(`
         query {
           siegeDojoRoundMoves1V1Models(where: { match_id: "${id}" }) {
-            edges { node { round reveal_count a_p0 a_p1 a_p2 a_g0 a_g1 a_g2 b_p0 b_p1 b_p2 b_g0 b_g1 b_g2 } }
+            edges { node { round reveal_count a_p0 a_p1 a_p2 a_g0 a_g1 a_g2 b_p0 b_p1 b_p2 b_g0 b_g1 b_g2 a_trap0 a_trap1 a_trap2 b_trap0 b_trap1 b_trap2 } }
           }
           siegeDojoRoundModifiers1V1Models(where: { match_id: "${id}" }) {
             edges { node { round gate_0 gate_1 gate_2 } }
@@ -383,6 +389,8 @@ export function useRoundHistory1v1(matchId: string | null) {
           const bDef = [toNum(n.b_g0), toNum(n.b_g1), toNum(n.b_g2)];
           const mods: [number, number, number] = modsByRound[rnd] || [0, 0, 0];
           const { gateBreakdown, damageToA, damageToB } = computeGateBreakdown(aAtk, aDef, bAtk, bDef, mods);
+          const aTraps: [number, number, number] = [toNum(n.a_trap0), toNum(n.a_trap1), toNum(n.a_trap2)];
+          const bTraps: [number, number, number] = [toNum(n.b_trap0), toNum(n.b_trap1), toNum(n.b_trap2)];
           return {
             round: rnd,
             aAttack: aAtk,
@@ -393,6 +401,10 @@ export function useRoundHistory1v1(matchId: string | null) {
             damageToB,
             modifiers: mods,
             gateBreakdown,
+            aTraps,
+            bTraps,
+            trapDmgToA: 0,
+            trapDmgToB: 0,
           };
         });
 
