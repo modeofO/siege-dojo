@@ -23,6 +23,7 @@ import {
   getMove1v1,
 } from "@/lib/crypto";
 import { commitMove1v1, revealMove1v1 } from "@/lib/contracts1v1";
+import { useToriiSubscription } from "@/lib/toriiSubscription";
 import { VaultDisplay } from "@/components/VaultDisplay";
 import { AllocationForm1v1 } from "@/components/AllocationForm1v1";
 import Link from "next/link";
@@ -34,6 +35,9 @@ export default function Match1v1Page() {
 
   const { state, loading, refresh } = useMatchState1v1(matchId);
   const history = useRoundHistory1v1(matchId);
+
+  // Real-time updates via WebSocket — triggers refresh on any world event
+  useToriiSubscription(matchId, refresh);
 
   // Role detection
   const addrMatch = (a: string | undefined, b: string | undefined) => {
