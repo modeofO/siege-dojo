@@ -8,6 +8,12 @@ pub trait IActions1v1<T> {
         player_b: ContractAddress,
     ) -> u64;
     fn get_budget_1v1(self: @T, match_id: u64, is_player_a: bool) -> u8;
+    fn set_resource_config(
+        ref self: T,
+        iron: ContractAddress, linen: ContractAddress,
+        stone: ContractAddress, wood: ContractAddress,
+        ember: ContractAddress, seeds: ContractAddress,
+    );
 }
 
 #[starknet::interface]
@@ -31,6 +37,7 @@ pub mod actions_1v1 {
     use siege_dojo::models::match_counter::MatchCounter;
     use siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1;
     use siege_dojo::models::events::MatchCreated1v1;
+    use siege_dojo::models::resource_config::ResourceConfig;
     use dojo::event::EventStorage;
     use super::{IVrfProviderDispatcher, IVrfProviderDispatcherTrait, Source};
 
@@ -130,6 +137,19 @@ pub mod actions_1v1 {
                 i += 1;
             };
             10 + bonus
+        }
+
+        fn set_resource_config(
+            ref self: ContractState,
+            iron: ContractAddress, linen: ContractAddress,
+            stone: ContractAddress, wood: ContractAddress,
+            ember: ContractAddress, seeds: ContractAddress,
+        ) {
+            let mut world = self.world_default();
+            world.write_model(@ResourceConfig {
+                id: 0,
+                iron, linen, stone, wood, ember, seeds,
+            });
         }
     }
 }

@@ -28,6 +28,8 @@ pub mod resolution_1v1 {
     use siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1;
     use siege_dojo::models::round_traps_1v1::RoundTraps1v1;
     use siege_dojo::models::events::{RoundResolved, MatchFinished};
+    use siege_dojo::models::resource_config::ResourceConfig;
+    use siege_dojo::tokens::resource_token::{IResourceTokenDispatcher, IResourceTokenDispatcherTrait};
     use super::{IVrfProviderResDispatcher, IVrfProviderResDispatcherTrait, Source};
 
     const VRF_PROVIDER_ADDRESS: felt252 =
@@ -303,6 +305,41 @@ pub mod resolution_1v1 {
 
             state.vault_a_hp = hp_a;
             state.vault_b_hp = hp_b;
+
+            // Award resource tokens for node ownership
+            let config: ResourceConfig = world.read_model(0_u8);
+            let zero_addr: starknet::ContractAddress = 0.try_into().unwrap();
+            // Only mint if resource config has been set (non-zero addresses)
+            if config.iron != zero_addr {
+                let mut rn: u8 = 0;
+                while rn < 3 {
+                    let node: NodeState = world.read_model((match_id, rn));
+                    let owner_addr = if node.owner == NodeOwner::TeamA {
+                        state.player_a
+                    } else if node.owner == NodeOwner::TeamB {
+                        state.player_b
+                    } else {
+                        // Node is unowned, no resources
+                        rn += 1;
+                        continue;
+                    };
+
+                    let (token_a_addr, token_b_addr) = if rn == 0 {
+                        (config.iron, config.linen)         // Forge
+                    } else if rn == 1 {
+                        (config.stone, config.wood)          // Quarry
+                    } else {
+                        (config.ember, config.seeds)          // Grove
+                    };
+
+                    let token_a = IResourceTokenDispatcher { contract_address: token_a_addr };
+                    let token_b = IResourceTokenDispatcher { contract_address: token_b_addr };
+                    token_a.mint(owner_addr, 1);
+                    token_b.mint(owner_addr, 1);
+
+                    rn += 1;
+                };
+            }
 
             world.emit_event(@RoundResolved {
                 match_id,

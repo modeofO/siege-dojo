@@ -9,6 +9,7 @@ pub mod models {
     pub mod round_traps_1v1;
     pub mod match_counter;
     pub mod events;
+    pub mod resource_config;
 }
 
 pub mod tokens;
