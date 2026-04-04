@@ -21,7 +21,7 @@ const GATE_LABELS = [
   "Repair",
 ];
 
-const NODE_LABELS = ["Node 1", "Node 2", "Node 3"];
+const NODE_LABELS = ["Forge (Iron + Linen)", "Quarry (Stone + Wood)", "Grove (Ember + Seeds)"];
 
 const SECTION_BREAKS: Record<number, string> = {
   0: "ATTACK",

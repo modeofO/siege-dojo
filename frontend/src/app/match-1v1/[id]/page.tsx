@@ -297,21 +297,26 @@ export default function Match1v1Page() {
       <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
         <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Resource Nodes</div>
         <div className="flex justify-around items-center">
-          {state.nodes.map((owner, i) => {
-            const color = owner === "teamA"
-              ? "bg-[#00d4ff] border-[#00d4ff]"
-              : owner === "teamB"
-                ? "bg-[#ff3344] border-[#ff3344]"
-                : "bg-[#6a6a7a] border-[#6a6a7a]";
-            const label = owner === "neutral" ? "Neutral" : owner === (isPlayerA ? "teamA" : "teamB") ? "Yours" : "Enemy";
-            return (
-              <div key={i} className="flex flex-col items-center gap-2">
-                <div className={`w-6 h-6 rounded-full border-2 ${color} opacity-80`} />
-                <span className="text-xs text-[#6a6a7a]">Node {i + 1}</span>
-                <span className="text-[10px] text-[#6a6a7a]">({label})</span>
-              </div>
-            );
-          })}
+          {(() => {
+            const nodeNames = ["Forge", "Quarry", "Grove"];
+            const nodeResources = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
+            return state.nodes.map((owner, i) => {
+              const color = owner === "teamA"
+                ? "bg-[#00d4ff] border-[#00d4ff]"
+                : owner === "teamB"
+                  ? "bg-[#ff3344] border-[#ff3344]"
+                  : "bg-[#6a6a7a] border-[#6a6a7a]";
+              const label = owner === "neutral" ? "Neutral" : owner === (isPlayerA ? "teamA" : "teamB") ? "Yours" : "Enemy";
+              return (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <div className={`w-6 h-6 rounded-full border-2 ${color} opacity-80`} />
+                  <span className="text-xs text-[#e0e0e8]">{nodeNames[i]}</span>
+                  <span className="text-[10px] text-[#6a6a7a]">{nodeResources[i]}</span>
+                  <span className="text-[10px] text-[#6a6a7a]">({label})</span>
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
 
@@ -436,25 +441,28 @@ export default function Match1v1Page() {
                   {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
                     <div className="text-xs mt-2 border-t border-[#2a2a3a] pt-2 space-y-1">
                       <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Node Traps</div>
-                      {[0, 1, 2].map(ni => {
-                        const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
-                        const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
-                        if (myTrap) {
-                          return (
-                            <div key={`mt${ni}`} className="text-[#ffd700]">
-                              You trapped Node {ni + 1} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
-                            </div>
-                          );
-                        }
-                        if (theirTrap) {
-                          return (
-                            <div key={`tt${ni}`} className="text-[#ff3344]">
-                              Enemy trapped Node {ni + 1}! You take <span className="font-bold">5 damage</span> if you captured it
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
+                      {(() => {
+                        const nodeNames = ["Forge", "Quarry", "Grove"];
+                        return [0, 1, 2].map(ni => {
+                          const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
+                          const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
+                          if (myTrap) {
+                            return (
+                              <div key={`mt${ni}`} className="text-[#ffd700]">
+                                You trapped {nodeNames[ni]} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
+                              </div>
+                            );
+                          }
+                          if (theirTrap) {
+                            return (
+                              <div key={`tt${ni}`} className="text-[#ff3344]">
+                                Enemy trapped {nodeNames[ni]}! You take <span className="font-bold">5 damage</span> if you captured it
+                              </div>
+                            );
+                          }
+                          return null;
+                        });
+                      })()}
                     </div>
                   )}
                 </div>
