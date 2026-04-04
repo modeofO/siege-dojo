@@ -99,12 +99,15 @@ export default function Match1v1Page() {
 
     (async () => {
       try {
+        // Include vRNG only if we're the 2nd reveal (triggers resolution)
+        const isSecondReveal = roundStatus.revealCount >= 1;
         await revealMove1v1(
           account, matchId, salt,
           move[0].toString(), move[1].toString(), move[2].toString(),
           move[3].toString(), move[4].toString(), move[5].toString(),
           move[6].toString(),
           move[7].toString(), move[8].toString(), move[9].toString(),
+          isSecondReveal,
         );
         void refresh();
       } catch (e) {

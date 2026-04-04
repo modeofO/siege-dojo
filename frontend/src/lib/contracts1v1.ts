@@ -71,18 +71,22 @@ export async function revealMove1v1(
   g0: string, g1: string, g2: string,
   repair: string,
   nc0: string, nc1: string, nc2: string,
+  includeVrf: boolean,
 ) {
-  // Always include request_random — harmless if not consumed (1st reveal),
-  // required when this is the 2nd reveal (triggers resolution which consumes it)
-  return account.execute(
-    [
-      vrfRequestRandomCall(CONTRACTS_1V1.RESOLUTION, account.address),
-      {
-        contractAddress: CONTRACTS_1V1.COMMIT_REVEAL,
-        entrypoint: "reveal",
-        calldata: [matchId, salt, p0, p1, p2, g0, g1, g2, repair, nc0, nc1, nc2],
-      },
-    ],
-    TX_OPTS,
-  );
+  const revealCall = {
+    contractAddress: CONTRACTS_1V1.COMMIT_REVEAL,
+    entrypoint: "reveal",
+    calldata: [matchId, salt, p0, p1, p2, g0, g1, g2, repair, nc0, nc1, nc2],
+  };
+
+  if (includeVrf) {
+    // 2nd reveal triggers resolution which consumes vRNG
+    return account.execute(
+      [vrfRequestRandomCall(CONTRACTS_1V1.RESOLUTION, account.address), revealCall],
+      TX_OPTS,
+    );
+  }
+
+  // 1st reveal — no vRNG needed
+  return account.execute(revealCall, TX_OPTS);
 }
