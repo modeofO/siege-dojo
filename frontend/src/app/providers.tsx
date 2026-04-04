@@ -12,6 +12,7 @@ import {
 import { ControllerConnector } from "@cartridge/connector";
 import type { SessionPolicies } from "@cartridge/controller";
 import { CONTRACTS } from "@/lib/contracts";
+import { CONTRACTS_1V1 } from "@/lib/contracts1v1";
 
 // ---------- Network mode ----------
 
@@ -112,6 +113,17 @@ const SESSION_POLICIES: SessionPolicies = {
         { name: "Commit Move", entrypoint: "commit" },
         { name: "Reveal Attacker", entrypoint: "reveal_attacker" },
         { name: "Reveal Defender", entrypoint: "reveal_defender" },
+      ],
+    },
+    [CONTRACTS_1V1.ACTIONS]: {
+      methods: [
+        { name: "Create 1v1 Match", entrypoint: "create_match_1v1" },
+      ],
+    },
+    [CONTRACTS_1V1.COMMIT_REVEAL]: {
+      methods: [
+        { name: "Commit 1v1", entrypoint: "commit" },
+        { name: "Reveal 1v1", entrypoint: "reveal" },
       ],
     },
   },
