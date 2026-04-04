@@ -58,6 +58,7 @@ mod tests {
         h = h.update(g0.into()); h = h.update(g1.into()); h = h.update(g2.into());
         h = h.update(repair.into());
         h = h.update(nc0.into()); h = h.update(nc1.into()); h = h.update(nc2.into());
+        h = h.update(0); h = h.update(0); h = h.update(0);
         h.finalize()
     }
 
@@ -94,9 +95,9 @@ mod tests {
         cr_sys.commit(match_id, h_b);
 
         testing::set_contract_address(addr1);
-        cr_sys.reveal(match_id, salt, ap0, ap1, ap2, ag0, ag1, ag2, ar, anc0, anc1, anc2);
+        cr_sys.reveal(match_id, salt, ap0, ap1, ap2, ag0, ag1, ag2, ar, anc0, anc1, anc2, 0, 0, 0);
         testing::set_contract_address(addr2);
-        cr_sys.reveal(match_id, salt, bp0, bp1, bp2, bg0, bg1, bg2, br, bnc0, bnc1, bnc2);
+        cr_sys.reveal(match_id, salt, bp0, bp1, bp2, bg0, bg1, bg2, br, bnc0, bnc1, bnc2, 0, 0, 0);
 
         (world, match_id)
     }
@@ -191,9 +192,9 @@ mod tests {
         cr_sys.commit(match_id, h_b);
 
         testing::set_contract_address(addr1);
-        cr_sys.reveal(match_id, salt, 5, 3, 2, 0, 0, 0, 0, 0, 0, 0);
+        cr_sys.reveal(match_id, salt, 5, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         testing::set_contract_address(addr2);
-        cr_sys.reveal(match_id, salt, 0, 0, 0, 0, 0, 0, 0, 5, 3, 2);
+        cr_sys.reveal(match_id, salt, 0, 0, 0, 0, 0, 0, 0, 5, 3, 2, 0, 0, 0);
 
         let state: MatchState1v1 = world.read_model(match_id);
         // Damage to B: 5+3+2 = 10. HP_B = 5 - 10 => 0

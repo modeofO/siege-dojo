@@ -9,6 +9,7 @@ pub trait ICommitReveal1v1<T> {
         g0: u8, g1: u8, g2: u8,
         repair: u8,
         nc0: u8, nc1: u8, nc2: u8,
+        trap0: u8, trap1: u8, trap2: u8,
     );
     fn force_timeout(ref self: T, match_id: u64);
 }
@@ -110,6 +111,7 @@ pub mod commit_reveal_1v1 {
             g0: u8, g1: u8, g2: u8,
             repair: u8,
             nc0: u8, nc1: u8, nc2: u8,
+            trap0: u8, trap1: u8, trap2: u8,
         ) {
             let mut world = self.world_default();
             let caller = get_caller_address();
@@ -126,7 +128,7 @@ pub mod commit_reveal_1v1 {
             assert(c.committed, 'Not committed');
             assert(!c.revealed, 'Already revealed');
 
-            // Verify hash: H(salt, p0, p1, p2, g0, g1, g2, repair, nc0, nc1, nc2)
+            // Verify hash: H(salt, p0..p2, g0..g2, repair, nc0..nc2, trap0..trap2)
             let mut h = PoseidonTrait::new();
             h = h.update(salt);
             h = h.update(p0.into());
@@ -139,17 +141,38 @@ pub mod commit_reveal_1v1 {
             h = h.update(nc0.into());
             h = h.update(nc1.into());
             h = h.update(nc2.into());
+            h = h.update(trap0.into());
+            h = h.update(trap1.into());
+            h = h.update(trap2.into());
             let computed = h.finalize();
             assert(computed == c.hash, 'Invalid reveal');
 
-            // Budget check: sum of all 10 allocation values <= budget
+            // Budget check: allocations + trap costs <= budget
             let is_player_a = role == ROLE_A;
             let budget = calc_budget(@world, match_id, is_player_a);
+            let trap_cost: u16 = (trap0.into() + trap1.into() + trap2.into()) * 2;
             let total: u16 = p0.into() + p1.into() + p2.into()
                 + g0.into() + g1.into() + g2.into()
                 + repair.into()
-                + nc0.into() + nc1.into() + nc2.into();
+                + nc0.into() + nc1.into() + nc2.into()
+                + trap_cost;
             assert(total <= budget.into(), 'Over budget');
+
+            // Trap validation: can only trap nodes you own, trap must be 0 or 1
+            assert(trap0 <= 1 && trap1 <= 1 && trap2 <= 1, 'Invalid trap value');
+            let owner_team = if is_player_a { NodeOwner::TeamA } else { NodeOwner::TeamB };
+            if trap0 == 1 {
+                let n: NodeState = world.read_model((match_id, 0_u8));
+                assert(n.owner == owner_team, 'Cannot trap unowned node');
+            }
+            if trap1 == 1 {
+                let n: NodeState = world.read_model((match_id, 1_u8));
+                assert(n.owner == owner_team, 'Cannot trap unowned node');
+            }
+            if trap2 == 1 {
+                let n: NodeState = world.read_model((match_id, 2_u8));
+                assert(n.owner == owner_team, 'Cannot trap unowned node');
+            }
 
             c.revealed = true;
             world.write_model(@c);
@@ -162,11 +185,13 @@ pub mod commit_reveal_1v1 {
                 rm.a_g0 = g0; rm.a_g1 = g1; rm.a_g2 = g2;
                 rm.a_repair = repair;
                 rm.a_nc0 = nc0; rm.a_nc1 = nc1; rm.a_nc2 = nc2;
+                rm.a_trap0 = trap0; rm.a_trap1 = trap1; rm.a_trap2 = trap2;
             } else {
                 rm.b_p0 = p0; rm.b_p1 = p1; rm.b_p2 = p2;
                 rm.b_g0 = g0; rm.b_g1 = g1; rm.b_g2 = g2;
                 rm.b_repair = repair;
                 rm.b_nc0 = nc0; rm.b_nc1 = nc1; rm.b_nc2 = nc2;
+                rm.b_trap0 = trap0; rm.b_trap1 = trap1; rm.b_trap2 = trap2;
             }
 
             world.write_model(@rm);

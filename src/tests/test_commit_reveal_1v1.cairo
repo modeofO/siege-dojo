@@ -58,6 +58,7 @@ mod tests {
         h = h.update(g0.into()); h = h.update(g1.into()); h = h.update(g2.into());
         h = h.update(repair.into());
         h = h.update(nc0.into()); h = h.update(nc1.into()); h = h.update(nc2.into());
+        h = h.update(0); h = h.update(0); h = h.update(0);
         h.finalize()
     }
 
@@ -124,9 +125,9 @@ mod tests {
         cr_sys.commit(match_id, h_b);
 
         testing::set_contract_address(contract_address_const::<0x1>());
-        cr_sys.reveal(match_id, salt, 3, 2, 1, 2, 1, 0, 1, 0, 0, 0);
+        cr_sys.reveal(match_id, salt, 3, 2, 1, 2, 1, 0, 1, 0, 0, 0, 0, 0, 0);
         testing::set_contract_address(contract_address_const::<0x2>());
-        cr_sys.reveal(match_id, salt, 2, 2, 2, 2, 1, 0, 1, 0, 0, 0);
+        cr_sys.reveal(match_id, salt, 2, 2, 2, 2, 1, 0, 1, 0, 0, 0, 0, 0, 0);
 
         let state: siege_dojo::models::match_state_1v1::MatchState1v1 = world.read_model(match_id);
         // Damage to B: max(0,3-2)+max(0,2-1)+max(0,1-0) = 1+1+1 = 3
@@ -152,7 +153,7 @@ mod tests {
         cr_sys.commit(match_id, 'x');
 
         testing::set_contract_address(contract_address_const::<0x1>());
-        cr_sys.reveal(match_id, salt, 5, 5, 3, 0, 0, 0, 0, 0, 0, 0);
+        cr_sys.reveal(match_id, salt, 5, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     #[test]
@@ -171,6 +172,6 @@ mod tests {
 
         // Reveal with different values
         testing::set_contract_address(contract_address_const::<0x1>());
-        cr_sys.reveal(match_id, salt, 4, 2, 1, 2, 1, 0, 0, 0, 0, 0);
+        cr_sys.reveal(match_id, salt, 4, 2, 1, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 }
