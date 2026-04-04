@@ -111,8 +111,15 @@ export default function Match1v1Page() {
         );
         void refresh();
       } catch (e) {
-        console.error("Auto-reveal failed:", e);
-        setError("Auto-reveal failed. Try refreshing.");
+        const msg = e instanceof Error ? e.message : String(e);
+        if (msg.includes("Already revealed")) {
+          // Harmless race — our reveal already went through
+          console.log("Already revealed, refreshing state...");
+          void refresh();
+        } else {
+          console.error("Auto-reveal failed:", e);
+          setError("Auto-reveal failed. Try refreshing.");
+        }
       } finally {
         setAutoRevealing(false);
       }
