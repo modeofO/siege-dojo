@@ -106,10 +106,16 @@ export default function Match1v1Page() {
     const move = getMove1v1(matchId, state.round);
     if (!salt || !move) return;
 
-    // Prevent concurrent attempts
     setAutoRevealing(true);
 
-    const attemptReveal = async (includeVrf: boolean): Promise<boolean> => {
+    // Check if an error is a known recoverable case
+    // Starknet errors contain hex-encoded short strings, so check both ASCII and hex
+    const isAlreadyRevealed = (msg: string) =>
+      msg.includes("Already revealed") || msg.includes("416c72656164792072657665616c6564");
+    const isNotConsumed = (msg: string) =>
+      msg.includes("not consumed") || msg.includes("6e6f7420636f6e73756d6564");
+
+    const attemptReveal = async (includeVrf: boolean): Promise<void> => {
       try {
         await revealMove1v1(
           account, matchId, salt,
@@ -119,20 +125,17 @@ export default function Match1v1Page() {
           move[7].toString(), move[8].toString(), move[9].toString(),
           includeVrf,
         );
-        return true;
       } catch (e) {
         const msg = extractErrorMsg(e);
-        if (msg.includes("Already revealed")) {
-          console.log("Already revealed, refreshing...");
-          return true; // Not an error — reveal already went through
+        if (isAlreadyRevealed(msg)) {
+          console.log("Already revealed — round progressed normally.");
+          return;
         }
-        if (msg.includes("not consumed") && includeVrf) {
-          // vRNG wasn't consumed — we're the 1st reveal, retry without vRNG
-          console.log("vRNG not consumed, retrying without vRNG...");
+        if (isNotConsumed(msg) && includeVrf) {
+          console.log("vRNG not consumed, retrying without...");
           return attemptReveal(false);
         }
-        if (msg.includes("not consumed") && !includeVrf) {
-          // Shouldn't happen, but try with vRNG
+        if (isNotConsumed(msg) && !includeVrf) {
           console.log("Retrying with vRNG...");
           return attemptReveal(true);
         }
@@ -140,19 +143,23 @@ export default function Match1v1Page() {
       }
     };
 
-    (async () => {
-      try {
-        // Start by checking if someone already revealed (we'd be 2nd = need vRNG)
-        const isSecondReveal = roundStatus.revealCount >= 1;
-        await attemptReveal(isSecondReveal);
+    // Small random delay (1-3s) so both browsers don't fire simultaneously
+    const delay = 1000 + Math.random() * 2000;
+    const timer = setTimeout(() => {
+      (async () => {
+        try {
+          const isSecondReveal = roundStatus.revealCount >= 1;
+          await attemptReveal(isSecondReveal);
+        } catch (e) {
+          console.error("Auto-reveal failed:", e);
+          // Don't show error if the round already advanced (state will update on next poll)
+        }
         void refresh();
-      } catch (e) {
-        console.error("Auto-reveal failed:", e);
-        setError("Auto-reveal failed. Try refreshing.");
-      } finally {
         setAutoRevealing(false);
-      }
-    })();
+      })();
+    }, delay);
+
+    return () => clearTimeout(timer);
   }, [account, state, matchId, committed, revealed, roundStatus.commitCount, roundStatus.revealCount, refresh, autoRevealing]);
 
   // Commit handler
