@@ -69,69 +69,100 @@ export default function Match1v1Page() {
   const [submitting, setSubmitting] = useState(false);
   const [autoRevealing, setAutoRevealing] = useState(false);
   const [error, setError] = useState("");
-  const revealAttempted = useRef(false);
+
 
   const budget = state
     ? isPlayerA ? state.budgetA : state.budgetB
     : 10;
 
-  // Reset allocations on round change
+  // Reset state on round change
   useEffect(() => {
     setAllocations(new Array(10).fill(0));
-    revealAttempted.current = false;
     setAutoRevealing(false);
     setError("");
   }, [state?.round]);
+
+  // Extract error message from Cartridge's structured errors
+  function extractErrorMsg(e: unknown): string {
+    if (e instanceof Error) return e.message;
+    if (typeof e === "object" && e !== null) {
+      const obj = e as Record<string, unknown>;
+      // Cartridge error: {code, message, data: {execution_error: "..."}}
+      const execErr = (obj.data as Record<string, unknown>)?.execution_error;
+      if (typeof execErr === "string") return execErr;
+      if (typeof obj.message === "string") return obj.message;
+    }
+    return String(e);
+  }
 
   // Auto-reveal: when both committed & we haven't revealed yet
   useEffect(() => {
     if (
       !account || !state || !committed || revealed ||
-      roundStatus.commitCount < 2 || revealAttempted.current || autoRevealing
+      roundStatus.commitCount < 2 || autoRevealing
     ) return;
 
     const salt = getSalt1v1(matchId, state.round);
     const move = getMove1v1(matchId, state.round);
     if (!salt || !move) return;
 
-    revealAttempted.current = true;
+    // Prevent concurrent attempts
     setAutoRevealing(true);
 
-    (async () => {
+    const attemptReveal = async (includeVrf: boolean): Promise<boolean> => {
       try {
-        // Include vRNG only if we're the 2nd reveal (triggers resolution)
-        const isSecondReveal = roundStatus.revealCount >= 1;
         await revealMove1v1(
           account, matchId, salt,
           move[0].toString(), move[1].toString(), move[2].toString(),
           move[3].toString(), move[4].toString(), move[5].toString(),
           move[6].toString(),
           move[7].toString(), move[8].toString(), move[9].toString(),
-          isSecondReveal,
+          includeVrf,
         );
+        return true;
+      } catch (e) {
+        const msg = extractErrorMsg(e);
+        if (msg.includes("Already revealed")) {
+          console.log("Already revealed, refreshing...");
+          return true; // Not an error — reveal already went through
+        }
+        if (msg.includes("not consumed") && includeVrf) {
+          // vRNG wasn't consumed — we're the 1st reveal, retry without vRNG
+          console.log("vRNG not consumed, retrying without vRNG...");
+          return attemptReveal(false);
+        }
+        if (msg.includes("not consumed") && !includeVrf) {
+          // Shouldn't happen, but try with vRNG
+          console.log("Retrying with vRNG...");
+          return attemptReveal(true);
+        }
+        throw e;
+      }
+    };
+
+    (async () => {
+      try {
+        // Start by checking if someone already revealed (we'd be 2nd = need vRNG)
+        const isSecondReveal = roundStatus.revealCount >= 1;
+        await attemptReveal(isSecondReveal);
         void refresh();
       } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        if (msg.includes("Already revealed")) {
-          // Harmless race — our reveal already went through
-          console.log("Already revealed, refreshing state...");
-          void refresh();
-        } else {
-          console.error("Auto-reveal failed:", e);
-          setError("Auto-reveal failed. Try refreshing.");
-        }
+        console.error("Auto-reveal failed:", e);
+        setError("Auto-reveal failed. Try refreshing.");
       } finally {
         setAutoRevealing(false);
       }
     })();
-  }, [account, state, matchId, committed, revealed, roundStatus.commitCount, refresh, autoRevealing]);
+  }, [account, state, matchId, committed, revealed, roundStatus.commitCount, roundStatus.revealCount, refresh, autoRevealing]);
 
   // Commit handler
+  const commitLock = useRef(false);
   const handleCommit = useCallback(async () => {
-    if (!account || !state) return;
+    if (!account || !state || commitLock.current) return;
     const total = allocations.reduce((a, b) => a + b, 0);
     if (total !== budget) return;
 
+    commitLock.current = true;
     setSubmitting(true);
     setError("");
     try {
