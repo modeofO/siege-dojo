@@ -73,7 +73,7 @@ async function fetchMatchState1v1(matchId: string): Promise<MatchState1v1 | null
   if (!Number.isInteger(id) || id < 0) return null;
 
   const data = await toriiQuery<{
-    siegeDojoMatchState1v1Models: GraphEdges<{
+    siegeDojoMatchState1V1Models: GraphEdges<{
       match_id: string; player_a: string; player_b: string;
       vault_a_hp: string; vault_b_hp: string;
       current_round: string; status: string;
@@ -83,7 +83,7 @@ async function fetchMatchState1v1(matchId: string): Promise<MatchState1v1 | null
     }>;
   }>(`
     query {
-      siegeDojoMatchState1v1Models(where: { match_id: "${id}" }) {
+      siegeDojoMatchState1V1Models(where: { match_id: "${id}" }) {
         edges { node { match_id player_a player_b vault_a_hp vault_b_hp current_round status } }
       }
       siegeDojoNodeStateModels(where: { match_id: "${id}" }) {
@@ -92,7 +92,7 @@ async function fetchMatchState1v1(matchId: string): Promise<MatchState1v1 | null
     }
   `);
 
-  const m = data?.siegeDojoMatchState1v1Models?.edges?.[0]?.node;
+  const m = data?.siegeDojoMatchState1V1Models?.edges?.[0]?.node;
   if (!m) return null;
 
   const round = toNum(m.current_round);
@@ -110,17 +110,17 @@ async function fetchMatchState1v1(matchId: string): Promise<MatchState1v1 | null
     phase = "finished";
   } else {
     const roundData = await toriiQuery<{
-      siegeDojoRoundMoves1v1Models: GraphEdges<{
+      siegeDojoRoundMoves1V1Models: GraphEdges<{
         commit_count: string; reveal_count: string;
       }>;
     }>(`
       query {
-        siegeDojoRoundMoves1v1Models(where: { match_id: "${id}", round: ${round} }) {
+        siegeDojoRoundMoves1V1Models(where: { match_id: "${id}", round: ${round} }) {
           edges { node { commit_count reveal_count } }
         }
       }
     `);
-    const rn = roundData?.siegeDojoRoundMoves1v1Models?.edges?.[0]?.node;
+    const rn = roundData?.siegeDojoRoundMoves1V1Models?.edges?.[0]?.node;
     if (rn) {
       const cc = toNum(rn.commit_count);
       const rc = toNum(rn.reveal_count);
@@ -183,17 +183,17 @@ export function useRoundStatus1v1(matchId: string | null, round: number) {
 
     const fetch = async () => {
       const data = await toriiQuery<{
-        siegeDojoRoundMoves1v1Models: GraphEdges<{
+        siegeDojoRoundMoves1V1Models: GraphEdges<{
           commit_count: string; reveal_count: string;
         }>;
       }>(`
         query {
-          siegeDojoRoundMoves1v1Models(where: { match_id: "${id}", round: ${round} }) {
+          siegeDojoRoundMoves1V1Models(where: { match_id: "${id}", round: ${round} }) {
             edges { node { commit_count reveal_count } }
           }
         }
       `);
-      const node = data?.siegeDojoRoundMoves1v1Models?.edges?.[0]?.node;
+      const node = data?.siegeDojoRoundMoves1V1Models?.edges?.[0]?.node;
       if (node) {
         setStatus({
           commitCount: toNum(node.commit_count),
@@ -252,7 +252,7 @@ export function useRoundHistory1v1(matchId: string | null) {
 
     const fetch = async () => {
       const data = await toriiQuery<{
-        siegeDojoRoundMoves1v1Models: GraphEdges<{
+        siegeDojoRoundMoves1V1Models: GraphEdges<{
           round: string; reveal_count: string;
           a_p0: string; a_p1: string; a_p2: string;
           a_g0: string; a_g1: string; a_g2: string;
@@ -261,13 +261,13 @@ export function useRoundHistory1v1(matchId: string | null) {
         }>;
       }>(`
         query {
-          siegeDojoRoundMoves1v1Models(where: { match_id: "${id}" }) {
+          siegeDojoRoundMoves1V1Models(where: { match_id: "${id}" }) {
             edges { node { round reveal_count a_p0 a_p1 a_p2 a_g0 a_g1 a_g2 b_p0 b_p1 b_p2 b_g0 b_g1 b_g2 } }
           }
         }
       `);
 
-      const results = (data?.siegeDojoRoundMoves1v1Models?.edges || [])
+      const results = (data?.siegeDojoRoundMoves1V1Models?.edges || [])
         .map((e) => e.node)
         .filter((n) => toNum(n.reveal_count) >= 2)
         .sort((a, b) => toNum(b.round) - toNum(a.round))

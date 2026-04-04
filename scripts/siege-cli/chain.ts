@@ -97,7 +97,7 @@ export async function fetchMatchState(matchId: string): Promise<MatchInfo | null
   if (!Number.isInteger(id) || id < 0) return null;
 
   const data = await toriiQuery<{
-    siegeDojoMatchState1v1Models: {
+    siegeDojoMatchState1V1Models: {
       edges: Array<{
         node: {
           match_id: number | string;
@@ -120,7 +120,7 @@ export async function fetchMatchState(matchId: string): Promise<MatchInfo | null
     };
   }>(`
     query {
-      siegeDojoMatchState1v1Models(where: { match_id: "${id}" }) {
+      siegeDojoMatchState1V1Models(where: { match_id: "${id}" }) {
         edges {
           node {
             match_id
@@ -144,7 +144,7 @@ export async function fetchMatchState(matchId: string): Promise<MatchInfo | null
     }
   `);
 
-  const matchNode = data?.siegeDojoMatchState1v1Models?.edges?.[0]?.node;
+  const matchNode = data?.siegeDojoMatchState1V1Models?.edges?.[0]?.node;
   if (!matchNode) return null;
 
   const nodes: [NodeOwner, NodeOwner, NodeOwner] = ["neutral", "neutral", "neutral"];
@@ -171,7 +171,7 @@ export async function fetchMatchState(matchId: string): Promise<MatchInfo | null
 export async function fetchRoundStatus(matchId: string, round: number): Promise<RoundStatus> {
   const id = Number(matchId);
   const data = await toriiQuery<{
-    siegeDojoRoundMoves1v1Models: {
+    siegeDojoRoundMoves1V1Models: {
       edges: Array<{
         node: {
           commit_count: number | string;
@@ -181,7 +181,7 @@ export async function fetchRoundStatus(matchId: string, round: number): Promise<
     };
   }>(`
     query {
-      siegeDojoRoundMoves1v1Models(where: { match_id: "${id}", round: ${round} }) {
+      siegeDojoRoundMoves1V1Models(where: { match_id: "${id}", round: ${round} }) {
         edges {
           node {
             commit_count
@@ -192,7 +192,7 @@ export async function fetchRoundStatus(matchId: string, round: number): Promise<
     }
   `);
 
-  const node = data?.siegeDojoRoundMoves1v1Models?.edges?.[0]?.node;
+  const node = data?.siegeDojoRoundMoves1V1Models?.edges?.[0]?.node;
   if (!node) return { commitCount: 0, revealCount: 0 };
   return {
     commitCount: toNum(node.commit_count),
@@ -203,7 +203,7 @@ export async function fetchRoundStatus(matchId: string, round: number): Promise<
 export async function fetchRoundMoves(matchId: string, round: number): Promise<RoundMoves | null> {
   const id = Number(matchId);
   const data = await toriiQuery<{
-    siegeDojoRoundMoves1v1Models: {
+    siegeDojoRoundMoves1V1Models: {
       edges: Array<{
         node: {
           a_p0: number | string; a_p1: number | string; a_p2: number | string;
@@ -219,7 +219,7 @@ export async function fetchRoundMoves(matchId: string, round: number): Promise<R
     };
   }>(`
     query {
-      siegeDojoRoundMoves1v1Models(where: { match_id: "${id}", round: ${round} }) {
+      siegeDojoRoundMoves1V1Models(where: { match_id: "${id}", round: ${round} }) {
         edges {
           node {
             a_p0 a_p1 a_p2
@@ -236,7 +236,7 @@ export async function fetchRoundMoves(matchId: string, round: number): Promise<R
     }
   `);
 
-  const node = data?.siegeDojoRoundMoves1v1Models?.edges?.[0]?.node;
+  const node = data?.siegeDojoRoundMoves1V1Models?.edges?.[0]?.node;
   if (!node) return null;
 
   return {
