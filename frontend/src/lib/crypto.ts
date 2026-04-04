@@ -79,3 +79,55 @@ export function getMove(matchId: string, round: number): number[] | null {
   const data = localStorage.getItem(key);
   return data ? JSON.parse(data) : null;
 }
+
+/**
+ * Compute Poseidon hash commitment for 1v1 move (all allocations in one hash)
+ */
+export function computeCommitment1v1(
+  salt: string,
+  p0: number, p1: number, p2: number,
+  g0: number, g1: number, g2: number,
+  repair: number,
+  nc0: number, nc1: number, nc2: number,
+): string {
+  return hash.computePoseidonHashOnElements([
+    salt,
+    p0.toString(), p1.toString(), p2.toString(),
+    g0.toString(), g1.toString(), g2.toString(),
+    repair.toString(),
+    nc0.toString(), nc1.toString(), nc2.toString(),
+  ]);
+}
+
+/**
+ * Store 1v1 move allocations for auto-reveal
+ */
+export function storeMove1v1(matchId: string, round: number, move: number[]) {
+  const key = `siege_1v1_move_${matchId}_${round}`;
+  localStorage.setItem(key, JSON.stringify(move));
+}
+
+/**
+ * Retrieve stored 1v1 move
+ */
+export function getMove1v1(matchId: string, round: number): number[] | null {
+  const key = `siege_1v1_move_${matchId}_${round}`;
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : null;
+}
+
+/**
+ * Store salt for 1v1 move
+ */
+export function storeSalt1v1(matchId: string, round: number, salt: string) {
+  const key = `siege_1v1_salt_${matchId}_${round}`;
+  localStorage.setItem(key, salt);
+}
+
+/**
+ * Retrieve stored 1v1 salt
+ */
+export function getSalt1v1(matchId: string, round: number): string | null {
+  const key = `siege_1v1_salt_${matchId}_${round}`;
+  return localStorage.getItem(key);
+}
