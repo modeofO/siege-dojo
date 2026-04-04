@@ -167,7 +167,8 @@ export default function Match1v1Page() {
   const commitLock = useRef(false);
   const handleCommit = useCallback(async () => {
     if (!account || !state || commitLock.current) return;
-    const total = allocations.reduce((a, b) => a + b, 0);
+    const trapCost = (allocations[10] + allocations[11] + allocations[12]) * 2;
+    const total = allocations.slice(0, 10).reduce((a, b) => a + b, 0) + trapCost;
     if (total !== budget) return;
 
     commitLock.current = true;
@@ -351,7 +352,7 @@ export default function Match1v1Page() {
           {state.phase === "committing" && !committed && (
             <button
               onClick={handleCommit}
-              disabled={submitting || allocations.reduce((a, b) => a + b, 0) !== budget}
+              disabled={submitting || (allocations.slice(0, 10).reduce((a, b) => a + b, 0) + (allocations[10] + allocations[11] + allocations[12]) * 2) !== budget}
               className="px-6 py-2 bg-[#00d4ff]/10 border border-[#00d4ff]/40 text-[#00d4ff] rounded hover:bg-[#00d4ff]/20 transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
             >
               {submitting ? "SUBMITTING..." : "SUBMIT MOVES"}
