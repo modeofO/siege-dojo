@@ -12,7 +12,7 @@ import {
 import { ControllerConnector } from "@cartridge/connector";
 import type { SessionPolicies } from "@cartridge/controller";
 import { CONTRACTS } from "@/lib/contracts";
-import { CONTRACTS_1V1 } from "@/lib/contracts1v1";
+import { CONTRACTS_1V1, VRF_PROVIDER_ADDRESS } from "@/lib/contracts1v1";
 
 // ---------- Network mode ----------
 
@@ -124,6 +124,11 @@ const SESSION_POLICIES: SessionPolicies = {
       methods: [
         { name: "Commit 1v1", entrypoint: "commit" },
         { name: "Reveal 1v1", entrypoint: "reveal" },
+      ],
+    },
+    [VRF_PROVIDER_ADDRESS]: {
+      methods: [
+        { name: "Request Random", entrypoint: "request_random" },
       ],
     },
   },
