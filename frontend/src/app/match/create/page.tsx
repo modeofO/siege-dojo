@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount, isDevMode, useDevAccounts } from "@/app/providers";
 import { createMatch } from "@/lib/contracts";
+import { lookupUsernames } from "@cartridge/controller";
 import Link from "next/link";
 
 const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
@@ -31,6 +32,8 @@ async function fetchLatestMatchId(): Promise<string | null> {
   return String(typeof count === "string" && count.startsWith("0x") ? parseInt(count, 16) : Number(count));
 }
 
+const isHexAddress = (s: string) => /^0x[0-9a-fA-F]+$/.test(s);
+
 function AddressInput({
   label,
   value,
@@ -42,16 +45,66 @@ function AddressInput({
   onChange: (addr: string) => void;
   placeholder?: string;
 }) {
+  const [input, setInput] = useState(value);
+  const [resolvedAddr, setResolvedAddr] = useState<string | null>(null);
+  const [resolvedUsername, setResolvedUsername] = useState<string | null>(null);
+  const [lookupLoading, setLookupLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const trimmed = input.trim();
+    setResolvedAddr(null);
+    setResolvedUsername(null);
+
+    if (!trimmed || isHexAddress(trimmed)) {
+      setLookupLoading(false);
+      onChange(trimmed);
+      return;
+    }
+
+    // Non-hex input — clear the resolved address while looking up
+    onChange("");
+    setLookupLoading(true);
+
+    debounceRef.current = setTimeout(async () => {
+      const results = await lookupUsernames([trimmed]);
+      const addr = results.get(trimmed);
+      if (addr) {
+        setResolvedAddr(addr);
+        setResolvedUsername(trimmed);
+        onChange(addr);
+      }
+      setLookupLoading(false);
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [input]);
+
   return (
     <div className="space-y-2">
       <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">{label}</label>
       <input
         type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder || "0x..."}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder={placeholder || "Username or address (0x...)"}
         className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#00d4ff] focus:outline-none transition-colors font-mono"
       />
+      {lookupLoading && (
+        <div className="text-xs text-[#6a6a7a]">Looking up username...</div>
+      )}
+      {resolvedUsername && resolvedAddr && (
+        <div className="text-xs text-[#33cc66]">
+          {resolvedUsername} → <span className="font-mono">{resolvedAddr.slice(0, 10)}...{resolvedAddr.slice(-6)}</span>
+        </div>
+      )}
+      {!lookupLoading && input.trim() && !isHexAddress(input) && !resolvedAddr && (
+        <div className="text-xs text-[#ff3344]">Username not found</div>
+      )}
     </div>
   );
 }
@@ -160,22 +213,22 @@ function SepoliaModeFields({
   return (
     <>
       <AddressInput
-        label="Team A Teammate Address"
+        label="Team A Teammate"
         value={teamATeammateAddr}
         onChange={setTeamATeammateAddr}
-        placeholder="Paste teammate's wallet address"
+        placeholder="Username or wallet address"
       />
       <AddressInput
-        label="Team B Attacker Address"
+        label="Team B Attacker"
         value={teamBAttackerAddr}
         onChange={setTeamBAttackerAddr}
-        placeholder="Paste opponent attacker's wallet address"
+        placeholder="Username or wallet address"
       />
       <AddressInput
-        label="Team B Defender Address"
+        label="Team B Defender"
         value={teamBDefenderAddr}
         onChange={setTeamBDefenderAddr}
-        placeholder="Paste opponent defender's wallet address"
+        placeholder="Username or wallet address"
       />
     </>
   );

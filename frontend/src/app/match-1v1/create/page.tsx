@@ -1,9 +1,10 @@
 // frontend/src/app/match-1v1/create/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "@/app/providers";
 import { createMatch1v1 } from "@/lib/contracts1v1";
+import { lookupUsernames } from "@cartridge/controller";
 import Link from "next/link";
 
 const TORII_URL = process.env.NEXT_PUBLIC_TORII_URL || "http://localhost:8080";
@@ -34,10 +35,51 @@ export default function Create1v1Page() {
   const { account, address, status } = useAccount();
   const isConnected = status === "connected";
 
-  const [opponentAddr, setOpponentAddr] = useState("");
+  const [opponentInput, setOpponentInput] = useState("");
+  const [resolvedAddr, setResolvedAddr] = useState<string | null>(null);
+  const [resolvedUsername, setResolvedUsername] = useState<string | null>(null);
+  const [lookupLoading, setLookupLoading] = useState(false);
   const [matchId, setMatchId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isHexAddress = (s: string) => /^0x[0-9a-fA-F]+$/.test(s);
+
+  // The effective address: either a direct hex input or a resolved username
+  const opponentAddr = isHexAddress(opponentInput) ? opponentInput : resolvedAddr;
+
+  // Debounced username lookup
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    const input = opponentInput.trim();
+
+    // Reset resolved state when input changes
+    setResolvedAddr(null);
+    setResolvedUsername(null);
+
+    // Skip lookup for empty input or direct hex addresses
+    if (!input || isHexAddress(input)) {
+      setLookupLoading(false);
+      return;
+    }
+
+    setLookupLoading(true);
+    debounceRef.current = setTimeout(async () => {
+      const results = await lookupUsernames([input]);
+      const addr = results.get(input);
+      if (addr) {
+        setResolvedAddr(addr);
+        setResolvedUsername(input);
+      }
+      setLookupLoading(false);
+    }, 400);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [opponentInput]);
 
   const handleCreate = async () => {
     if (!account || !address || !opponentAddr) return;
@@ -106,14 +148,25 @@ export default function Create1v1Page() {
       )}
 
       <div className="space-y-2">
-        <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Opponent Address</label>
+        <label className="text-xs text-[#6a6a7a] tracking-wider uppercase">Opponent</label>
         <input
           type="text"
-          value={opponentAddr}
-          onChange={(e) => setOpponentAddr(e.target.value)}
-          placeholder="Paste opponent's wallet address (0x...)"
+          value={opponentInput}
+          onChange={(e) => setOpponentInput(e.target.value)}
+          placeholder="Username or wallet address (0x...)"
           className="w-full bg-[#12121a] border border-[#2a2a3a] rounded px-4 py-3 text-sm focus:border-[#ffd700] focus:outline-none transition-colors font-mono"
         />
+        {lookupLoading && (
+          <div className="text-xs text-[#6a6a7a]">Looking up username...</div>
+        )}
+        {resolvedUsername && resolvedAddr && (
+          <div className="text-xs text-[#33cc66]">
+            {resolvedUsername} → <span className="font-mono">{resolvedAddr.slice(0, 10)}...{resolvedAddr.slice(-6)}</span>
+          </div>
+        )}
+        {!lookupLoading && opponentInput.trim() && !isHexAddress(opponentInput) && !resolvedAddr && (
+          <div className="text-xs text-[#ff3344]">Username not found</div>
+        )}
       </div>
 
       <div className="text-xs text-[#6a6a7a] leading-relaxed">
