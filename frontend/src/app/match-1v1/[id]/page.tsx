@@ -422,12 +422,25 @@ export default function Match1v1Page() {
                     })}
                   </div>
                   {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
-                    <div className="text-[10px] text-[#ff3344] mt-1">
+                    <div className="text-xs mt-2 border-t border-[#2a2a3a] pt-2 space-y-1">
+                      <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Node Traps</div>
                       {[0, 1, 2].map(ni => {
                         const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
                         const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
-                        if (myTrap) return <div key={`mt${ni}`}>You trapped Node {ni + 1}</div>;
-                        if (theirTrap) return <div key={`tt${ni}`}>Enemy trapped Node {ni + 1}!</div>;
+                        if (myTrap) {
+                          return (
+                            <div key={`mt${ni}`} className="text-[#ffd700]">
+                              You trapped Node {ni + 1} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
+                            </div>
+                          );
+                        }
+                        if (theirTrap) {
+                          return (
+                            <div key={`tt${ni}`} className="text-[#ff3344]">
+                              Enemy trapped Node {ni + 1}! You take <span className="font-bold">5 damage</span> if you captured it
+                            </div>
+                          );
+                        }
                         return null;
                       })}
                     </div>
