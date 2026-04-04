@@ -243,8 +243,11 @@ pub mod resolution_1v1 {
             if total_dmg_to_a >= hp_a { hp_a = 0; } else { hp_a = hp_a - total_dmg_to_a; }
             if total_dmg_to_b >= hp_b { hp_b = 0; } else { hp_b = hp_b - total_dmg_to_b; }
 
-            state.vault_a_hp = hp_a;
-            state.vault_b_hp = hp_b;
+            // Snapshot node owners before contest resolution (for trap detection)
+            let pre_n0: NodeState = world.read_model((match_id, 0_u8));
+            let pre_n1: NodeState = world.read_model((match_id, 1_u8));
+            let pre_n2: NodeState = world.read_model((match_id, 2_u8));
+            let pre_node_owners: [NodeOwner; 3] = [pre_n0.owner, pre_n1.owner, pre_n2.owner];
 
             // Node contests (unaffected by gate modifiers)
             let mut n: u8 = 0;
@@ -264,6 +267,40 @@ pub mod resolution_1v1 {
                 }
                 n += 1;
             };
+
+            // Trap damage: if a node changed owner and the previous owner had a trap, deal 5 damage
+            let a_traps: [u8; 3] = [rm.a_trap0, rm.a_trap1, rm.a_trap2];
+            let b_traps: [u8; 3] = [rm.b_trap0, rm.b_trap1, rm.b_trap2];
+            let mut trap_dmg_to_a: u8 = 0;
+            let mut trap_dmg_to_b: u8 = 0;
+
+            let mut tn: u8 = 0;
+            while tn < 3 {
+                let pre_owner = *pre_node_owners.span()[tn.into()];
+                let post_node: NodeState = world.read_model((match_id, tn));
+                let post_owner = post_node.owner;
+
+                // Node ownership changed?
+                if pre_owner != post_owner {
+                    // Did previous owner have a trap?
+                    if pre_owner == NodeOwner::TeamA && *a_traps.span()[tn.into()] == 1 {
+                        // Player A trapped this node, Player B took it -> B takes 5 damage
+                        trap_dmg_to_b += 5;
+                    }
+                    if pre_owner == NodeOwner::TeamB && *b_traps.span()[tn.into()] == 1 {
+                        // Player B trapped this node, Player A took it -> A takes 5 damage
+                        trap_dmg_to_a += 5;
+                    }
+                }
+                tn += 1;
+            };
+
+            // Apply trap damage (post-repair, cannot be repaired)
+            if trap_dmg_to_a >= hp_a { hp_a = 0; } else { hp_a = hp_a - trap_dmg_to_a; }
+            if trap_dmg_to_b >= hp_b { hp_b = 0; } else { hp_b = hp_b - trap_dmg_to_b; }
+
+            state.vault_a_hp = hp_a;
+            state.vault_b_hp = hp_b;
 
             world.emit_event(@RoundResolved {
                 match_id,
