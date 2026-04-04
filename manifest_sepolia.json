@@ -45,7 +45,7 @@
     },
     {
       "address": "0x7cbd822e0dc535d084dd71b76ba332d76cb370954c83a5ebe5625f36cdfa1c",
-      "class_hash": "0x30b77ef7a09f9b30afc207620ee3dd0206155766059047c0ce3a78aaca054f5",
+      "class_hash": "0x6788a3a687a4bbd5c3de4332559e1e4c342b040a917dd903476e9c832e05f8b",
       "init_calldata": [],
       "tag": "siege_dojo-actions_1v1",
       "selector": "0x26e0eeadcc0c8f020b1da157b4d0f038ca209cb1d1ed9b6b52248376703705",
@@ -94,7 +94,7 @@
     },
     {
       "address": "0x1b31a6098f1b9081e925e98cd9627c6a5cce39073e92c3f5bf827cb09abe36b",
-      "class_hash": "0x151b1e3c782d0b0fcbcb7805b8791ae75b0a75616237fee3757558f3cc0f7d0",
+      "class_hash": "0x6d65497584be334adeeb441279728f7f5a960ced48ffff4ae5be4481659bc4b",
       "init_calldata": [],
       "tag": "siege_dojo-resolution_1v1",
       "selector": "0x3243785fc5c17bf6bc5b9d485ddaa1275e126e753d2eddd05e69e17e98f85fd",
@@ -275,6 +275,38 @@
       "class_hash": "0x33425c0293254ae0325a812d601bd946db7d6059c7d076e9e39ed9635cf2950",
       "tag": "siege_dojo-NodeState",
       "selector": "0x4bb7be800153f78192f4f5d55503f14c51a2865e40caa558e244961a379bbf"
+    },
+    {
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64",
+          "key": true
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32",
+          "key": true
+        },
+        {
+          "name": "gate_0",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "gate_1",
+          "type": "core::integer::u8",
+          "key": false
+        },
+        {
+          "name": "gate_2",
+          "type": "core::integer::u8",
+          "key": false
+        }
+      ],
+      "class_hash": "0x71f52adeb469ca749804ab05addb012b94aa0703ccaae564148a33289e1712a",
+      "tag": "siege_dojo-RoundModifiers1v1",
+      "selector": "0x1c90fabd68a52f03544469b84ad1e89a7a15696f5d49766571ca0f65af14f97"
     },
     {
       "members": [
@@ -3129,6 +3161,56 @@
     {
       "type": "event",
       "name": "siege_dojo::models::node_state::m_NodeState::Event",
+      "kind": "enum",
+      "variants": []
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1",
+      "members": [
+        {
+          "name": "match_id",
+          "type": "core::integer::u64"
+        },
+        {
+          "name": "round",
+          "type": "core::integer::u32"
+        },
+        {
+          "name": "gate_0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "gate_1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "gate_2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "struct",
+      "name": "siege_dojo::models::round_modifiers_1v1::RoundModifiers1v1Value",
+      "members": [
+        {
+          "name": "gate_0",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "gate_1",
+          "type": "core::integer::u8"
+        },
+        {
+          "name": "gate_2",
+          "type": "core::integer::u8"
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "siege_dojo::models::round_modifiers_1v1::m_RoundModifiers1v1::Event",
       "kind": "enum",
       "variants": []
     },
