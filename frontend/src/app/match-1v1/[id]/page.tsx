@@ -65,7 +65,7 @@ export default function Match1v1Page() {
   const modifiers = useRoundModifiers1v1(matchId, state?.round ?? 1);
 
   // Allocations: [p0,p1,p2, g0,g1,g2, repair, nc0,nc1,nc2]
-  const [allocations, setAllocations] = useState<number[]>(new Array(10).fill(0));
+  const [allocations, setAllocations] = useState<number[]>(new Array(13).fill(0));
   const [submitting, setSubmitting] = useState(false);
   const [autoRevealStatus, setAutoRevealStatus] = useState<"idle" | "pending" | "done">("idle");
   const autoRevealLock = useRef(false);
@@ -78,7 +78,7 @@ export default function Match1v1Page() {
 
   // Reset state on round change
   useEffect(() => {
-    setAllocations(new Array(10).fill(0));
+    setAllocations(new Array(13).fill(0));
     setAutoRevealStatus("idle");
     autoRevealLock.current = false;
     setError("");
@@ -126,6 +126,7 @@ export default function Match1v1Page() {
           move[3].toString(), move[4].toString(), move[5].toString(),
           move[6].toString(),
           move[7].toString(), move[8].toString(), move[9].toString(),
+          move[10].toString(), move[11].toString(), move[12].toString(),
           includeVrf,
         );
       } catch (e) {
@@ -183,6 +184,7 @@ export default function Match1v1Page() {
         allocations[3], allocations[4], allocations[5],
         allocations[6],
         allocations[7], allocations[8], allocations[9],
+        allocations[10], allocations[11], allocations[12],
       );
 
       await commitMove1v1(account, matchId, commitment);
@@ -338,6 +340,8 @@ export default function Match1v1Page() {
           budget={budget}
           allocations={allocations}
           onChange={setAllocations}
+          nodes={state.nodes}
+          isPlayerA={isPlayerA}
         />
       )}
 
@@ -416,6 +420,17 @@ export default function Match1v1Page() {
                       );
                     })}
                   </div>
+                  {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
+                    <div className="text-[10px] text-[#ff3344] mt-1">
+                      {[0, 1, 2].map(ni => {
+                        const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
+                        const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
+                        if (myTrap) return <div key={`mt${ni}`}>You trapped Node {ni + 1}</div>;
+                        if (theirTrap) return <div key={`tt${ni}`}>Enemy trapped Node {ni + 1}!</div>;
+                        return null;
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
