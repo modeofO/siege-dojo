@@ -295,51 +295,59 @@ export default function Match1v1Page() {
     <div className="space-y-3 max-w-4xl mx-auto">
 
       {/* ===== 1. HEADER BANNER ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
-        <div className="flex flex-col md:flex-row md:items-center gap-3">
-          {/* Left: Title + round + match */}
-          <div className="flex items-baseline gap-3 shrink-0">
-            <span className="text-2xl font-bold tracking-wider">SIEGE</span>
-            <span className="text-sm font-bold text-[#e0e0e8]">Round {state.round}</span>
+      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a] space-y-0">
+        {/* Row 1: Title, round, match ID, budget, player badge */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <div className="flex items-baseline gap-3">
+            <span className="text-3xl font-bold tracking-wider">SIEGE</span>
+            <span className="text-sm font-bold text-[#e0e0e8] bg-[#1a1a26] px-2 py-0.5 rounded">Round {state.round}</span>
             <span className="text-xs text-[#6a6a7a]">#{matchId}</span>
           </div>
-
-          {/* Center: HP bars side by side */}
-          <div className="flex-1 grid grid-cols-2 gap-3">
-            {/* Your Citadel */}
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Your Citadel</span>
-                <span className={`text-xs font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault}</span>
-              </div>
-              <div className="w-full h-2 bg-[#1a1a26] rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
-                  style={{ width: `${yourPct}%` }}
-                />
-              </div>
-            </div>
-            {/* Enemy Citadel */}
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Enemy Citadel</span>
-                <span className={`text-xs font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault}</span>
-              </div>
-              <div className="w-full h-2 bg-[#1a1a26] rounded-full overflow-hidden">
-                <div
-                  className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
-                  style={{ width: `${enemyPct}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Budget + role */}
-          <div className="flex items-center gap-3 shrink-0 text-sm">
-            <span className="text-[#ffd700] font-bold">{budget} pts</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[#ffd700] font-bold text-sm">{budget} pts</span>
             <span className="text-[10px] text-[#6a6a7a] border border-[#2a2a3a] rounded px-2 py-0.5">
               Player {isPlayerA ? "A" : "B"}
             </span>
+          </div>
+        </div>
+
+        {/* Row 2: Full-width HP bars side by side */}
+        <div className="grid grid-cols-2 gap-4 px-4 pb-3">
+          {/* Your Citadel */}
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-xs tracking-wider text-[#e0e0e8] uppercase font-bold">Your Citadel</span>
+              <span className={`text-sm font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault} / 50</span>
+            </div>
+            <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
+              <div
+                className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
+                style={{ width: `${yourPct}%` }}
+              />
+              {yourPct >= 15 && (
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
+                  {Math.round(yourPct)}%
+                </span>
+              )}
+            </div>
+          </div>
+          {/* Enemy Citadel */}
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-xs tracking-wider text-[#e0e0e8] uppercase font-bold">Enemy Citadel</span>
+              <span className={`text-sm font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault} / 50</span>
+            </div>
+            <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
+              <div
+                className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
+                style={{ width: `${enemyPct}%` }}
+              />
+              {enemyPct >= 15 && (
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
+                  {Math.round(enemyPct)}%
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -348,9 +356,11 @@ export default function Match1v1Page() {
       <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
         <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-3">Battlefield</div>
 
-        {/* Gates row */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          {["East Gate", "West Gate", "Underground"].map((gateName, i) => {
+        {/* Fortress Gates — East | Underground (main) | West */}
+        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-3 mb-2">
+          {[0, 2, 1].map((i) => {
+            const gateNames = ["East Gate", "West Gate", "Underground"];
+            const gateName = gateNames[i];
             const mod = modifiers[i];
             const modName = MODIFIER_NAMES[mod] || "Normal";
             const modDesc = MODIFIER_DESCRIPTIONS[mod] || "";
@@ -364,9 +374,16 @@ export default function Match1v1Page() {
               : mod === 2 ? "border-[#00d4ff]/30"
               : mod === 3 ? "border-[#ff3344]/30"
               : "border-[#ff8800]/30";
+            const modGlow = mod === 0 ? ""
+              : mod === 1 ? "shadow-[inset_0_0_12px_rgba(255,215,0,0.08)]"
+              : mod === 2 ? "shadow-[inset_0_0_12px_rgba(0,212,255,0.08)]"
+              : mod === 3 ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.08)]"
+              : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
+            const isMain = i === 2; // Underground = main gate
             return (
-              <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${modBorder} text-center space-y-1`}>
-                <div className="text-xs text-[#e0e0e8] font-bold">{gateName}</div>
+              <div key={i} className={`bg-[#1a1a26] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-4 ring-1 ring-[#3a3a4a]" : "p-3"}`}>
+                <div className={`font-bold ${isMain ? "text-sm text-[#e0e0e8]" : "text-xs text-[#e0e0e8]"}`}>{gateName}</div>
+                {isMain && <div className="text-[9px] tracking-wider text-[#4a4a5a] uppercase">Main Entrance</div>}
                 <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
                 {modDesc && <div className="text-[10px] text-[#6a6a7a] leading-tight">{modDesc}</div>}
               </div>
@@ -374,10 +391,15 @@ export default function Match1v1Page() {
           })}
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-[#2a2a3a] mb-4" />
+        {/* Fortified wall divider */}
+        <div className="flex items-center gap-2 my-3 px-2">
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#4a4a5a] to-transparent" />
+          <span className="text-[10px] tracking-[0.3em] text-[#3a3a4a] font-bold select-none">{"\u2550\u2550\u2550"} WALLS {"\u2550\u2550\u2550"}</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#4a4a5a] to-transparent" />
+        </div>
 
-        {/* Nodes row */}
+        {/* Contested territory — Nodes */}
+        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-2 text-center">Contested Territory</div>
         <div className="grid grid-cols-3 gap-3">
           {(() => {
             const nodeNames = ["Forge", "Quarry", "Grove"];
@@ -395,10 +417,15 @@ export default function Match1v1Page() {
                 : isEnemy
                   ? "border-[#ff3344]/30"
                   : "border-[#2a2a3a]";
+              const bgGlow = isYours
+                ? "shadow-[inset_0_0_12px_rgba(0,212,255,0.06)]"
+                : isEnemy
+                  ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.06)]"
+                  : "";
               const label = owner === "neutral" ? "Neutral" : isYours ? "Yours" : "Enemy";
               const labelColor = owner === "neutral" ? "text-[#6a6a7a]" : isYours ? "text-[#00d4ff]" : "text-[#ff3344]";
               return (
-                <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${borderColor} text-center space-y-1`}>
+                <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${borderColor} ${bgGlow} text-center space-y-1`}>
                   <div className="flex items-center justify-center gap-2">
                     <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
                     <span className="text-xs text-[#e0e0e8] font-bold">{nodeNames[i]}</span>
@@ -433,28 +460,16 @@ export default function Match1v1Page() {
       {/* ===== 4. DEPLOYMENT PANEL ===== */}
       <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a]">
         {state.phase === "committing" && !committed ? (
-          <div>
-            <AllocationForm1v1
-              budget={budget}
-              allocations={allocations}
-              onChange={setAllocations}
-              nodes={state.nodes}
-              isPlayerA={isPlayerA}
-            />
-            {/* Submit button inside the form panel */}
-            <div className="px-4 pb-4 pt-1 flex items-center justify-between">
-              <button
-                onClick={handleCommit}
-                disabled={submitting || (allocations.slice(0, 10).reduce((a, b) => a + b, 0) + (allocations[10] + allocations[11] + allocations[12]) * 2) !== budget}
-                className="px-8 py-2.5 bg-[#00d4ff]/10 border border-[#00d4ff]/40 text-[#00d4ff] rounded hover:bg-[#00d4ff]/20 transition-colors text-sm font-bold tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                {submitting ? "SUBMITTING..." : "COMMIT ORDERS"}
-              </button>
-              {error && (
-                <span className="text-[#ff3344] text-xs ml-3">{error}</span>
-              )}
-            </div>
-          </div>
+          <AllocationForm1v1
+            budget={budget}
+            allocations={allocations}
+            onChange={setAllocations}
+            onCommit={handleCommit}
+            submitting={submitting}
+            error={error}
+            nodes={state.nodes}
+            isPlayerA={isPlayerA}
+          />
         ) : (
           <div className="p-4 flex items-center justify-center min-h-[60px]">
             {phaseText ? (
