@@ -68,10 +68,16 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
       {/* 2-column grid: Attack | Defense */}
       <div className="grid grid-cols-2 gap-x-4 gap-y-1">
         {/* Column headers */}
-        <div className="text-[10px] tracking-wider text-[#ff8800] uppercase font-bold border-b border-[#ff8800]/20 pb-0.5 mb-1">
+        <div className="flex items-center gap-1.5 text-[10px] tracking-wider text-[#ff8800] uppercase font-bold border-b border-[#ff8800]/20 pb-0.5 mb-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14.5 17.5L3 6V3h3l11.5 11.5" /><path d="M13 7l4-4 4 4-4 4" /><path d="M8 12l-4 4 4 4 4-4" />
+          </svg>
           ATTACK
         </div>
-        <div className="text-[10px] tracking-wider text-[#00d4ff] uppercase font-bold border-b border-[#00d4ff]/20 pb-0.5 mb-1">
+        <div className="flex items-center gap-1.5 text-[10px] tracking-wider text-[#00d4ff] uppercase font-bold border-b border-[#00d4ff]/20 pb-0.5 mb-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
           DEFENSE
         </div>
 
@@ -103,7 +109,12 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
       {/* Repair — full-width */}
       <div className="border-t border-[#2a2a3a] pt-2">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase w-16 shrink-0">Repair</span>
+          <span className="flex items-center gap-1 text-[10px] tracking-wider text-[#66cc66] uppercase w-16 shrink-0">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+            </svg>
+            Repair
+          </span>
           <input type="range" min={0} max={3} value={allocations[6] || 0}
             onChange={(e) => handleChange(6, parseInt(e.target.value))}
             className="flex-1 accent-[#66cc66] h-2 cursor-pointer" />
@@ -116,7 +127,10 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
 
       {/* Nodes — 3-column grid with integrated traps */}
       <div className="border-t border-[#2a2a3a] pt-2">
-        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase font-bold mb-2">
+        <div className="flex items-center gap-1.5 text-[10px] tracking-wider text-[#ffd700] uppercase font-bold mb-2">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><path d="M2 12h20" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
           CONTESTED NODES
         </div>
         <div className="grid grid-cols-3 gap-2">
