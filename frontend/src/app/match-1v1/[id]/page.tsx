@@ -386,7 +386,7 @@ export default function Match1v1Page() {
                 const hasModifier = mod !== 0;
                 return (
                   <div key={idx} className={`rounded-lg text-center flex flex-col items-center justify-end gap-1 p-2 ${hasModifier ? `bg-[#252019]/50 border border-[#3d3428] ${modGlow}` : ""}`}>
-                    <img src={sprite} alt={name} className="w-32 h-32 object-contain rounded-xl" />
+                    <img src={sprite} alt={name} className={`object-contain rounded-xl ${isMain ? "w-44 h-44" : "w-32 h-32"}`} />
                     <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{name}</div>
                     <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
                     {modDesc && <div className="text-[10px] text-[#7a7060] leading-tight">{modDesc}</div>}
