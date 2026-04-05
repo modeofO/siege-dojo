@@ -25,7 +25,6 @@ import {
 import { commitMove1v1, revealMove1v1 } from "@/lib/contracts1v1";
 import { useToriiSubscription } from "@/lib/toriiSubscription";
 import { useResourceBalances } from "@/lib/useResourceBalances";
-import { VaultDisplay } from "@/components/VaultDisplay";
 import { AllocationForm1v1 } from "@/components/AllocationForm1v1";
 import Link from "next/link";
 
@@ -77,6 +76,7 @@ export default function Match1v1Page() {
   const [autoRevealStatus, setAutoRevealStatus] = useState<"idle" | "pending" | "done">("idle");
   const autoRevealLock = useRef(false);
   const [error, setError] = useState("");
+  const [expandedRounds, setExpandedRounds] = useState<Set<number>>(new Set());
 
 
   const budget = state
@@ -265,6 +265,10 @@ export default function Match1v1Page() {
 
   const yourVault = isPlayerA ? state.vaultAHp : state.vaultBHp;
   const enemyVault = isPlayerA ? state.vaultBHp : state.vaultAHp;
+  const yourPct = Math.max(0, Math.min(100, (yourVault / 50) * 100));
+  const enemyPct = Math.max(0, Math.min(100, (enemyVault / 50) * 100));
+  const hpBarColor = (pct: number) =>
+    pct > 50 ? "bg-green-500" : pct > 20 ? "bg-yellow-500" : "bg-red-500";
 
   // Phase status text
   let phaseText = "";
@@ -278,77 +282,74 @@ export default function Match1v1Page() {
     phaseText = "Resolving round...";
   }
 
+  const toggleRound = (round: number) => {
+    setExpandedRounds(prev => {
+      const next = new Set(prev);
+      if (next.has(round)) next.delete(round);
+      else next.add(round);
+      return next;
+    });
+  };
+
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
-        <div className="flex items-center gap-4">
-          <span className="text-xl font-bold">ROUND {state.round}</span>
-          <span className="text-xs text-[#6a6a7a]">1v1 Match #{matchId}</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-xs text-[#6a6a7a]">You: <span className="text-[#00d4ff]">Player {isPlayerA ? "A" : "B"}</span></span>
-          <span className="text-sm">Budget: <span className="text-[#ffd700] font-bold">{budget}</span></span>
-        </div>
-      </div>
+    <div className="space-y-3 max-w-4xl mx-auto">
 
-      {/* Vaults */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <VaultDisplay label="Your Vault" hp={yourVault} maxHp={50} />
-        <VaultDisplay label="Enemy Vault" hp={enemyVault} maxHp={50} isEnemy />
-      </div>
-
-      {/* Nodes — inline rendering for 1v1 (uses teamA/teamB instead of team1/team2) */}
-      <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-        <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Resource Nodes</div>
-        <div className="flex justify-around items-center">
-          {(() => {
-            const nodeNames = ["Forge", "Quarry", "Grove"];
-            const nodeResources = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
-            return state.nodes.map((owner, i) => {
-              const color = owner === "teamA"
-                ? "bg-[#00d4ff] border-[#00d4ff]"
-                : owner === "teamB"
-                  ? "bg-[#ff3344] border-[#ff3344]"
-                  : "bg-[#6a6a7a] border-[#6a6a7a]";
-              const label = owner === "neutral" ? "Neutral" : owner === (isPlayerA ? "teamA" : "teamB") ? "Yours" : "Enemy";
-              return (
-                <div key={i} className="flex flex-col items-center gap-2">
-                  <div className={`w-6 h-6 rounded-full border-2 ${color} opacity-80`} />
-                  <span className="text-xs text-[#e0e0e8]">{nodeNames[i]}</span>
-                  <span className="text-[10px] text-[#6a6a7a]">{nodeResources[i]}</span>
-                  <span className="text-[10px] text-[#6a6a7a]">({label})</span>
-                </div>
-              );
-            });
-          })()}
-        </div>
-      </div>
-
-      {/* Resource Balances */}
+      {/* ===== 1. HEADER BANNER ===== */}
       <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
-        <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-2">Your Resources</div>
-        <div className="flex justify-around text-center">
-          {[
-            { label: "Iron", value: resources.iron, color: "text-[#a0a0b0]" },
-            { label: "Linen", value: resources.linen, color: "text-[#d4a574]" },
-            { label: "Stone", value: resources.stone, color: "text-[#8a8a9a]" },
-            { label: "Wood", value: resources.wood, color: "text-[#8b6914]" },
-            { label: "Ember", value: resources.ember, color: "text-[#ff6633]" },
-            { label: "Seeds", value: resources.seeds, color: "text-[#66cc66]" },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="flex flex-col items-center">
-              <span className={`text-sm font-bold ${color}`}>{value}</span>
-              <span className="text-[10px] text-[#6a6a7a]">{label}</span>
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          {/* Left: Title + round + match */}
+          <div className="flex items-baseline gap-3 shrink-0">
+            <span className="text-2xl font-bold tracking-wider">SIEGE</span>
+            <span className="text-sm font-bold text-[#e0e0e8]">Round {state.round}</span>
+            <span className="text-xs text-[#6a6a7a]">#{matchId}</span>
+          </div>
+
+          {/* Center: HP bars side by side */}
+          <div className="flex-1 grid grid-cols-2 gap-3">
+            {/* Your Citadel */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Your Citadel</span>
+                <span className={`text-xs font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault}</span>
+              </div>
+              <div className="w-full h-2 bg-[#1a1a26] rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
+                  style={{ width: `${yourPct}%` }}
+                />
+              </div>
             </div>
-          ))}
+            {/* Enemy Citadel */}
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Enemy Citadel</span>
+                <span className={`text-xs font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault}</span>
+              </div>
+              <div className="w-full h-2 bg-[#1a1a26] rounded-full overflow-hidden">
+                <div
+                  className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
+                  style={{ width: `${enemyPct}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Budget + role */}
+          <div className="flex items-center gap-3 shrink-0 text-sm">
+            <span className="text-[#ffd700] font-bold">{budget} pts</span>
+            <span className="text-[10px] text-[#6a6a7a] border border-[#2a2a3a] rounded px-2 py-0.5">
+              Player {isPlayerA ? "A" : "B"}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Gate Modifiers */}
+      {/* ===== 2. BATTLEFIELD PANEL ===== */}
       <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-        <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Gate Conditions</div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-3">Battlefield</div>
+
+        {/* Gates row */}
+        <div className="grid grid-cols-3 gap-3 mb-4">
           {["East Gate", "West Gate", "Underground"].map((gateName, i) => {
             const mod = modifiers[i];
             const modName = MODIFIER_NAMES[mod] || "Normal";
@@ -358,55 +359,126 @@ export default function Match1v1Page() {
               : mod === 2 ? "text-[#00d4ff]"
               : mod === 3 ? "text-[#ff3344]"
               : "text-[#ff8800]";
+            const modBorder = mod === 0 ? "border-[#2a2a3a]"
+              : mod === 1 ? "border-[#ffd700]/30"
+              : mod === 2 ? "border-[#00d4ff]/30"
+              : mod === 3 ? "border-[#ff3344]/30"
+              : "border-[#ff8800]/30";
             return (
-              <div key={i} className="text-center space-y-1">
-                <div className="text-xs text-[#6a6a7a]">{gateName}</div>
-                <div className={`text-sm font-bold ${modColor}`}>{modName}</div>
-                {modDesc && <div className="text-[10px] text-[#6a6a7a]">{modDesc}</div>}
+              <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${modBorder} text-center space-y-1`}>
+                <div className="text-xs text-[#e0e0e8] font-bold">{gateName}</div>
+                <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
+                {modDesc && <div className="text-[10px] text-[#6a6a7a] leading-tight">{modDesc}</div>}
               </div>
             );
           })}
         </div>
-      </div>
 
-      {/* Allocation form — only during commit phase, before committed */}
-      {state.phase === "committing" && !committed && (
-        <AllocationForm1v1
-          budget={budget}
-          allocations={allocations}
-          onChange={setAllocations}
-          nodes={state.nodes}
-          isPlayerA={isPlayerA}
-        />
-      )}
+        {/* Divider */}
+        <div className="border-t border-[#2a2a3a] mb-4" />
 
-      {/* Action / status */}
-      <div className="flex items-center justify-between border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-        <div>
-          {state.phase === "committing" && !committed && (
-            <button
-              onClick={handleCommit}
-              disabled={submitting || (allocations.slice(0, 10).reduce((a, b) => a + b, 0) + (allocations[10] + allocations[11] + allocations[12]) * 2) !== budget}
-              className="px-6 py-2 bg-[#00d4ff]/10 border border-[#00d4ff]/40 text-[#00d4ff] rounded hover:bg-[#00d4ff]/20 transition-colors text-sm disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              {submitting ? "SUBMITTING..." : "SUBMIT MOVES"}
-            </button>
-          )}
-          {phaseText && (
-            <span className="text-[#6a6a7a] text-sm animate-pulse">{phaseText}</span>
-          )}
+        {/* Nodes row */}
+        <div className="grid grid-cols-3 gap-3">
+          {(() => {
+            const nodeNames = ["Forge", "Quarry", "Grove"];
+            const nodeResources = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
+            return state.nodes.map((owner, i) => {
+              const isYours = owner === (isPlayerA ? "teamA" : "teamB");
+              const isEnemy = owner !== "neutral" && !isYours;
+              const dotColor = owner === "teamA"
+                ? "bg-[#00d4ff]"
+                : owner === "teamB"
+                  ? "bg-[#ff3344]"
+                  : "bg-[#6a6a7a]";
+              const borderColor = isYours
+                ? "border-[#00d4ff]/30"
+                : isEnemy
+                  ? "border-[#ff3344]/30"
+                  : "border-[#2a2a3a]";
+              const label = owner === "neutral" ? "Neutral" : isYours ? "Yours" : "Enemy";
+              const labelColor = owner === "neutral" ? "text-[#6a6a7a]" : isYours ? "text-[#00d4ff]" : "text-[#ff3344]";
+              return (
+                <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${borderColor} text-center space-y-1`}>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
+                    <span className="text-xs text-[#e0e0e8] font-bold">{nodeNames[i]}</span>
+                  </div>
+                  <div className="text-[10px] text-[#6a6a7a]">{nodeResources[i]}</div>
+                  <div className={`text-[10px] font-bold ${labelColor}`}>{label}</div>
+                </div>
+              );
+            });
+          })()}
         </div>
       </div>
 
-      {error && (
+      {/* ===== 3. RESOURCES BAR ===== */}
+      <div className="flex items-center gap-1 px-3 py-2 bg-[#12121a] border border-[#2a2a3a] rounded-lg overflow-x-auto">
+        <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase shrink-0 mr-2">Resources</span>
+        {[
+          { label: "Iron", value: resources.iron, color: "text-[#a0a0b0]" },
+          { label: "Linen", value: resources.linen, color: "text-[#d4a574]" },
+          { label: "Stone", value: resources.stone, color: "text-[#8a8a9a]" },
+          { label: "Wood", value: resources.wood, color: "text-[#8b6914]" },
+          { label: "Ember", value: resources.ember, color: "text-[#ff6633]" },
+          { label: "Seeds", value: resources.seeds, color: "text-[#66cc66]" },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="flex items-center gap-1 px-2 py-0.5 bg-[#1a1a26] rounded text-xs shrink-0">
+            <span className={`font-bold ${color}`}>{value}</span>
+            <span className="text-[10px] text-[#6a6a7a]">{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ===== 4. DEPLOYMENT PANEL ===== */}
+      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a]">
+        {state.phase === "committing" && !committed ? (
+          <div>
+            <AllocationForm1v1
+              budget={budget}
+              allocations={allocations}
+              onChange={setAllocations}
+              nodes={state.nodes}
+              isPlayerA={isPlayerA}
+            />
+            {/* Submit button inside the form panel */}
+            <div className="px-4 pb-4 pt-1 flex items-center justify-between">
+              <button
+                onClick={handleCommit}
+                disabled={submitting || (allocations.slice(0, 10).reduce((a, b) => a + b, 0) + (allocations[10] + allocations[11] + allocations[12]) * 2) !== budget}
+                className="px-8 py-2.5 bg-[#00d4ff]/10 border border-[#00d4ff]/40 text-[#00d4ff] rounded hover:bg-[#00d4ff]/20 transition-colors text-sm font-bold tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                {submitting ? "SUBMITTING..." : "COMMIT ORDERS"}
+              </button>
+              {error && (
+                <span className="text-[#ff3344] text-xs ml-3">{error}</span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 flex items-center justify-center min-h-[60px]">
+            {phaseText ? (
+              <span className="text-[#6a6a7a] text-sm animate-pulse tracking-wide">{phaseText}</span>
+            ) : (
+              <span className="text-[#6a6a7a] text-xs">Awaiting next phase...</span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {error && !state.phase && (
         <div className="text-[#ff3344] text-sm border border-[#ff3344]/30 rounded p-3 bg-[#ff3344]/5">{error}</div>
       )}
 
-      {/* Round history */}
-      {history.length > 0 && (
-        <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-          <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-3">Round History</div>
-          <div className="space-y-4 max-h-80 overflow-y-auto">
+      {/* ===== 5. WAR DISPATCH LOG ===== */}
+      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a]">
+        <div className="px-4 pt-3 pb-2">
+          <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">War Dispatch Log</span>
+        </div>
+        {history.length === 0 ? (
+          <div className="px-4 pb-3 text-sm text-[#6a6a7a]">No rounds played yet</div>
+        ) : (
+          <div className="max-h-96 overflow-y-auto">
             {history.map((r: RoundResult1v1) => {
               const gateDmgDealt = isPlayerA ? r.damageToB : r.damageToA;
               const gateDmgTaken = isPlayerA ? r.damageToA : r.damageToB;
@@ -416,95 +488,102 @@ export default function Match1v1Page() {
               const theirTrapDmg = theirTraps.filter(t => t > 0).length * 5;
               const dmgDealt = gateDmgDealt + myTrapDmg;
               const dmgTaken = gateDmgTaken + theirTrapDmg;
+              const isExpanded = expandedRounds.has(r.round);
               const gateNames = ["East", "West", "Underground"];
 
               return (
-                <div key={r.round} className="text-xs py-2 border-b border-[#1a1a26] space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-[#6a6a7a] font-bold">R{r.round}</span>
-                    <span>
+                <div key={r.round} className="border-t border-[#1a1a26]">
+                  {/* Summary row — always visible, clickable */}
+                  <button
+                    onClick={() => toggleRound(r.round)}
+                    className="w-full px-4 py-2 flex items-center justify-between text-xs hover:bg-[#1a1a26] transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-[#6a6a7a] text-[10px]">{isExpanded ? "\u25BC" : "\u25B6"}</span>
+                      <span className="text-[#e0e0e8] font-bold">R{r.round}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <span className="text-green-400">+{dmgDealt} dealt</span>
-                      {myTrapDmg > 0 && <span className="text-[#ffd700]"> (trap +{myTrapDmg})</span>}
-                      {" / "}
+                      {myTrapDmg > 0 && <span className="text-[#ffd700]">(trap +{myTrapDmg})</span>}
+                      <span className="text-[#6a6a7a]">/</span>
                       <span className="text-red-400">-{dmgTaken} taken</span>
-                      {theirTrapDmg > 0 && <span className="text-[#ff3344]"> (trap -{theirTrapDmg})</span>}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {r.gateBreakdown.map((gate, i) => {
-                      const modName = MODIFIER_NAMES[gate.modifier] || "Normal";
-                      const modColor = gate.modifier === 0 ? "text-[#6a6a7a]"
-                        : gate.modifier === 1 ? "text-[#ffd700]"
-                        : gate.modifier === 2 ? "text-[#00d4ff]"
-                        : gate.modifier === 3 ? "text-[#ff3344]"
-                        : "text-[#ff8800]";
-                      const myDmgDealt = isPlayerA ? gate.dmgToB : gate.dmgToA;
-                      const myDmgTaken = isPlayerA ? gate.dmgToA : gate.dmgToB;
-                      return (
-                        <div key={i} className="bg-[#1a1a26] rounded p-2 space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="text-[#6a6a7a]">{gateNames[i]}</span>
-                            {gate.modifier !== 0 && (
-                              <span className={`${modColor} text-[10px]`}>{modName}</span>
-                            )}
-                          </div>
-                          <div className="text-[#6a6a7a]">
-                            You: {isPlayerA ? gate.attackA : gate.attackB} atk / {isPlayerA ? gate.defenseA : gate.defenseB} def
-                          </div>
-                          <div className="text-[#6a6a7a]">
-                            Them: {isPlayerA ? gate.attackB : gate.attackA} atk / {isPlayerA ? gate.defenseB : gate.defenseA} def
-                          </div>
-                          <div>
-                            {myDmgDealt > 0 && <span className="text-green-400">+{myDmgDealt} </span>}
-                            {myDmgTaken > 0 && <span className="text-red-400">-{myDmgTaken}</span>}
-                            {myDmgDealt === 0 && myDmgTaken === 0 && <span className="text-[#6a6a7a]">0</span>}
-                          </div>
+                      {theirTrapDmg > 0 && <span className="text-[#ff3344]">(trap -{theirTrapDmg})</span>}
+                    </div>
+                  </button>
+
+                  {/* Expanded details */}
+                  {isExpanded && (
+                    <div className="px-4 pb-3 space-y-2">
+                      <div className="grid grid-cols-3 gap-2">
+                        {r.gateBreakdown.map((gate, i) => {
+                          const modName = MODIFIER_NAMES[gate.modifier] || "Normal";
+                          const modColor = gate.modifier === 0 ? "text-[#6a6a7a]"
+                            : gate.modifier === 1 ? "text-[#ffd700]"
+                            : gate.modifier === 2 ? "text-[#00d4ff]"
+                            : gate.modifier === 3 ? "text-[#ff3344]"
+                            : "text-[#ff8800]";
+                          const myDmgDealt = isPlayerA ? gate.dmgToB : gate.dmgToA;
+                          const myDmgTaken = isPlayerA ? gate.dmgToA : gate.dmgToB;
+                          return (
+                            <div key={i} className="bg-[#1a1a26] rounded p-2 space-y-1 text-xs">
+                              <div className="flex justify-between items-center">
+                                <span className="text-[#e0e0e8] font-bold">{gateNames[i]}</span>
+                                {gate.modifier !== 0 && (
+                                  <span className={`${modColor} text-[10px]`}>{modName}</span>
+                                )}
+                              </div>
+                              <div className="text-[#6a6a7a]">
+                                You: {isPlayerA ? gate.attackA : gate.attackB} atk / {isPlayerA ? gate.defenseA : gate.defenseB} def
+                              </div>
+                              <div className="text-[#6a6a7a]">
+                                Them: {isPlayerA ? gate.attackB : gate.attackA} atk / {isPlayerA ? gate.defenseB : gate.defenseA} def
+                              </div>
+                              <div>
+                                {myDmgDealt > 0 && <span className="text-green-400">+{myDmgDealt} </span>}
+                                {myDmgTaken > 0 && <span className="text-red-400">-{myDmgTaken}</span>}
+                                {myDmgDealt === 0 && myDmgTaken === 0 && <span className="text-[#6a6a7a]">0</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
+                        <div className="text-xs border-t border-[#2a2a3a] pt-2 space-y-1">
+                          <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Node Traps</div>
+                          {(() => {
+                            const nodeNames = ["Forge", "Quarry", "Grove"];
+                            return [0, 1, 2].map(ni => {
+                              const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
+                              const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
+                              if (myTrap) {
+                                return (
+                                  <div key={`mt${ni}`} className="text-[#ffd700]">
+                                    You trapped {nodeNames[ni]} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
+                                  </div>
+                                );
+                              }
+                              if (theirTrap) {
+                                return (
+                                  <div key={`tt${ni}`} className="text-[#ff3344]">
+                                    Enemy trapped {nodeNames[ni]}! You take <span className="font-bold">5 damage</span> if you captured it
+                                  </div>
+                                );
+                              }
+                              return null;
+                            });
+                          })()}
                         </div>
-                      );
-                    })}
-                  </div>
-                  {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
-                    <div className="text-xs mt-2 border-t border-[#2a2a3a] pt-2 space-y-1">
-                      <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Node Traps</div>
-                      {(() => {
-                        const nodeNames = ["Forge", "Quarry", "Grove"];
-                        return [0, 1, 2].map(ni => {
-                          const myTrap = isPlayerA ? r.aTraps[ni] : r.bTraps[ni];
-                          const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
-                          if (myTrap) {
-                            return (
-                              <div key={`mt${ni}`} className="text-[#ffd700]">
-                                You trapped {nodeNames[ni]} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
-                              </div>
-                            );
-                          }
-                          if (theirTrap) {
-                            return (
-                              <div key={`tt${ni}`} className="text-[#ff3344]">
-                                Enemy trapped {nodeNames[ni]}! You take <span className="font-bold">5 damage</span> if you captured it
-                              </div>
-                            );
-                          }
-                          return null;
-                        });
-                      })()}
+                      )}
                     </div>
                   )}
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {history.length === 0 && (
-        <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-          <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-2">Round History</div>
-          <div className="text-sm text-[#6a6a7a]">No rounds played yet</div>
-        </div>
-      )}
-
-      <div className="text-[10px] text-[#2a2a3a] text-center">
+      <div className="text-[10px] text-[#2a2a3a] text-center pb-4">
         Move data stored in localStorage until revealed. Auto-reveal triggers when both players commit.
       </div>
     </div>
