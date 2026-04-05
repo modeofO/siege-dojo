@@ -383,10 +383,18 @@ export default function Match1v1Page() {
                   : mod === 3 ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.08)]"
                   : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
                 const isMain = idx === 2;
+                const hasModifier = mod !== 0;
                 return (
-                  <div key={idx} className={`rounded-lg ${modGlow} text-center flex flex-col items-center gap-1 p-2`}>
-                    {sprite && (
+                  <div key={idx} className={`rounded-lg text-center flex flex-col items-center justify-end gap-1 p-2 ${hasModifier ? `bg-[#252019]/50 border border-[#3d3428] ${modGlow}` : ""}`}>
+                    {sprite ? (
                       <img src={sprite} alt={name} className="w-32 h-32 object-contain" />
+                    ) : (
+                      /* Underground placeholder — archway icon */
+                      <div className="w-32 h-32 flex items-center justify-center">
+                        <div className="w-20 h-24 rounded-t-full border-2 border-[#3d3428] bg-[#252019] flex items-end justify-center pb-2">
+                          <div className="w-8 h-12 rounded-t-full bg-[#0d0b0a] border border-[#3d3428]" />
+                        </div>
+                      </div>
                     )}
                     <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{name}</div>
                     <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
