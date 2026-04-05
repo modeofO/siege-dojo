@@ -24,6 +24,7 @@ import {
 } from "@/lib/crypto";
 import { commitMove1v1, revealMove1v1 } from "@/lib/contracts1v1";
 import { useToriiSubscription } from "@/lib/toriiSubscription";
+import { useResourceBalances } from "@/lib/useResourceBalances";
 import { VaultDisplay } from "@/components/VaultDisplay";
 import { AllocationForm1v1 } from "@/components/AllocationForm1v1";
 import Link from "next/link";
@@ -35,6 +36,7 @@ export default function Match1v1Page() {
 
   const { state, loading, refresh } = useMatchState1v1(matchId);
   const history = useRoundHistory1v1(matchId);
+  const resources = useResourceBalances(address);
 
   // Real-time updates via WebSocket — triggers refresh on any world event
   useToriiSubscription(matchId, refresh);
@@ -317,6 +319,26 @@ export default function Match1v1Page() {
               );
             });
           })()}
+        </div>
+      </div>
+
+      {/* Resource Balances */}
+      <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
+        <div className="text-xs tracking-wider text-[#6a6a7a] uppercase mb-2">Your Resources</div>
+        <div className="flex justify-around text-center">
+          {[
+            { label: "Iron", value: resources.iron, color: "text-[#a0a0b0]" },
+            { label: "Linen", value: resources.linen, color: "text-[#d4a574]" },
+            { label: "Stone", value: resources.stone, color: "text-[#8a8a9a]" },
+            { label: "Wood", value: resources.wood, color: "text-[#8b6914]" },
+            { label: "Ember", value: resources.ember, color: "text-[#ff6633]" },
+            { label: "Seeds", value: resources.seeds, color: "text-[#66cc66]" },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="flex flex-col items-center">
+              <span className={`text-sm font-bold ${color}`}>{value}</span>
+              <span className="text-[10px] text-[#6a6a7a]">{label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
