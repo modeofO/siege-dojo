@@ -188,9 +188,9 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
       <button
         onClick={onCommit}
         disabled={submitting || !budgetExact}
-        className={`w-full py-3 rounded font-bold tracking-wider text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
+        className={`w-full py-3 rounded font-bold tracking-wider text-sm font-serif transition-all disabled:opacity-30 disabled:cursor-not-allowed ${
           budgetExact
-            ? "bg-green-500/10 border-2 border-green-400 text-green-400 shadow-[0_0_12px_rgba(74,222,128,0.2)] hover:bg-green-500/20 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)]"
+            ? "bg-green-500/10 border-2 border-green-400 text-green-400 commit-ready hover:bg-green-500/20"
             : remaining > 0
               ? "bg-[#daa520]/10 border-2 border-[#daa520]/40 text-[#daa520]"
               : "bg-[#ff3344]/10 border-2 border-[#ff3344]/40 text-[#ff3344]"

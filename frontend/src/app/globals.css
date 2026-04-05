@@ -85,3 +85,27 @@ input[type="range"]::-moz-range-thumb {
   background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-parchment) 100%);
   border-color: var(--color-border);
 }
+
+/* Number input styling — hide spinners, match theme */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Header panel glow */
+.panel-header {
+  box-shadow: 0 0 20px rgba(184, 134, 11, 0.08), inset 0 1px 0 rgba(200, 164, 78, 0.1);
+}
+
+/* Commit button glow animation */
+@keyframes commit-pulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(74, 222, 128, 0.2); }
+  50% { box-shadow: 0 0 24px rgba(74, 222, 128, 0.4); }
+}
+.commit-ready {
+  animation: commit-pulse 2s ease-in-out infinite;
+}

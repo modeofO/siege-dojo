@@ -295,7 +295,7 @@ export default function Match1v1Page() {
     <div className="space-y-2 max-w-4xl mx-auto">
 
       {/* ===== 1. HEADER BANNER ===== */}
-      <div className="border border-[#3d3428] rounded-lg bg-[#1a1714] space-y-0">
+      <div className="border border-[#3d3428] rounded-lg bg-[#1a1714] space-y-0 panel-header">
         {/* Row 1: Title, round, match ID, budget, player badge */}
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
           <div className="flex items-baseline gap-3">
