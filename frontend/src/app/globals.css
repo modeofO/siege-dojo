@@ -19,8 +19,26 @@
 }
 
 body {
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  background-image: url('/background.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   color: var(--color-text);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 11, 10, 0.55);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Pulsing red for critical HP */
