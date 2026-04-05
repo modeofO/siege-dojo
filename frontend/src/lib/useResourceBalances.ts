@@ -46,6 +46,7 @@ export function useResourceBalances(playerAddress: string | undefined): Resource
               entrypoint: "balance_of",
               calldata: [playerAddress],
             });
+            console.log(`[resources] ${name}: raw result =`, result);
             // Result is [low, high] u256 — just use low since values are small
             results[name as keyof ResourceBalances] = Number(result[0] || 0);
           } catch {
