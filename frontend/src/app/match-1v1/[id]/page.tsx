@@ -384,9 +384,9 @@ export default function Match1v1Page() {
                   : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
                 const isMain = idx === 2;
                 return (
-                  <div key={idx} className={`bg-[#252019] rounded-lg border ${modBorder} ${modGlow} text-center flex flex-col items-center gap-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
+                  <div key={idx} className={`rounded-lg ${modGlow} text-center flex flex-col items-center gap-1 p-2`}>
                     {sprite && (
-                      <img src={sprite} alt={name} className="w-20 h-20 object-contain" />
+                      <img src={sprite} alt={name} className="w-32 h-32 object-contain" />
                     )}
                     <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{name}</div>
                     <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
