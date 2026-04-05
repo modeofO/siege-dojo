@@ -106,11 +106,12 @@ function computeGateBreakdown(
   }
 
   // Distribute reflection — reduced by unused defense at receiving gate
+  // Deadlock gates block reflected damage entirely
   for (let g = 0; g < 3; g++) {
     if (ovfToB[g] > 0) {
       const per = Math.floor(ovfToB[g] / 2);
       for (let t = 0; t < 3; t++) {
-        if (t !== g) {
+        if (t !== g && mods[t] !== 3) { // 3 = Deadlock
           const blocked = Math.min(per, unusedDefB[t]);
           dmgToB[t] += per - blocked;
         }
@@ -119,7 +120,7 @@ function computeGateBreakdown(
     if (ovfToA[g] > 0) {
       const per = Math.floor(ovfToA[g] / 2);
       for (let t = 0; t < 3; t++) {
-        if (t !== g) {
+        if (t !== g && mods[t] !== 3) { // 3 = Deadlock
           const blocked = Math.min(per, unusedDefA[t]);
           dmgToA[t] += per - blocked;
         }

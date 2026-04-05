@@ -164,7 +164,11 @@ export default function Match1v1Page() {
           console.error("Auto-reveal failed:", e);
         }
         setAutoRevealStatus("done");
-        void refresh();
+        // Rapid polling to pick up the reveal + resolution results
+        for (let i = 0; i < 5; i++) {
+          await new Promise(r => setTimeout(r, 1500));
+          void refresh();
+        }
       })();
     }, delay);
   }, [account, state, matchId, committed, revealed, roundStatus.commitCount, roundStatus.revealCount, refresh]);
@@ -195,7 +199,11 @@ export default function Match1v1Page() {
       );
 
       await commitMove1v1(account, matchId, commitment);
-      void refresh();
+      // Rapid polling to pick up the commit quickly instead of waiting for 4s poll
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 1500));
+        void refresh();
+      }
     } catch (e) {
       console.error("Commit failed:", e);
       setError(e instanceof Error ? e.message : "Commit failed");

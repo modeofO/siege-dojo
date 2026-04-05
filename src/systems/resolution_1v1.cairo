@@ -191,7 +191,7 @@ pub mod resolution_1v1 {
                     let per_gate: u8 = ovf_b / 2;
                     let mut t: u32 = 0;
                     while t < 3 {
-                        if t != g2 {
+                        if t != g2 && *gate_mods.span()[t] != MOD_DEADLOCK {
                             let def = *unused_def_b.span()[t];
                             if per_gate > def {
                                 let cur = *damage_to_b.span()[t];
@@ -201,7 +201,6 @@ pub mod resolution_1v1 {
                                     _ => [*damage_to_b.span()[0], *damage_to_b.span()[1], cur + per_gate - def],
                                 };
                             }
-                            // If def >= per_gate, reflected damage is fully blocked
                         }
                         t += 1;
                     };
@@ -210,7 +209,7 @@ pub mod resolution_1v1 {
                     let per_gate: u8 = ovf_a / 2;
                     let mut t: u32 = 0;
                     while t < 3 {
-                        if t != g2 {
+                        if t != g2 && *gate_mods.span()[t] != MOD_DEADLOCK {
                             let def = *unused_def_a.span()[t];
                             if per_gate > def {
                                 let cur = *damage_to_a.span()[t];
