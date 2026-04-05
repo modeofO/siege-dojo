@@ -292,7 +292,7 @@ export default function Match1v1Page() {
   };
 
   return (
-    <div className="space-y-3 max-w-4xl mx-auto">
+    <div className="space-y-2 max-w-4xl mx-auto">
 
       {/* ===== 1. HEADER BANNER ===== */}
       <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a] space-y-0">
@@ -353,11 +353,11 @@ export default function Match1v1Page() {
       </div>
 
       {/* ===== 2. BATTLEFIELD PANEL ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg p-4 bg-[#12121a]">
-        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-3">Battlefield</div>
+      <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
+        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-2">Battlefield</div>
 
         {/* Fortress Gates — East | Underground (main) | West */}
-        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-3 mb-2">
+        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2 mb-2">
           {[0, 2, 1].map((i) => {
             const gateNames = ["East Gate", "West Gate", "Underground"];
             const gateName = gateNames[i];
@@ -381,7 +381,7 @@ export default function Match1v1Page() {
               : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
             const isMain = i === 2; // Underground = main gate
             return (
-              <div key={i} className={`bg-[#1a1a26] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-4 ring-1 ring-[#3a3a4a]" : "p-3"}`}>
+              <div key={i} className={`bg-[#1a1a26] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
                 <div className={`font-bold ${isMain ? "text-sm text-[#e0e0e8]" : "text-xs text-[#e0e0e8]"}`}>{gateName}</div>
                 {isMain && <div className="text-[9px] tracking-wider text-[#4a4a5a] uppercase">Main Entrance</div>}
                 <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
@@ -391,16 +391,8 @@ export default function Match1v1Page() {
           })}
         </div>
 
-        {/* Fortified wall divider */}
-        <div className="flex items-center gap-2 my-3 px-2">
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#4a4a5a] to-transparent" />
-          <span className="text-[10px] tracking-[0.3em] text-[#3a3a4a] font-bold select-none">{"\u2550\u2550\u2550"} WALLS {"\u2550\u2550\u2550"}</span>
-          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#4a4a5a] to-transparent" />
-        </div>
-
-        {/* Contested territory — Nodes */}
-        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-2 text-center">Contested Territory</div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="border-t border-[#2a2a3a] my-3" />
+        <div className="grid grid-cols-3 gap-2">
           {(() => {
             const nodeNames = ["Forge", "Quarry", "Grove"];
             const nodeResources = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
@@ -425,7 +417,7 @@ export default function Match1v1Page() {
               const label = owner === "neutral" ? "Neutral" : isYours ? "Yours" : "Enemy";
               const labelColor = owner === "neutral" ? "text-[#6a6a7a]" : isYours ? "text-[#00d4ff]" : "text-[#ff3344]";
               return (
-                <div key={i} className={`bg-[#1a1a26] rounded-lg p-3 border ${borderColor} ${bgGlow} text-center space-y-1`}>
+                <div key={i} className={`bg-[#1a1a26] rounded-lg p-2 border ${borderColor} ${bgGlow} text-center space-y-1`}>
                   <div className="flex items-center justify-center gap-2">
                     <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
                     <span className="text-xs text-[#e0e0e8] font-bold">{nodeNames[i]}</span>
@@ -471,7 +463,7 @@ export default function Match1v1Page() {
             isPlayerA={isPlayerA}
           />
         ) : (
-          <div className="p-4 flex items-center justify-center min-h-[60px]">
+          <div className="p-3 flex items-center justify-center">
             {phaseText ? (
               <span className="text-[#6a6a7a] text-sm animate-pulse tracking-wide">{phaseText}</span>
             ) : (

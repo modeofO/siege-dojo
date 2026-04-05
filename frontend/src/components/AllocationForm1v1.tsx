@@ -81,42 +81,42 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
             {/* Attack column */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-[#e0e0e8] w-12 shrink-0">{name}</span>
-              <input
-                type="range"
-                min={0}
-                max={budget}
-                value={allocations[gi] || 0}
-                onChange={(e) => handleChange(gi, parseInt(e.target.value))}
-                className="flex-1 accent-[#ff8800]"
-              />
+              <button onClick={() => handleChange(gi, (allocations[gi] || 0) - 1)} disabled={(allocations[gi] || 0) <= 0}
+                className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                -
+              </button>
               <input
                 type="number"
                 min={0}
                 max={budget}
                 value={allocations[gi] || 0}
-                onChange={(e) => handleChange(gi, Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={(e) => handleChange(gi, parseInt(e.target.value) || 0)}
                 className="w-10 text-center bg-[#1a1a26] border border-[#2a2a3a] rounded text-sm py-0.5 text-[#ff8800]"
               />
+              <button onClick={() => handleChange(gi, (allocations[gi] || 0) + 1)}
+                className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                +
+              </button>
             </div>
             {/* Defense column */}
             <div className="flex items-center gap-2">
               <span className="text-xs text-[#e0e0e8] w-12 shrink-0">{name}</span>
-              <input
-                type="range"
-                min={0}
-                max={budget}
-                value={allocations[3 + gi] || 0}
-                onChange={(e) => handleChange(3 + gi, parseInt(e.target.value))}
-                className="flex-1 accent-[#00d4ff]"
-              />
+              <button onClick={() => handleChange(3 + gi, (allocations[3 + gi] || 0) - 1)} disabled={(allocations[3 + gi] || 0) <= 0}
+                className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                -
+              </button>
               <input
                 type="number"
                 min={0}
                 max={budget}
                 value={allocations[3 + gi] || 0}
-                onChange={(e) => handleChange(3 + gi, Math.max(0, parseInt(e.target.value) || 0))}
+                onChange={(e) => handleChange(3 + gi, parseInt(e.target.value) || 0)}
                 className="w-10 text-center bg-[#1a1a26] border border-[#2a2a3a] rounded text-sm py-0.5 text-[#00d4ff]"
               />
+              <button onClick={() => handleChange(3 + gi, (allocations[3 + gi] || 0) + 1)}
+                className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                +
+              </button>
             </div>
           </React.Fragment>
         ))}
@@ -126,22 +126,22 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
       <div className="border-t border-[#2a2a3a] pt-3">
         <div className="flex items-center gap-3">
           <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase w-16 shrink-0">Repair</span>
-          <input
-            type="range"
-            min={0}
-            max={Math.min(3, budget)}
-            value={allocations[6] || 0}
-            onChange={(e) => handleChange(6, parseInt(e.target.value))}
-            className="flex-1 accent-[#66cc66]"
-          />
+          <button onClick={() => handleChange(6, (allocations[6] || 0) - 1)} disabled={(allocations[6] || 0) <= 0}
+            className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+            -
+          </button>
           <input
             type="number"
             min={0}
             max={3}
             value={allocations[6] || 0}
-            onChange={(e) => handleChange(6, Math.max(0, parseInt(e.target.value) || 0))}
+            onChange={(e) => handleChange(6, parseInt(e.target.value) || 0)}
             className="w-10 text-center bg-[#1a1a26] border border-[#2a2a3a] rounded text-sm py-0.5 text-[#66cc66]"
           />
+          <button onClick={() => handleChange(6, (allocations[6] || 0) + 1)}
+            className="w-7 h-7 rounded bg-[#1a1a26] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+            +
+          </button>
           <span className="text-[10px] text-[#6a6a7a]">max 3</span>
         </div>
       </div>
@@ -165,23 +165,23 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
                 {isTrapped ? (
                   <div className="text-center text-[10px] text-[#ff3344] font-bold py-1">TRAPPED (2 pts)</div>
                 ) : (
-                  <div className="flex items-center gap-1">
-                    <input
-                      type="range"
-                      min={0}
-                      max={budget}
-                      value={allocations[nodeIdx] || 0}
-                      onChange={(e) => handleChange(nodeIdx, parseInt(e.target.value))}
-                      className="flex-1 accent-[#ffd700]"
-                    />
+                  <div className="flex items-center justify-center gap-1">
+                    <button onClick={() => handleChange(nodeIdx, (allocations[nodeIdx] || 0) - 1)} disabled={(allocations[nodeIdx] || 0) <= 0}
+                      className="w-7 h-7 rounded bg-[#0a0a0f] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                      -
+                    </button>
                     <input
                       type="number"
                       min={0}
                       max={budget}
                       value={allocations[nodeIdx] || 0}
-                      onChange={(e) => handleChange(nodeIdx, Math.max(0, parseInt(e.target.value) || 0))}
+                      onChange={(e) => handleChange(nodeIdx, parseInt(e.target.value) || 0)}
                       className="w-10 text-center bg-[#0a0a0f] border border-[#2a2a3a] rounded text-xs py-0.5"
                     />
+                    <button onClick={() => handleChange(nodeIdx, (allocations[nodeIdx] || 0) + 1)}
+                      className="w-7 h-7 rounded bg-[#0a0a0f] border border-[#2a2a3a] text-[#6a6a7a] hover:text-[#e0e0e8] hover:border-[#6a6a7a] disabled:opacity-20 text-sm">
+                      +
+                    </button>
                   </div>
                 )}
                 {canTrap && (
