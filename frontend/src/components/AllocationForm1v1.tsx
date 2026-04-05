@@ -18,6 +18,7 @@ interface AllocationForm1v1Props {
 const GATE_NAMES = ["East", "West", "Under."];
 const NODE_NAMES = ["Forge", "Quarry", "Grove"];
 const NODE_RESOURCES = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
+const NODE_SPRITES = ["/sprites/node-forge.png", "/sprites/node-quarry.png", "/sprites/node-grove.png"];
 
 export function AllocationForm1v1({ budget, allocations, onChange, onCommit, submitting, error, nodes, isPlayerA }: AllocationForm1v1Props) {
   const trapCost = ((allocations[10] || 0) + (allocations[11] || 0) + (allocations[12] || 0)) * 2;
@@ -141,7 +142,8 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
             const canTrap = nodes[ni] === myTeam;
 
             return (
-              <div key={ni} className="bg-[#252019] rounded-lg p-2 space-y-1.5">
+              <div key={ni} className="bg-[#252019] rounded-lg p-2 space-y-1.5 flex flex-col items-center">
+                <img src={NODE_SPRITES[ni]} alt={name} className="w-20 h-20 object-contain rounded-lg" />
                 <div className="text-xs text-[#d4cfc6] font-bold text-center">{name}</div>
                 <div className="text-[10px] text-[#7a7060] text-center">{NODE_RESOURCES[ni]}</div>
                 {isTrapped ? (
