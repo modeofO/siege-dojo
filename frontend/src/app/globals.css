@@ -41,39 +41,43 @@ body {
   animation: damage-flash 0.5s ease-out;
 }
 
-/* Slider styling */
+/* Slider styling — thumb color comes from accent-* classes on each input */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   background: transparent;
   cursor: pointer;
   width: 100%;
+  height: 20px;
 }
-input[type="range"]::-webkit-slider-track {
+input[type="range"]::-webkit-slider-runnable-track {
   background: var(--color-surface-light);
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--color-friendly);
-  margin-top: -6px;
+  background: currentColor;
+  margin-top: -5px;
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
 }
 input[type="range"]::-moz-range-track {
   background: var(--color-surface-light);
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
 }
 input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--color-friendly);
-  border: none;
+  background: currentColor;
+  border: 2px solid var(--color-surface);
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
 }
 
 /* Medieval panel texture */

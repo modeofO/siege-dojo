@@ -88,7 +88,7 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
               <span className="text-xs text-[#d4cfc6] w-10 shrink-0">{name}</span>
               <input type="range" min={0} max={budget} value={allocations[gi] || 0}
                 onChange={(e) => handleChange(gi, parseInt(e.target.value))}
-                className="flex-1 accent-[#ff8800] h-2 cursor-pointer" />
+                className="flex-1 accent-[#ff8800] text-[#ff8800] h-2 cursor-pointer" />
               <input type="number" min={0} max={budget} value={allocations[gi] || 0}
                 onChange={(e) => handleChange(gi, Math.max(0, parseInt(e.target.value) || 0))}
                 className="w-8 text-center bg-[#252019] border border-[#3d3428] rounded text-sm py-0.5 text-[#ff8800]" />
@@ -97,7 +97,7 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
               <span className="text-xs text-[#d4cfc6] w-10 shrink-0">{name}</span>
               <input type="range" min={0} max={budget} value={allocations[3 + gi] || 0}
                 onChange={(e) => handleChange(3 + gi, parseInt(e.target.value))}
-                className="flex-1 accent-[#6b8cae] h-2 cursor-pointer" />
+                className="flex-1 accent-[#6b8cae] text-[#6b8cae] h-2 cursor-pointer" />
               <input type="number" min={0} max={budget} value={allocations[3 + gi] || 0}
                 onChange={(e) => handleChange(3 + gi, Math.max(0, parseInt(e.target.value) || 0))}
                 className="w-8 text-center bg-[#252019] border border-[#3d3428] rounded text-sm py-0.5 text-[#6b8cae]" />
@@ -117,7 +117,7 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
           </span>
           <input type="range" min={0} max={3} value={allocations[6] || 0}
             onChange={(e) => handleChange(6, parseInt(e.target.value))}
-            className="flex-1 accent-[#66cc66] h-2 cursor-pointer" />
+            className="flex-1 accent-[#66cc66] text-[#66cc66] h-2 cursor-pointer" />
           <input type="number" min={0} max={3} value={allocations[6] || 0}
             onChange={(e) => handleChange(6, Math.max(0, parseInt(e.target.value) || 0))}
             className="w-8 text-center bg-[#252019] border border-[#3d3428] rounded text-sm py-0.5 text-[#66cc66]" />
@@ -150,7 +150,7 @@ export function AllocationForm1v1({ budget, allocations, onChange, onCommit, sub
                   <div className="flex items-center gap-1 px-1">
                     <input type="range" min={0} max={budget} value={allocations[nodeIdx] || 0}
                       onChange={(e) => handleChange(nodeIdx, parseInt(e.target.value))}
-                      className="flex-1 accent-[#daa520] h-2 cursor-pointer" />
+                      className="flex-1 accent-[#daa520] text-[#daa520] h-2 cursor-pointer" />
                     <input type="number" min={0} max={budget} value={allocations[nodeIdx] || 0}
                       onChange={(e) => handleChange(nodeIdx, Math.max(0, parseInt(e.target.value) || 0))}
                       className="w-8 text-center bg-[#0d0b0a] border border-[#3d3428] rounded text-xs py-0.5" />
