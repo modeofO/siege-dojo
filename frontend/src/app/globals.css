@@ -1,15 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  --font-serif: var(--font-serif);
+}
+
 :root {
-  --color-bg: #0a0a0f;
-  --color-surface: #12121a;
-  --color-surface-light: #1a1a26;
-  --color-border: #2a2a3a;
-  --color-friendly: #00d4ff;
-  --color-enemy: #ff3344;
-  --color-gold: #ffd700;
-  --color-text: #e0e0e8;
-  --color-text-dim: #6a6a7a;
+  --color-bg: #0d0b0a;
+  --color-surface: #1a1714;
+  --color-surface-light: #252019;
+  --color-border: #3d3428;
+  --color-friendly: #c8a44e;
+  --color-enemy: #c44332;
+  --color-gold: #daa520;
+  --color-text: #d4cfc6;
+  --color-text-dim: #7a7060;
+  --color-accent: #b8860b;
+  --color-parchment: #2a2318;
 }
 
 body {
@@ -68,4 +74,10 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 50%;
   background: var(--color-friendly);
   border: none;
+}
+
+/* Medieval panel texture */
+.panel-medieval {
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-parchment) 100%);
+  border-color: var(--color-border);
 }

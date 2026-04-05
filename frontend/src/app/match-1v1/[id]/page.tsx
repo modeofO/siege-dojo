@@ -211,7 +211,7 @@ export default function Match1v1Page() {
   if (loading || !state) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-[#6a6a7a] tracking-wider animate-pulse">LOADING MATCH...</div>
+        <div className="text-[#7a7060] tracking-wider animate-pulse">LOADING MATCH...</div>
       </div>
     );
   }
@@ -221,10 +221,10 @@ export default function Match1v1Page() {
     return (
       <div className="max-w-lg mx-auto mt-20 space-y-4 text-center">
         <div className="text-[#ff3344] text-lg font-bold">NOT A PLAYER IN THIS MATCH</div>
-        <div className="text-[#6a6a7a] text-sm">
-          Your address: <span className="font-mono text-[#e0e0e8]">{address}</span>
+        <div className="text-[#7a7060] text-sm">
+          Your address: <span className="font-mono text-[#d4cfc6]">{address}</span>
         </div>
-        <div className="text-[#6a6a7a] text-xs space-y-1">
+        <div className="text-[#7a7060] text-xs space-y-1">
           <div>Player A: <span className="font-mono">{state.playerA}</span></div>
           <div>Player B: <span className="font-mono">{state.playerB}</span></div>
         </div>
@@ -237,25 +237,25 @@ export default function Match1v1Page() {
     const didWin = (state.winner === 1 && isPlayerA) || (state.winner === 2 && isPlayerB);
     const isDraw = state.winner === 0;
     return (
-      <div className="fixed inset-0 bg-[#0a0a0f]/95 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-[#0d0b0a]/95 z-50 flex items-center justify-center">
         <div className="text-center space-y-8 max-w-md">
           <div className="space-y-2">
-            <div className={`text-6xl font-bold tracking-widest ${isDraw ? "text-[#ffd700]" : didWin ? "text-[#00d4ff]" : "text-[#ff3344]"}`}>
+            <div className={`text-6xl font-bold tracking-widest font-serif ${isDraw ? "text-[#daa520]" : didWin ? "text-[#c8a44e]" : "text-[#ff3344]"}`}>
               {isDraw ? "DRAW" : didWin ? "VICTORY" : "DEFEAT"}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="border border-[#2a2a3a] rounded p-3 bg-[#12121a]">
-              <div className="text-[#6a6a7a] text-xs mb-1">Your Vault</div>
+            <div className="border border-[#3d3428] rounded p-3 bg-[#1a1714]">
+              <div className="text-[#7a7060] text-xs mb-1">Your Vault</div>
               <div className="text-xl font-bold">{isPlayerA ? state.vaultAHp : state.vaultBHp} HP</div>
             </div>
-            <div className="border border-[#2a2a3a] rounded p-3 bg-[#12121a]">
-              <div className="text-[#6a6a7a] text-xs mb-1">Enemy Vault</div>
+            <div className="border border-[#3d3428] rounded p-3 bg-[#1a1714]">
+              <div className="text-[#7a7060] text-xs mb-1">Enemy Vault</div>
               <div className="text-xl font-bold">{isPlayerA ? state.vaultBHp : state.vaultAHp} HP</div>
             </div>
           </div>
-          <div className="text-[#6a6a7a] text-xs">{history.length} rounds played</div>
-          <Link href="/" className="inline-block px-8 py-3 bg-[#00d4ff]/10 border border-[#00d4ff]/40 text-[#00d4ff] rounded hover:bg-[#00d4ff]/20 transition-colors tracking-wider text-sm">
+          <div className="text-[#7a7060] text-xs">{history.length} rounds played</div>
+          <Link href="/" className="inline-block px-8 py-3 bg-[#c8a44e]/10 border border-[#c8a44e]/40 text-[#c8a44e] rounded hover:bg-[#c8a44e]/20 transition-colors tracking-wider text-sm">
             RETURN HOME
           </Link>
         </div>
@@ -295,17 +295,17 @@ export default function Match1v1Page() {
     <div className="space-y-2 max-w-4xl mx-auto">
 
       {/* ===== 1. HEADER BANNER ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a] space-y-0">
+      <div className="border border-[#3d3428] rounded-lg bg-[#1a1714] space-y-0">
         {/* Row 1: Title, round, match ID, budget, player badge */}
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
           <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-bold tracking-wider">SIEGE</span>
-            <span className="text-sm font-bold text-[#e0e0e8] bg-[#1a1a26] px-2 py-0.5 rounded">Round {state.round}</span>
-            <span className="text-xs text-[#6a6a7a]">#{matchId}</span>
+            <span className="text-3xl font-bold tracking-wider font-serif">SIEGE</span>
+            <span className="text-sm font-bold text-[#d4cfc6] bg-[#252019] px-2 py-0.5 rounded">Round {state.round}</span>
+            <span className="text-xs text-[#7a7060]">#{matchId}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[#ffd700] font-bold text-sm">{budget} pts</span>
-            <span className="text-[10px] text-[#6a6a7a] border border-[#2a2a3a] rounded px-2 py-0.5">
+            <span className="text-[#daa520] font-bold text-sm">{budget} pts</span>
+            <span className="text-[10px] text-[#7a7060] border border-[#3d3428] rounded px-2 py-0.5">
               Player {isPlayerA ? "A" : "B"}
             </span>
           </div>
@@ -315,14 +315,14 @@ export default function Match1v1Page() {
         <div className="grid grid-cols-2 gap-6 px-4 pb-3">
           {/* Your Citadel */}
           <div className="flex flex-col items-center">
-            <img src="/sprites/citadel.png" alt="Your Citadel" className="w-32 h-32 object-contain drop-shadow-[0_0_12px_rgba(0,212,255,0.3)]" />
-            <span className="text-xs tracking-wider text-[#00d4ff] uppercase font-bold mt-1">Your Citadel</span>
+            <img src="/sprites/citadel.png" alt="Your Citadel" className="w-32 h-32 object-contain drop-shadow-[0_0_12px_rgba(200,164,78,0.3)]" />
+            <span className="text-xs tracking-wider text-[#c8a44e] uppercase font-bold mt-1">Your Citadel</span>
             <div className="w-full mt-1.5">
               <div className="flex justify-between items-center mb-0.5">
-                <span className={`text-sm font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault} / 50</span>
-                <span className="text-[10px] text-[#6a6a7a]">{Math.round(yourPct)}%</span>
+                <span className={`text-sm font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#d4cfc6]"}`}>{yourVault} / 50</span>
+                <span className="text-[10px] text-[#7a7060]">{Math.round(yourPct)}%</span>
               </div>
-              <div className="w-full h-3 bg-[#1a1a26] rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-[#252019] rounded-full overflow-hidden">
                 <div
                   className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
                   style={{ width: `${yourPct}%` }}
@@ -336,10 +336,10 @@ export default function Match1v1Page() {
             <span className="text-xs tracking-wider text-[#ff3344] uppercase font-bold mt-1">Enemy Citadel</span>
             <div className="w-full mt-1.5">
               <div className="flex justify-between items-center mb-0.5">
-                <span className={`text-sm font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault} / 50</span>
-                <span className="text-[10px] text-[#6a6a7a]">{Math.round(enemyPct)}%</span>
+                <span className={`text-sm font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#d4cfc6]"}`}>{enemyVault} / 50</span>
+                <span className="text-[10px] text-[#7a7060]">{Math.round(enemyPct)}%</span>
               </div>
-              <div className="w-full h-3 bg-[#1a1a26] rounded-full overflow-hidden">
+              <div className="w-full h-3 bg-[#252019] rounded-full overflow-hidden">
                 <div
                   className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
                   style={{ width: `${enemyPct}%` }}
@@ -351,8 +351,8 @@ export default function Match1v1Page() {
       </div>
 
       {/* ===== 2. BATTLEFIELD PANEL ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#12121a]">
-        <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-2">Battlefield</div>
+      <div className="border border-[#3d3428] rounded-lg p-3 bg-[#1a1714]">
+        <div className="text-[10px] tracking-wider text-[#7a7060] uppercase mb-2 font-serif">Battlefield</div>
 
         {/* Fortress Gates — East | Underground (main) | West */}
         <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2">
@@ -362,27 +362,27 @@ export default function Match1v1Page() {
             const mod = modifiers[i];
             const modName = MODIFIER_NAMES[mod] || "Normal";
             const modDesc = MODIFIER_DESCRIPTIONS[mod] || "";
-            const modColor = mod === 0 ? "text-[#6a6a7a]"
-              : mod === 1 ? "text-[#ffd700]"
-              : mod === 2 ? "text-[#00d4ff]"
+            const modColor = mod === 0 ? "text-[#7a7060]"
+              : mod === 1 ? "text-[#daa520]"
+              : mod === 2 ? "text-[#c8a44e]"
               : mod === 3 ? "text-[#ff3344]"
               : "text-[#ff8800]";
-            const modBorder = mod === 0 ? "border-[#2a2a3a]"
-              : mod === 1 ? "border-[#ffd700]/30"
-              : mod === 2 ? "border-[#00d4ff]/30"
+            const modBorder = mod === 0 ? "border-[#3d3428]"
+              : mod === 1 ? "border-[#daa520]/30"
+              : mod === 2 ? "border-[#c8a44e]/30"
               : mod === 3 ? "border-[#ff3344]/30"
               : "border-[#ff8800]/30";
             const modGlow = mod === 0 ? ""
               : mod === 1 ? "shadow-[inset_0_0_12px_rgba(255,215,0,0.08)]"
-              : mod === 2 ? "shadow-[inset_0_0_12px_rgba(0,212,255,0.08)]"
+              : mod === 2 ? "shadow-[inset_0_0_12px_rgba(200,164,78,0.08)]"
               : mod === 3 ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.08)]"
               : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
             const isMain = i === 2; // Underground = main gate
             return (
-              <div key={i} className={`bg-[#1a1a26] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
-                <div className={`font-bold ${isMain ? "text-sm text-[#e0e0e8]" : "text-xs text-[#e0e0e8]"}`}>{gateName}</div>
+              <div key={i} className={`bg-[#252019] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
+                <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{gateName}</div>
                 <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
-                {modDesc && <div className="text-[10px] text-[#6a6a7a] leading-tight">{modDesc}</div>}
+                {modDesc && <div className="text-[10px] text-[#7a7060] leading-tight">{modDesc}</div>}
               </div>
             );
           })}
@@ -391,8 +391,8 @@ export default function Match1v1Page() {
       </div>
 
       {/* ===== 3. RESOURCES BAR ===== */}
-      <div className="flex items-center gap-1 px-3 py-2 bg-[#12121a] border border-[#2a2a3a] rounded-lg overflow-x-auto">
-        <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase shrink-0 mr-2">Resources</span>
+      <div className="flex items-center gap-1 px-3 py-2 bg-[#1a1714] border border-[#3d3428] rounded-lg overflow-x-auto">
+        <span className="text-[10px] tracking-wider text-[#7a7060] uppercase shrink-0 mr-2">Resources</span>
         {[
           { label: "Iron", value: resources.iron, color: "text-[#a0a0b0]" },
           { label: "Linen", value: resources.linen, color: "text-[#d4a574]" },
@@ -401,15 +401,15 @@ export default function Match1v1Page() {
           { label: "Ember", value: resources.ember, color: "text-[#ff6633]" },
           { label: "Seeds", value: resources.seeds, color: "text-[#66cc66]" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="flex items-center gap-1 px-2 py-0.5 bg-[#1a1a26] rounded text-xs shrink-0">
+          <div key={label} className="flex items-center gap-1 px-2 py-0.5 bg-[#252019] rounded text-xs shrink-0">
             <span className={`font-bold ${color}`}>{value}</span>
-            <span className="text-[10px] text-[#6a6a7a]">{label}</span>
+            <span className="text-[10px] text-[#7a7060]">{label}</span>
           </div>
         ))}
       </div>
 
       {/* ===== 4. DEPLOYMENT PANEL ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a]">
+      <div className="border border-[#3d3428] rounded-lg bg-[#1a1714]">
         {state.phase === "committing" && !committed ? (
           <AllocationForm1v1
             budget={budget}
@@ -424,9 +424,9 @@ export default function Match1v1Page() {
         ) : (
           <div className="p-3 flex items-center justify-center">
             {phaseText ? (
-              <span className="text-[#6a6a7a] text-sm animate-pulse tracking-wide">{phaseText}</span>
+              <span className="text-[#7a7060] text-sm animate-pulse tracking-wide">{phaseText}</span>
             ) : (
-              <span className="text-[#6a6a7a] text-xs">Awaiting next phase...</span>
+              <span className="text-[#7a7060] text-xs">Awaiting next phase...</span>
             )}
           </div>
         )}
@@ -437,12 +437,12 @@ export default function Match1v1Page() {
       )}
 
       {/* ===== 5. WAR DISPATCH LOG ===== */}
-      <div className="border border-[#2a2a3a] rounded-lg bg-[#12121a]">
+      <div className="border border-[#3d3428] rounded-lg bg-[#1a1714]">
         <div className="px-4 pt-3 pb-2">
-          <span className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">War Dispatch Log</span>
+          <span className="text-[10px] tracking-wider text-[#7a7060] uppercase font-serif">War Dispatch Log</span>
         </div>
         {history.length === 0 ? (
-          <div className="px-4 pb-3 text-sm text-[#6a6a7a]">No rounds played yet</div>
+          <div className="px-4 pb-3 text-sm text-[#7a7060]">No rounds played yet</div>
         ) : (
           <div className="max-h-96 overflow-y-auto">
             {history.map((r: RoundResult1v1) => {
@@ -458,20 +458,20 @@ export default function Match1v1Page() {
               const gateNames = ["East", "West", "Underground"];
 
               return (
-                <div key={r.round} className="border-t border-[#1a1a26]">
+                <div key={r.round} className="border-t border-[#252019]">
                   {/* Summary row — always visible, clickable */}
                   <button
                     onClick={() => toggleRound(r.round)}
-                    className="w-full px-4 py-2 flex items-center justify-between text-xs hover:bg-[#1a1a26] transition-colors"
+                    className="w-full px-4 py-2 flex items-center justify-between text-xs hover:bg-[#252019] transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-[#6a6a7a] text-[10px]">{isExpanded ? "\u25BC" : "\u25B6"}</span>
-                      <span className="text-[#e0e0e8] font-bold">R{r.round}</span>
+                      <span className="text-[#7a7060] text-[10px]">{isExpanded ? "\u25BC" : "\u25B6"}</span>
+                      <span className="text-[#d4cfc6] font-bold">R{r.round}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-green-400">+{dmgDealt} dealt</span>
-                      {myTrapDmg > 0 && <span className="text-[#ffd700]">(trap +{myTrapDmg})</span>}
-                      <span className="text-[#6a6a7a]">/</span>
+                      {myTrapDmg > 0 && <span className="text-[#daa520]">(trap +{myTrapDmg})</span>}
+                      <span className="text-[#7a7060]">/</span>
                       <span className="text-red-400">-{dmgTaken} taken</span>
                       {theirTrapDmg > 0 && <span className="text-[#ff3344]">(trap -{theirTrapDmg})</span>}
                     </div>
@@ -483,39 +483,39 @@ export default function Match1v1Page() {
                       <div className="grid grid-cols-3 gap-2">
                         {r.gateBreakdown.map((gate, i) => {
                           const modName = MODIFIER_NAMES[gate.modifier] || "Normal";
-                          const modColor = gate.modifier === 0 ? "text-[#6a6a7a]"
-                            : gate.modifier === 1 ? "text-[#ffd700]"
-                            : gate.modifier === 2 ? "text-[#00d4ff]"
+                          const modColor = gate.modifier === 0 ? "text-[#7a7060]"
+                            : gate.modifier === 1 ? "text-[#daa520]"
+                            : gate.modifier === 2 ? "text-[#c8a44e]"
                             : gate.modifier === 3 ? "text-[#ff3344]"
                             : "text-[#ff8800]";
                           const myDmgDealt = isPlayerA ? gate.dmgToB : gate.dmgToA;
                           const myDmgTaken = isPlayerA ? gate.dmgToA : gate.dmgToB;
                           return (
-                            <div key={i} className="bg-[#1a1a26] rounded p-2 space-y-1 text-xs">
+                            <div key={i} className="bg-[#252019] rounded p-2 space-y-1 text-xs">
                               <div className="flex justify-between items-center">
-                                <span className="text-[#e0e0e8] font-bold">{gateNames[i]}</span>
+                                <span className="text-[#d4cfc6] font-bold">{gateNames[i]}</span>
                                 {gate.modifier !== 0 && (
                                   <span className={`${modColor} text-[10px]`}>{modName}</span>
                                 )}
                               </div>
-                              <div className="text-[#6a6a7a]">
+                              <div className="text-[#7a7060]">
                                 You: {isPlayerA ? gate.attackA : gate.attackB} atk / {isPlayerA ? gate.defenseA : gate.defenseB} def
                               </div>
-                              <div className="text-[#6a6a7a]">
+                              <div className="text-[#7a7060]">
                                 Them: {isPlayerA ? gate.attackB : gate.attackA} atk / {isPlayerA ? gate.defenseB : gate.defenseA} def
                               </div>
                               <div>
                                 {myDmgDealt > 0 && <span className="text-green-400">+{myDmgDealt} </span>}
                                 {myDmgTaken > 0 && <span className="text-red-400">-{myDmgTaken}</span>}
-                                {myDmgDealt === 0 && myDmgTaken === 0 && <span className="text-[#6a6a7a]">0</span>}
+                                {myDmgDealt === 0 && myDmgTaken === 0 && <span className="text-[#7a7060]">0</span>}
                               </div>
                             </div>
                           );
                         })}
                       </div>
                       {(r.aTraps.some(t => t > 0) || r.bTraps.some(t => t > 0)) && (
-                        <div className="text-xs border-t border-[#2a2a3a] pt-2 space-y-1">
-                          <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase">Node Traps</div>
+                        <div className="text-xs border-t border-[#3d3428] pt-2 space-y-1">
+                          <div className="text-[10px] tracking-wider text-[#7a7060] uppercase">Node Traps</div>
                           {(() => {
                             const nodeNames = ["Forge", "Quarry", "Grove"];
                             return [0, 1, 2].map(ni => {
@@ -523,7 +523,7 @@ export default function Match1v1Page() {
                               const theirTrap = isPlayerA ? r.bTraps[ni] : r.aTraps[ni];
                               if (myTrap) {
                                 return (
-                                  <div key={`mt${ni}`} className="text-[#ffd700]">
+                                  <div key={`mt${ni}`} className="text-[#daa520]">
                                     You trapped {nodeNames[ni]} — opponent takes <span className="text-[#ff3344] font-bold">5 damage</span> if they captured it
                                   </div>
                                 );
@@ -549,7 +549,7 @@ export default function Match1v1Page() {
         )}
       </div>
 
-      <div className="text-[10px] text-[#2a2a3a] text-center pb-4">
+      <div className="text-[10px] text-[#3d3428] text-center pb-4">
         Move data stored in localStorage until revealed. Auto-reveal triggers when both players commit.
       </div>
     </div>
