@@ -311,43 +311,49 @@ export default function Match1v1Page() {
           </div>
         </div>
 
-        {/* Row 2: Full-width HP bars side by side */}
+        {/* Row 2: Citadel sprites + HP bars */}
         <div className="grid grid-cols-2 gap-4 px-4 pb-3">
           {/* Your Citadel */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs tracking-wider text-[#e0e0e8] uppercase font-bold">Your Citadel</span>
-              <span className={`text-sm font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault} / 50</span>
-            </div>
-            <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
-              <div
-                className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
-                style={{ width: `${yourPct}%` }}
-              />
-              {yourPct >= 15 && (
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
-                  {Math.round(yourPct)}%
-                </span>
-              )}
+          <div className="flex items-center gap-3">
+            <img src="/sprites/citadel.png" alt="Your Citadel" className="w-16 h-16 object-contain opacity-90" />
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs tracking-wider text-[#00d4ff] uppercase font-bold">Your Citadel</span>
+                <span className={`text-sm font-bold ${yourPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{yourVault} / 50</span>
+              </div>
+              <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
+                <div
+                  className={`h-full ${hpBarColor(yourPct)} rounded-full transition-all duration-700 ease-out`}
+                  style={{ width: `${yourPct}%` }}
+                />
+                {yourPct >= 15 && (
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
+                    {Math.round(yourPct)}%
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           {/* Enemy Citadel */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <span className="text-xs tracking-wider text-[#e0e0e8] uppercase font-bold">Enemy Citadel</span>
-              <span className={`text-sm font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault} / 50</span>
+          <div className="flex items-center gap-3">
+            <div className="flex-1">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs tracking-wider text-[#ff3344] uppercase font-bold">Enemy Citadel</span>
+                <span className={`text-sm font-bold ${enemyPct < 10 ? "animate-pulse text-red-400" : "text-[#e0e0e8]"}`}>{enemyVault} / 50</span>
+              </div>
+              <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
+                <div
+                  className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
+                  style={{ width: `${enemyPct}%` }}
+                />
+                {enemyPct >= 15 && (
+                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
+                    {Math.round(enemyPct)}%
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="w-full h-4 bg-[#1a1a26] rounded-full overflow-hidden relative">
-              <div
-                className={`h-full ${hpBarColor(enemyPct)} rounded-full transition-all duration-700 ease-out`}
-                style={{ width: `${enemyPct}%` }}
-              />
-              {enemyPct >= 15 && (
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/80 drop-shadow-sm">
-                  {Math.round(enemyPct)}%
-                </span>
-              )}
-            </div>
+            <img src="/sprites/citadel.png" alt="Enemy Citadel" className="w-16 h-16 object-contain opacity-90" style={{ filter: "hue-rotate(340deg) saturate(1.5)" }} />
           </div>
         </div>
       </div>
