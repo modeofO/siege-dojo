@@ -355,38 +355,48 @@ export default function Match1v1Page() {
         <div className="text-[10px] tracking-wider text-[#7a7060] uppercase mb-2 font-serif">Battlefield</div>
 
         {/* Fortress Gates — East | Underground (main) | West */}
-        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2">
-          {[0, 2, 1].map((i) => {
-            const gateNames = ["East Gate", "West Gate", "Underground"];
-            const gateName = gateNames[i];
-            const mod = modifiers[i];
-            const modName = MODIFIER_NAMES[mod] || "Normal";
-            const modDesc = MODIFIER_DESCRIPTIONS[mod] || "";
-            const modColor = mod === 0 ? "text-[#7a7060]"
-              : mod === 1 ? "text-[#daa520]"
-              : mod === 2 ? "text-[#c8a44e]"
-              : mod === 3 ? "text-[#ff3344]"
-              : "text-[#ff8800]";
-            const modBorder = mod === 0 ? "border-[#3d3428]"
-              : mod === 1 ? "border-[#daa520]/30"
-              : mod === 2 ? "border-[#c8a44e]/30"
-              : mod === 3 ? "border-[#ff3344]/30"
-              : "border-[#ff8800]/30";
-            const modGlow = mod === 0 ? ""
-              : mod === 1 ? "shadow-[inset_0_0_12px_rgba(255,215,0,0.08)]"
-              : mod === 2 ? "shadow-[inset_0_0_12px_rgba(200,164,78,0.08)]"
-              : mod === 3 ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.08)]"
-              : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
-            const isMain = i === 2; // Underground = main gate
-            return (
-              <div key={i} className={`bg-[#252019] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
-                <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{gateName}</div>
-                <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
-                {modDesc && <div className="text-[10px] text-[#7a7060] leading-tight">{modDesc}</div>}
-              </div>
-            );
-          })}
-        </div>
+        {(() => {
+          const gateConfig = [
+            { idx: 0, name: "East Gate", sprite: "/sprites/gate-east.png" },
+            { idx: 2, name: "Underground", sprite: null },
+            { idx: 1, name: "West Gate", sprite: "/sprites/gate-west.png" },
+          ];
+          return (
+            <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2">
+              {gateConfig.map(({ idx, name, sprite }) => {
+                const mod = modifiers[idx];
+                const modName = MODIFIER_NAMES[mod] || "Normal";
+                const modDesc = MODIFIER_DESCRIPTIONS[mod] || "";
+                const modColor = mod === 0 ? "text-[#7a7060]"
+                  : mod === 1 ? "text-[#daa520]"
+                  : mod === 2 ? "text-[#c8a44e]"
+                  : mod === 3 ? "text-[#ff3344]"
+                  : "text-[#ff8800]";
+                const modBorder = mod === 0 ? "border-[#3d3428]"
+                  : mod === 1 ? "border-[#daa520]/30"
+                  : mod === 2 ? "border-[#c8a44e]/30"
+                  : mod === 3 ? "border-[#ff3344]/30"
+                  : "border-[#ff8800]/30";
+                const modGlow = mod === 0 ? ""
+                  : mod === 1 ? "shadow-[inset_0_0_12px_rgba(255,215,0,0.08)]"
+                  : mod === 2 ? "shadow-[inset_0_0_12px_rgba(200,164,78,0.08)]"
+                  : mod === 3 ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.08)]"
+                  : "shadow-[inset_0_0_12px_rgba(255,136,0,0.08)]";
+                const isMain = idx === 2;
+                return (
+                  <div key={idx} className={`bg-[#252019] rounded-lg border ${modBorder} ${modGlow} text-center flex flex-col items-center gap-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
+                    {sprite && (
+                      <img src={sprite} alt={name} className="w-20 h-20 object-contain" />
+                    )}
+                    <div className={`font-bold font-serif ${isMain ? "text-sm text-[#d4cfc6]" : "text-xs text-[#d4cfc6]"}`}>{name}</div>
+                    <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
+                    {modDesc && <div className="text-[10px] text-[#7a7060] leading-tight">{modDesc}</div>}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
       </div>
 
