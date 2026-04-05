@@ -357,7 +357,7 @@ export default function Match1v1Page() {
         <div className="text-[10px] tracking-wider text-[#6a6a7a] uppercase mb-2">Battlefield</div>
 
         {/* Fortress Gates — East | Underground (main) | West */}
-        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2 mb-2">
+        <div className="grid grid-cols-[1fr_1.3fr_1fr] gap-2">
           {[0, 2, 1].map((i) => {
             const gateNames = ["East Gate", "West Gate", "Underground"];
             const gateName = gateNames[i];
@@ -383,7 +383,6 @@ export default function Match1v1Page() {
             return (
               <div key={i} className={`bg-[#1a1a26] rounded-lg border ${modBorder} ${modGlow} text-center space-y-1 ${isMain ? "p-3 ring-1 ring-[#3a3a4a]" : "p-2"}`}>
                 <div className={`font-bold ${isMain ? "text-sm text-[#e0e0e8]" : "text-xs text-[#e0e0e8]"}`}>{gateName}</div>
-                {isMain && <div className="text-[9px] tracking-wider text-[#4a4a5a] uppercase">Main Entrance</div>}
                 <div className={`text-xs font-bold ${modColor}`}>{modName}</div>
                 {modDesc && <div className="text-[10px] text-[#6a6a7a] leading-tight">{modDesc}</div>}
               </div>
@@ -391,44 +390,6 @@ export default function Match1v1Page() {
           })}
         </div>
 
-        <div className="border-t border-[#2a2a3a] my-3" />
-        <div className="grid grid-cols-3 gap-2">
-          {(() => {
-            const nodeNames = ["Forge", "Quarry", "Grove"];
-            const nodeResources = ["Iron + Linen", "Stone + Wood", "Ember + Seeds"];
-            return state.nodes.map((owner, i) => {
-              const isYours = owner === (isPlayerA ? "teamA" : "teamB");
-              const isEnemy = owner !== "neutral" && !isYours;
-              const dotColor = owner === "teamA"
-                ? "bg-[#00d4ff]"
-                : owner === "teamB"
-                  ? "bg-[#ff3344]"
-                  : "bg-[#6a6a7a]";
-              const borderColor = isYours
-                ? "border-[#00d4ff]/30"
-                : isEnemy
-                  ? "border-[#ff3344]/30"
-                  : "border-[#2a2a3a]";
-              const bgGlow = isYours
-                ? "shadow-[inset_0_0_12px_rgba(0,212,255,0.06)]"
-                : isEnemy
-                  ? "shadow-[inset_0_0_12px_rgba(255,51,68,0.06)]"
-                  : "";
-              const label = owner === "neutral" ? "Neutral" : isYours ? "Yours" : "Enemy";
-              const labelColor = owner === "neutral" ? "text-[#6a6a7a]" : isYours ? "text-[#00d4ff]" : "text-[#ff3344]";
-              return (
-                <div key={i} className={`bg-[#1a1a26] rounded-lg p-2 border ${borderColor} ${bgGlow} text-center space-y-1`}>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
-                    <span className="text-xs text-[#e0e0e8] font-bold">{nodeNames[i]}</span>
-                  </div>
-                  <div className="text-[10px] text-[#6a6a7a]">{nodeResources[i]}</div>
-                  <div className={`text-[10px] font-bold ${labelColor}`}>{label}</div>
-                </div>
-              );
-            });
-          })()}
-        </div>
       </div>
 
       {/* ===== 3. RESOURCES BAR ===== */}
