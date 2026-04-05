@@ -248,12 +248,14 @@ async function fetchMatchState1v1(matchId: string): Promise<MatchState1v1 | null
 export function useMatchState1v1(matchId: string | null) {
   const [state, setState] = useState<MatchState1v1 | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const refresh = useCallback(async () => {
     if (!matchId) return;
     const s = await fetchMatchState1v1(matchId);
     setState(s);
     setLoading(false);
+    setRefreshKey(k => k + 1);
   }, [matchId]);
 
   useEffect(() => {
@@ -262,10 +264,10 @@ export function useMatchState1v1(matchId: string | null) {
     return () => { clearTimeout(t); clearInterval(i); };
   }, [refresh]);
 
-  return { state, loading, refresh };
+  return { state, loading, refresh, refreshKey };
 }
 
-export function useRoundStatus1v1(matchId: string | null, round: number) {
+export function useRoundStatus1v1(matchId: string | null, round: number, refreshKey?: number) {
   const [status, setStatus] = useState({ commitCount: 0, revealCount: 0 });
 
   useEffect(() => {
@@ -296,7 +298,7 @@ export function useRoundStatus1v1(matchId: string | null, round: number) {
     const t = setTimeout(() => { void fetch(); }, 0);
     const i = setInterval(() => { void fetch(); }, POLL_INTERVAL);
     return () => { clearTimeout(t); clearInterval(i); };
-  }, [matchId, round]);
+  }, [matchId, round, refreshKey]);
 
   return status;
 }
@@ -305,6 +307,7 @@ export function useCommitmentStatus1v1(
   matchId: string | null,
   round: number,
   role: 0 | 1,
+  refreshKey?: number,
 ) {
   const [status, setStatus] = useState({ committed: false, revealed: false });
 
@@ -333,7 +336,7 @@ export function useCommitmentStatus1v1(
     const t = setTimeout(() => { void fetch(); }, 0);
     const i = setInterval(() => { void fetch(); }, POLL_INTERVAL);
     return () => { clearTimeout(t); clearInterval(i); };
-  }, [matchId, round, role]);
+  }, [matchId, round, role, refreshKey]);
 
   return status;
 }

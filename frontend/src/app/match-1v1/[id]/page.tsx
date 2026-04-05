@@ -34,7 +34,7 @@ export default function Match1v1Page() {
   const matchId = params.id as string;
   const { account, address } = useAccount();
 
-  const { state, loading, refresh } = useMatchState1v1(matchId);
+  const { state, loading, refresh, refreshKey } = useMatchState1v1(matchId);
   const history = useRoundHistory1v1(matchId);
   const resources = useResourceBalances(address);
 
@@ -57,15 +57,16 @@ export default function Match1v1Page() {
   }
   const roleFound = isPlayerA || isPlayerB;
 
-  // Commitment status from chain
+  // Commitment status from chain — refreshKey ensures these re-fetch when match state updates
   const { committed, revealed } = useCommitmentStatus1v1(
     matchId,
     state?.round ?? 1,
     role,
+    refreshKey,
   );
 
   // Round status for polling commit/reveal counts
-  const roundStatus = useRoundStatus1v1(matchId, state?.round ?? 1);
+  const roundStatus = useRoundStatus1v1(matchId, state?.round ?? 1, refreshKey);
 
   // Gate modifiers for current round
   const modifiers = useRoundModifiers1v1(matchId, state?.round ?? 1);
